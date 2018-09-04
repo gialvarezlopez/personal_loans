@@ -1,0 +1,121 @@
+AppBundle\Entity\Client:
+    type: entity
+    table: client
+    indexes:
+        FK_client_user:
+            columns:
+                - usr_id
+    id:
+        cliId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: cli_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        cliFirstName:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+            column: cli_first_name
+        cliMiddleName:
+            type: string
+            nullable: true
+            length: 15
+            options:
+                fixed: false
+            column: cli_middle_name
+        cliFirstSurname:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+            column: cli_first_surname
+        cliSecondSurname:
+            type: string
+            nullable: true
+            length: 15
+            options:
+                fixed: false
+            column: cli_second_surname
+        cliIdNumber:
+            type: string
+            nullable: false
+            length: 15
+            options:
+                fixed: false
+            column: cli_id_number
+        cliIdType:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+            column: cli_id_type
+        cliAddress:
+            type: string
+            nullable: false
+            length: 240
+            options:
+                fixed: false
+            column: cli_address
+        cliPhone1:
+            type: string
+            nullable: true
+            length: 15
+            options:
+                fixed: false
+            column: cli_phone1
+        cliPhone2:
+            type: string
+            nullable: true
+            length: 15
+            options:
+                fixed: false
+            column: cli_phone2
+        cliEmail:
+            type: string
+            nullable: true
+            length: 40
+            options:
+                fixed: false
+            column: cli_email
+        cliNote:
+            type: string
+            nullable: true
+            length: 240
+            options:
+                fixed: false
+            column: cli_note
+        cliActive:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+            column: cli_active
+        cliCreated:
+            type: datetime
+            nullable: true
+            column: cli_created
+        cliUpdated:
+            type: datetime
+            nullable: true
+            column: cli_updated
+    manyToOne:
+        usr:
+            targetEntity: User
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usr_id:
+                    referencedColumnName: usr_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

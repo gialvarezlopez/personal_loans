@@ -1,0 +1,53 @@
+AppBundle\Entity\SocialNetwork:
+    type: entity
+    table: social_network
+    id:
+        snId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: sn_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        snType:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: sn_type
+        snKey:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: sn_key
+        snIcon:
+            type: string
+            nullable: true
+            length: 20
+            options:
+                fixed: false
+            column: sn_icon
+        snBackground:
+            type: string
+            nullable: true
+            length: 12
+            options:
+                fixed: false
+            column: sn_background
+        snActive:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: sn_active
+        snCreated:
+            type: datetime
+            nullable: true
+            column: sn_created
+    lifecycleCallbacks: {  }

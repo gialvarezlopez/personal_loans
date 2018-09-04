@@ -1,0 +1,122 @@
+{# {% extends 'app/base.html.twig' %} #}
+
+
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+fieldset{
+    margin-bottom:20px;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+  
+    {% if client|length %}
+        <div class="well">
+        <div class="row">
+            <div class="col-lg-6">
+                
+                    <fieldset>
+                        <legend><h5><i class="fa fa-user-circle-o" aria-hidden="true"></i> Full Name:</h5></legend>
+                        {{ client.cliFirstName }} {{ client.cliMiddleName }} {{ client.cliFirstSurname }} {{ client.cliSecondSurname }}
+                    </fieldset>
+                
+            </div>
+            <div class="col-lg-6">
+                
+                    <fieldset>
+                        <legend><h5><i class="fa fa-address-card-o"></i> ID Info</h5></legend>
+                        <div class="row">
+                            <div class="col-lg-6"><strong>Number:</strong> {{ client.cliIdNumber }} </div>
+                            <div class="col-lg-6"><strong>Type:</strong> {{ client.cliIdType }}</div>
+                        
+                        </div>
+                    </fieldset>
+                
+            </div>
+        </div>
+        </div> 
+        <fieldset>
+            <legend><h4><i class="fa fa-tag" aria-hidden="true"></i> Contact Info</h4></legend>
+           
+            <table class="table table-striped">
+            <tbody>
+                {#
+                <tr>
+                    <th>Cliid</th>
+                    <td>{{ client.cliId }}</td>
+                </tr>
+                #}
+                <tr>
+                    <th>Address</th>
+                    <td>{{ client.cliAddress }}</td>
+                </tr>
+                <tr>
+                    <th>Phone1</th>
+                    <td>{{ client.cliPhone1 }}</td>
+                </tr>
+                <tr>
+                    <th>Phone2</th>
+                    <td>{{ client.cliPhone2 }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ client.cliEmail }}</td>
+                </tr>
+                <tr>
+                    <th>Note</th>
+                    <td> {% if client.cliNote != "" %}{{ client.cliNote }}{% else %}N/A{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Created At</th>
+                    <td> {{ client.cliCreated|date('Y-m-d H:i:s') }}</td>
+                </tr>
+                <tr>
+                    <th>Update At</th>
+                    <td> {% if client.cliUpdated != "" %}{{ client.cliUpdated|date('Y-m-d H:i:s') }}{% else %}N/A{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Active</th>
+                    <td>{% if client.cliActive %}Yes{% else %}No{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+        </fieldset>
+
+        
+        
+        {#
+        <ul>
+            <li>
+                <a href="{{ path('client_index') }}">Back to the list</a>
+            </li>
+            <li>
+                <a href="{{ path('client_edit', { 'cliId': client.cliId }) }}">Edit</a>
+            </li>
+            <li>
+                {{ form_start(delete_form) }}
+                    <input type="submit" value="Delete">
+                {{ form_end(delete_form) }}
+            </li>
+        </ul>
+        #}
+    {% else %}
+        <div class="alert alert-danger">Record not found</div>
+    {% endif %}
+{% endblock %}

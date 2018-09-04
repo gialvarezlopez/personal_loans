@@ -1,0 +1,144 @@
+<style>
+.amounts{
+    font-size:14px;
+    font-weight: 600;
+    color: #34825F;
+}
+
+.titleCurrency{
+    font-size: 18px !important;
+}
+</style>
+
+<div class="row">
+    <div class="col-md-4"><span><i class="fa fa-money" aria-hidden="true"></i> Payments history: <span class="badge"></span></span></div>
+    <div class="col-md-4 col-md-offset-4 text-right">
+        <form class="form-inline"> 
+            <div class="form-group">
+                <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">Full History Here</a>
+            </div>
+        </form>
+    </div>
+</div>
+<hr>
+<input type='hidden' value="{{ loan.loaRecurringDayPayment }}" id='curringDaySelected'>
+{% if arr %}
+                        <table class="table table-striped display nowrap" id="tablePayments" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Payment Date</th>
+                                        <th>Paid Date</th>
+                                        <th>Paid Amount</th>
+                                        <th>Rate</th>
+                                        <th>Paid to Capital</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set counter = 0 %}
+                                    {% set totalToPay = 0 %}
+                                    {% set totalPaid = 0  %}
+                                    {% set totalAmount = 0  %}
+                                    {% for item in arr %}
+                                        {% set counter =  counter + 1 %}
+
+                                        {% if item.lpa_paid_capital or item.lpa_total_amount_paid %}
+                                            {% set readonly = "readonly='readonly'" %}
+                                            {% set done = "done" %} 
+                                        {% else %}
+                                            {% set readonly = "" %}
+                                            {% set done = "" %}
+                                        {% endif %}
+                                        <tr id="tr_{{ counter }}" class="{{done}}">
+                                            {# <td>{{ counter }}</td> #}
+                                            <td>{{ counter }}</td>
+                                            <td>
+                                                {% if counter > 1 %}
+                                                    {{ item.lpa_max_payment_date|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date("Y-m-d") }}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}    
+                                                -
+                                                <span class="maxDate">{{ item.lpa_max_payment_date }}</span>
+                                            </td>
+                                            
+                                            <td>{% if item.lpa_paid_date  %} {{  item.lpa_paid_date }} {% else %} Pending {% endif %}</td>
+                                            <td>
+                                                    
+                                                   <span class="label label-default amounts"> ${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span>
+                                                    {% set totalAmount =  totalAmount + item.lpa_total_amount_paid %}
+                                            </td>
+                                            <td>{{ item.lpa_current_rate_interest }}%</td>
+                                            <td><span class="label label-success amounts">
+                                                {% set totalPaid = totalPaid + item.lpa_paid_capital %}
+                                                ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}</span>
+                                            </td>
+                                            <td>
+                                                {% if item.lpa_total_amount_paid > 0 %}
+                                                    {# <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> #}
+                                                    Done
+                                                {% else %}
+                                                    Pending
+                                                {% endif %}
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                       
+                                    {% endfor %}
+                                    <tfood>
+                                        <tr>
+                                            <td colspan="3" class="text-center">Totals</td>
+                                            <td><span class="label label-default amounts">${{ totalAmount|number_format(2, '.', ',') }}</span></td>
+                                            <td></td>
+                                            <td><span class="label label-success amounts">${{ totalPaid|number_format(2, '.', ',') }}</span></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfood>
+                                </tbody>
+                        </table>
+
+                        <div>
+
+                                {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                {% if pending %}
+                                    {% set rate = pending.rate %}   
+
+                                {% else %}
+                                    {% set rate = loan.loaRateInterest %}     
+                                {% endif %}
+
+                                {% set paidAmount = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
+                                {% if paidAmount %}
+                                    {% set money = (loan.loaAmount - paidAmount[0]['paidCapital']) %}
+                                {% else %}
+                                    {% set money = loan.loaAmount %}
+                                {% endif %}
+                                
+                                <hr>
+                                <h3 class=""><span class="">Payments done:</span> <span id="total" class="label label-default">${{ totalAmount|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="">Paid capital:</span> <span id="total" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="">Paid interest:</span> <span id="total" class="label label-default">${{ (totalAmount - totalPaid)|number_format(2, '.', ',') }}</span></h3>
+                                {% if showResume %}
+                                <div>
+                                    <h3 class=""><span class="labelCurrencyc">Pending to pay: </span>
+                                    <span class="amountsX">
+                                        ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+                                        <span class="label label-default">${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}</span>
+                                        </span>
+                                    </h3>    
+                                </div>
+                                {% endif %}
+                        </div>
+                    {% else %}
+                        There are not payments done    
+                    {% endif %}
+
+                        {#
+                        <div class="text-right"><button id="addInput" class="btn btn-default"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</button></div>
+                        <div>
+                            <h3><span class="labelCurrency">Total to pay:</span> <span id="total" class="label label-default">${{ totalToPay|number_format(2, '.', ',') }}</span></h3>
+                            <h3><span class="labelCurrency">Total paid:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
+                            <h3><span class="labelCurrency">Pending:</span> <span id="pending" class="label label-default">${{ (totalToPay - totalPaid)|number_format(2, '.', ',') }}</span></h3>
+                        </div>
+                        #}

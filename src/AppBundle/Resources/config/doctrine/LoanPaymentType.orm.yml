@@ -1,0 +1,29 @@
+AppBundle\Entity\LoanPaymentType:
+    type: entity
+    table: loan_payment_type
+    id:
+        lptId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: lpt_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        lptName:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: lpt_name
+        lptKey:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: lpt_key
+    lifecycleCallbacks: {  }

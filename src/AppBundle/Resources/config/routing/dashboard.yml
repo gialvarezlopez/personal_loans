@@ -1,0 +1,9 @@
+dashboard_index:
+    path:     /
+    defaults: { _controller: "AppBundle:Dashboard:index" }
+    methods:  GET
+
+dashboard_show:
+    path:     /{cliId}/show
+    defaults: { _controller: "AppBundle:Dashboard:show" }
+    methods:  [GET, POST]

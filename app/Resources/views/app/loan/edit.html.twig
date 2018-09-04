@@ -1,0 +1,942 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Loan edit - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+.marginBT{
+    margin-bottom:10px; 
+}
+#total, #totalPaid, #pending{
+    color: green;
+}
+.labelCurrency{
+    display:inline-block;
+    width: 150px;
+    font-size: 22px;
+}
+
+.widthAuto {
+   width: auto !important;
+}
+.labelInfo{
+    display: inline-block;
+    width:60px;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Loan edit
+        <small>
+            Update the necessary data
+        </small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
+        <li class="active">Edit</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    
+    <div class="box-header">
+        
+        
+       
+    </div>
+     
+    <div class="box-body">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <div class="well well-sm">
+                        <div class="text-right">
+                            {% set loanId = app.request.get('loaId') %}
+                            {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loanId) %}
+                            This loan has <span class="badge">{{ hasPayments }}</span> payment(s) done
+                        </div>
+                        <div>
+                            <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  Client:</span>
+                        <span>
+                            <a href="{{ loan.cli.cliId }}" class="btnShowClient">
+                                {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
+                            </a>
+                            {# {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }} #}
+                        </span>
+                        </div>
+                        <h5><span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i> Code:</span> <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">{{ loan.loaCode }}</a></h5>
+                        
+                        
+                </div>
+                <div class="well">
+                    
+                    {# {{ dump(client) }} #}
+                    
+                    
+                    
+                                {{form_start(edit_form,{'enctype':'multipart/form-date'})}}
+                                {# <div class="">{{ form_widget(edit_form.loaClient,  { 'attr': {'class': 'form-control',"value":client.cliId } } ) }}</div> #}
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="form_error">{{ form_errors(edit_form.loaLoanMade)}}</div>
+                                            <label for="" class=" control-label">Loan created at: <span class="text-danger">*</span></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="">{{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                            </div>
+                                            <span id="helpBlock2" class="help-block">Date when was made the loan.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="form_error">{{ form_errors(edit_form.loaAmount)}}</div>
+                                            <label for="" class=" control-label">Requested amount: <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-usd" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="">{{ form_widget(edit_form.loaAmount,  { 'attr': {'class': 'form-control pull-right',"autocomplete":"off"}} ) }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-6 col-sm-12">
+                                        <div class="form-group" id="holderRate">
+                                            <div class="form_error">{{ form_errors(edit_form.loaRateInterestByDefault)}}</div>
+                                            <label for="" class=" control-label">Default Interest rate: <span class="text-danger">*</span></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-percent" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="">{{ form_widget(edit_form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'},type:"number" } ) }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if loan.loc.locKey  != "inactive_rate" %}
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <span id="helpBlock2" class="help-block">The interest rate may change due to non-compliance of payments not made on time</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="form_error">{{ form_errors(edit_form.loaRecurringDayPayment)}}</div>
+                                            <label for="" class=" control-label">Recurring day payment: <span class="text-danger">*</span></label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="">{{ form_widget(edit_form.loaRecurringDayPayment,  { 'attr': {'class': 'form-control', 'placeholder':'Number Days'} } ) }}</div>
+                                            </div>
+                                            <span id="helpBlock2" class="help-block">Recurring day payment for example for every week enter number 7 </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-6 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="form_error">{{ form_errors(edit_form.loaDeadline)}}</div>
+                                            <label for="" class=" control-label">
+                                                 
+                                                {% if hasPayments == 0 %} 
+                                                    First Payment Date: 
+                                                {% else %} 
+                                                    {% if loan.loc.locKey  == "inactive_rate" %}
+                                                        Last Payment done:
+                                                    {% else %}
+                                                        Next Payment date:
+                                                    {% endif %}
+                                                     
+                                                {% endif %}
+                                                <span class="text-danger">*</span>
+                                            </label>
+
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                </div>
+                                                
+                                                <div class="">
+                                                    {% if loan.loc.locKey  == "inactive_rate" %}
+                                                        {% if hasPayments == 0 %}
+                                                            {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}
+                                                        {% else %}
+                                                            
+                                                            {% set lastPayment = srv_Loans.getLastPayment(loanId) %}
+                                                            {% if lastPayment and lastPayment[0]['lpa_paid_date'] != "" %}
+                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly", "value": lastPayment[0]['lpa_paid_date'] } } ) }}
+                                                            {% else %}
+                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }}
+                                                            {% endif %}
+                                                            {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }} #}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                            </div>
+                                            <span id="helpBlock2" class="help-block">Max date available to client can make the payment.</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+
+                                <div class="col-md-12 col-lg-12 col-sm-12" id="holderQuotas">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(edit_form.loaQuotas)}}</div>
+                                        {# {% if hasPayments == 0 %} #}
+                                            <label for="" class=" control-label"># Quotas: <span class="text-danger">*</span></label>
+                                            
+                                            <div class="input-group">                                            
+                                                {{ form_widget(edit_form.loaQuotas,  { 'attr': {'class': 'form-control', 'placeholder':''},required: true } ) }}
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-primary" type="button" id="setPatments">Set payments</button>
+                                                </span>                    
+                                            </div>
+                                            <span id="helpBlock2" class="help-block">Press <b>"Set payments"</b> button to get all payment date.</span>
+                                       {#
+                                        {% else %}    
+                                            <label for="" class=" control-label"># Quotas: <span class="badge">{{ loan.loaQuotas }}</span></label>
+                                        {% endif %}
+                                        #}
+                                       
+                                    </div>
+                                
+                                </div>
+
+                                
+                                {#
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
+                                        <label for="" class=" control-label">Dead Line: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD'} } ) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                #}
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(edit_form.loaDescription)}}</div>
+                                        <label for="" class=" control-label">Description:</label>
+                                        <div class="">{{ form_widget(edit_form.loaDescription,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
+                                        <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(edit_form.loaCompleted)}}</div>
+                                        <label for="appbundle_loan_loaCompleted" class=" control-label">Is this Loan finished?:&nbsp; {{ form_widget(edit_form.loaCompleted,  { 'attr': {'class': 'form-controlx'} } ) }}</label>
+                                        <span id="helpBlock2" class="help-block">If the checkbox is checked that means the loan is completed and paid.</span>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                        <ul class="list-inline">
+                                            {{ form_start(edit_form) }}
+                                                {{ form_widget(edit_form) }}
+                                                <li><button type="submit" class="btn bg-navy marginBT"><i class="fa fa-check-circle" aria-hidden="true"></i> Save</button></li>
+                                                {% if loan.loaCompleted == 0 %}
+                                                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                                                {% endif %}
+                                            {{ form_end(edit_form) }}
+                                            
+                                            <li>
+                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Back to the list</a>
+                                            </li>
+                                            <li>
+                                                {{ form_start(delete_form,{'attr':{"id":'formDelete'}} )  }}
+                                                    <button type="submit" class="btn btn-danger marginBT" ><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+                                                {{ form_end(delete_form) }}
+                                            </li>
+                                        </ul>
+                                        </div>    
+                                    </div>
+                                </div>    
+                            {{form_end(edit_form)}}
+                                
+                            </div>
+
+                    {#
+                    {{ form_start(edit_form) }}
+                        {{ form_widget(edit_form) }}
+                        <input type="submit" value="Edit" />
+                    {{ form_end(edit_form) }}
+
+                    #}
+                    <hr>
+                    
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+
+                {% if loan.loc.locKey == "active_rate" %}
+                    {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
+                {% endif %}
+                    
+                    
+                   
+                    
+                        {% set arr =  srv_Loans.getAllDeteailLoan(loanId) %}
+                        {% if loan.loc.locKey  == "inactive_rate" %}
+                            <h4><span class="">Payments </span> - <small>If you remove or add items you must click in "Save" button to save all data </small></h4>
+                            <hr>
+                            <div class="text-right">Click <a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">here</a> to see the complete history</div><hr>
+                            <div id="holderMainRight">
+                                {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"edit"}) }}
+                            </div>
+                        {% else %}
+                            <div id="holderMainRight">
+                                {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
+                            </div>
+                        {% endif %}    
+                        
+                    
+
+                    {#
+                    <h4><span class="">Payment history</span></h4><hr>
+                    <table class="table table-striped" id="clientslist">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Created at</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1223444</td>
+                                <td>Pedro antanio</td>
+                                <td>2017-05-05</td>
+                                <td><a href="" class="btn btn-block btn-default">View</a></td>
+                            </tr>
+                            <tr>
+                                <td>1223444</td>
+                                <td>Pedro antanio</td>
+                                <td>2017-05-05</td>
+                                <td><a href="" class="btn btn-block btn-default">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    #}
+
+            </div>
+        </div>        
+    </div>
+ </div>   
+
+{{ include('app/client/_modals.html.twig' )  }}  
+
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function (){
+            
+            $("#appbundle_loan_loaRateInterest").closest("div").remove();    
+
+            $('#clientslist').DataTable({
+                "scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                //'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                'dom': 'Blfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+           //Date picker
+            /*
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            });
+            */
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+            });
+
+            
+
+            //$("#appbundle_loan_loaDeadline").val("");
+
+            
+            {% if loan.loc.locKey  != "inactive_rate" %}
+                $("#holderQuotas").remove();
+            {% else %}
+
+                $("body").on("click",".btnSetEditAmount", function(){
+                    var btn = $(this).find("i").removeClass().addClass("fa fa-window-close");
+                    $(this).removeClass().addClass("btn btn-danger btnRemoveEditAmount");
+                    var tr = $(this).closest("tr");
+                    var td = $(this).closest("td");
+                    tr.removeClass("done");
+                    td.find("input[type='number']").attr("readonly", false);
+                    td.find("input[type='number']").focus();
+                });
+
+                $("body").on("click",".btnRemoveEditAmount", function(){
+                    var btn = $(this).find("i").removeClass().addClass("fa fa-pencil-square-o");
+                    $(this).removeClass().addClass("btn btn-primary btnSetEditAmount");
+                    var tr = $(this).closest("tr");
+                    var td = $(this).closest("td");
+                    tr.addClass("done");
+                    td.find("input[type='number']").attr("readonly", true);
+                });
+
+                ///var quotas =
+                //$("#appbundle_loan_loaCompleted").closest("div").remove();
+                $("#holderRate").html("<h5><i class='fa fa-percent' aria-hidden='true'></i> Interest rate not apply for this loan</h5>");
+                $("#setPatments").on("click",function(){
+                    var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
+                    var nextDate = $("#appbundle_loan_loaDeadline").val();
+                    var quotas = $("#appbundle_loan_loaQuotas").val();
+                    if( $.trim(recurringDays) == "" || $.trim(nextDate) == "" || $.trim(quotas) == "" )
+                    {
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'Make sure the fields "<b>Recurring day payment, First Payment Date and Quotas</b>" are filled',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+                    if( recurringDays <= 0 || quotas <= 0 )
+                    {
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'The fields "<b>Recurring day payment and Quotas</b>" must be numbers',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false; 
+                    }
+                    //printAddInput()
+                    //#tablePayments
+                    var hasPayments = "{{ srv_Loans.getCountLoanPaymentsDone(app.request.get('loaId')) }}";
+                    //Loan has already at least a payment
+                    var currentTr = $("body").find("#tablePayments").find("tbody tr").length;
+                    if( /*parseInt(hasPayments) > 0 || */ parseInt(currentTr) > 0 )
+                    {
+                        var addNew = ( quotas - currentTr );
+                        //alert(addNew);
+                        if(addNew > 0)
+                        {
+                            for(var i = 0; i < addNew; i++)
+                            {
+                                res = preventAddItem();
+                                if ( res == 0 ){
+                                    return false;
+                                }
+                                printAddInput();
+                            }
+                        }
+                        else if(addNew < 0 )
+                        {
+                            for(var i = 0; i < Math.abs(addNew); i++)
+                            {
+                                //alert();
+                                var rowCount = $('#tablePayments tbody tr').length;
+                                if( rowCount > 0 )
+                                {
+                                    if( !$("body").find("#tablePayments tr:last" ).hasClass("done") )
+                                    {
+                                        $("body").find("#tablePayments tr:last" ).remove();
+                                        $("#appbundle_loan_loaQuotas").val( $('#tablePayments tbody tr').length );
+                                        sumPayment();
+                                    }
+                                    else
+                                    {
+                                        var msg = $("body").find("#tablePayments tr:last" ).find("td").eq(0).text();
+                                        $.alert({
+                                            icon: 'glyphicon glyphicon-exclamation-sign',
+                                            title: 'Error!',
+                                            content: "Some dates could not be removed due to already exist a period paid: <b>"+msg+"</b>",
+                                            type: 'red',
+                                            typeAnimated: true,
+						                });
+                                        break;
+                                    }
+                                }
+                               //$("body").find("#tablePayments tr:last" ).hasClass("done");
+                            }
+                            /*
+                            $(this).closest("tr").remove();
+                            var rowCount = $('#tablePayments tbody tr').length;
+                            $("#appbundle_loan_loaQuotas").val(rowCount);
+                            sumPayment();
+                            */
+                        }
+                    }
+                    else
+                    {
+                        //alert();
+                        var dates = getPayments(quotas, nextDate, recurringDays);
+                        if( dates.length > 0 )
+                        {
+                            printPayments(dates, recurringDays);
+                        }
+                    }
+                    
+                    
+                })
+
+                function getPayments(quotas, nextDate, recurringDays)
+                {
+                    var listDate = [];
+                    for(var i = 0; i < quotas; i++)
+                    {
+                        totalDays = (i == 0 )?0:recurringDays;
+                        nextDate = moment(nextDate, 'YYYY-MM-DD').add(totalDays, 'days').format('YYYY-MM-DD'); 
+                        listDate.push(nextDate);
+                    }
+
+                    return listDate;
+                }
+
+                function printPayments(arrDates, recurringDays)
+                {
+                    //alert();
+                    var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
+                    table += "<table class='table table-striped' id='tablePayments'>";
+                    table += "<thead><tr><th>Payment Date</th><th>Quota to pay</th><th>Action</th><th>Paid amount</th><th>Paid date</th><th>Note</th><th></th></tr></thead><tbody>";
+                    var trbody = "";
+                    var firstPaymentDate = "";
+                    for(var i = 0; i < arrDates.length; i++)
+                    {
+                        if( i != 0 )
+                        {
+                            var per = moment(arrDates[i], 'YYYY-MM-DD').add(-6, 'days').format('YYYY-MM-DD'); 
+                            var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i></span>";
+                        }else{
+                            var per = " N/A ";
+                            var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i></span>";//"";
+                            firstPaymentDate = arrDates[i];
+                        }
+
+                        var input = "<div class='input-group'><span class='input-group-addon'><i class='fa fa-usd' aria-hidden='true'></i></span><input type='number' class='form-control inputDatePayment' id='input"+i+"'></div>";
+                        trbody += "<tr id='tr_"+i+"'>";
+                        trbody += "<td> <i class='fa fa-calendarxxxxx' aria-hidden='true'></i> <span class='initDate'>"+ per +"</span> - <span class='maxDate'>"+ arrDates[i] + "</span></td>"
+                        trbody += "<td> "+input+"</td>"
+                        trbody += "<td>Pending</td>";
+                        trbody += "<td>Pending</td>";
+                        trbody += "<td>Pending</td>";
+                        trbody += "<td>N/A</td>"
+                        trbody += "<td>"+button+"</td>";
+                        trbody += "</tr>";
+                    }
+                    table += trbody;
+                    table += "</tbody>";
+                    table += "</table>";
+                    table += "<input type='hidden' value='"+firstPaymentDate+"' id='inputfistPaymentDate'>";
+
+                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> Add item</button></div>";
+                    var labelTotal = "<div><h2>Total: <span id='total' class='label label-default'>$0.00</span></h2></div>";
+                    
+
+                    $("#holderMainRight").html(table+addInput+labelTotal);
+                    $("#tablePayments tbody tr:first" ).find("input[type='number']").focus();
+                }
+
+                //var total = 0;
+                $("body").on("keyup",".inputDatePayment", function(){
+                    
+                    sumPayment();
+                });
+
+                function sumPayment()
+                {
+                    var inputs = 0;
+                    $(".inputDatePayment").each(function(){
+                        var item = ( $(this).val() );
+                        if( $.trim(item) != "" )
+                        {
+                            inputs = parseFloat(inputs) + parseFloat(item);
+                            //console.log("item: "+item+" - total "+total);
+                        }
+                        
+                    });
+                    var total = inputs.toFixed(2);
+                    $("#total").html("$"+total.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+                    var totalPaid = $("#totalPaid").text();
+                    //totalPaid = (totalPaid.replace(/\D/g,''));
+                    //str = "$1,250.00";
+                    totalPaid=totalPaid.replace(/[$,]/gi,""); //replace $ and ,
+                    var res = inputs - parseFloat(totalPaid);
+                    res = res.toFixed(2);
+                    $("#pending").html("$"+res.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    //console.log(res.toFixed(2));
+                }
+
+                $("body").on("click","#addInput", function(){
+                    printAddInput();
+                });
+
+                function preventAddItem()
+                {
+                    if( $('#appbundle_loan_loaCompleted').prop('checked') ) {
+                    
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Info!',
+							content: "This loan <b>has already been completed</b>, if you want to add more items uncheck where it says <b>'Is this Loan finished?'</b>",
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return 0;
+                    }
+                }
+
+                function printAddInput()
+                {
+                    
+                    res = preventAddItem();
+                    if ( res == 0 ){
+                        return false;
+                    }
+
+                    var lastTr = $("#tablePayments tr:last" ).attr("id");
+                    //alert(lastTr);
+                    if( lastTr != undefined )
+                    {
+                        var id = lastTr.replace(/[^0-9]/g, '');
+                        var newId = parseInt(id) + 1
+                        var lastDate = $("body").find("#tablePayments tr:last" ).eq(0).find(".maxDate").text();
+                        var minDate = moment(lastDate, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD');
+                        var inputDate = $("#curringDaySelected").val();
+                        var maxDate = moment(lastDate, 'YYYY-MM-DD').add(inputDate, 'days').format('YYYY-MM-DD'); 
+                        var cln = $("#tablePayments tr:last" ).clone();
+                        $("#tablePayments").append(cln);
+                        $("body").find("#tablePayments tr:last" ).attr("id","tr_"+newId);
+                        $("body").find("#tablePayments tr:last" ).removeClass("done paid");
+                        $("body").find("#tablePayments tr:last" ).attr("data-paymentid","");
+                        $("body").find("#tablePayments tr:last" ).attr("data-paymenttypeid","");
+                       
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(0).html("<i class='fa fa-calendarxxxxx' aria-hidden='true'></i> <span class='initDate'>"+minDate+"</span> - <span class='maxDate'>"+maxDate+"</span>");
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(1).find("input").val("");
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(1).find("input").attr("readonly", false);
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(1).find(".holderEdit").remove();
+
+                        var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i> </span>";
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(6).html(button);
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(5).html("N/A");
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(2).html("Pending");
+            
+                        //alert();
+                        var rowCount = $('#tablePayments tbody tr').length;
+                        //alert(rowCount+" - rowCount");
+                        if( rowCount == 0 )
+                        {
+                            $("#holderMainRight").empty();
+                            
+                        }
+                        else
+                        {
+                            $("#appbundle_loan_loaQuotas").val(rowCount);
+                        }
+                    }
+                }
+
+                deleteItem();
+                function deleteItem()
+                {
+                    $("body").on("click", ".deleteItem", function(){
+                        var currentMaxDate = $(this).closest("tr").find("td").eq(0).find(".maxDate").text();
+                        var rowCount = $('#tablePayments tbody tr').length;
+                        if( rowCount >= 2 )
+                        {
+                            var inputfistPaymentDate =  $("#inputfistPaymentDate").val();
+                            
+                            
+                            //console.log(currentMaxDate);
+                            if( currentMaxDate == inputfistPaymentDate )
+                            {
+                                var newMaxDate = $(this).closest("tr" ).siblings().find("td").eq(0).find(".maxDate").text();
+                                $(this).closest("tr" ).siblings().find("td").eq(0).find(".initDate").text("N/A");
+                                $("#appbundle_loan_loaDeadline").val(newMaxDate);
+                                $("#inputfistPaymentDate").val(newMaxDate);
+                                $.alert({
+                                    icon: 'glyphicon glyphicon-exclamation-sign',
+                                    title: 'Info!',
+                                    content: "the new first payment date was setup at <b>"+newMaxDate+"</b>",
+                                    type: 'blue',
+                                    typeAnimated: true,
+                                });
+                                
+                            }
+                            
+                        }
+
+                        $(this).closest("tr").remove();
+                        
+                        $("#appbundle_loan_loaQuotas").val(rowCount-1);
+                        console.log(rowCount);
+                        
+                        if( rowCount == 0 )
+                        {
+                            $("#addInput").closest("div").remove();
+                        }
+
+                        sumPayment();
+
+                        var resRowCount = $('#tablePayments tbody tr').length;
+                        if( resRowCount == 0 )
+                        {
+                            $("#addInput").remove();
+                            $("#appbundle_loan_loaDeadline").val("");
+                            $("#appbundle_loan_loaQuotas").val("");
+                            $.alert({
+                                    icon: 'glyphicon glyphicon-exclamation-sign',
+                                    title: 'Info!',
+                                    content: "You don't have first payment date selected, please select one",
+                                    type: 'red',
+                                    typeAnimated: true,
+                            });
+                        }
+                    });
+                }
+
+            {% endif %}
+
+            $("form[name='appbundle_loan']").submit(function(){
+                
+                {% if loan.loc.locKey  == "inactive_rate" %}
+                   var tablePayments = $("body").find("#tablePayments").length;
+                   if( tablePayments == 0 )
+                   {
+    
+						$.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Info!',
+							content: 'Click in "Set Payments" button to get all payment date',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;
+                   }
+                   else
+                   {
+                       var arr = [];
+                       $("#tablePayments tbody tr").each(function(){
+                            if( !$(this).hasClass("done") )
+                            {
+                                var paymentId = $(this).data("paymentid");
+                                var paymenttypeId = $(this).data("paymenttypeid");
+                                var date = $(this).find("td").eq(0).find(".maxDate").text();
+                                var amount = $(this).find("td").eq(1).find("input[type='number']").val();
+                                
+                                arr.push(date+"="+amount+"|"+paymentId+"|"+paymenttypeId);
+                            }
+                       });
+                       $("form[name='appbundle_loan']").append("<input name='paymentDates' id='paymentsDate' type='hidden' value='"+arr.join(",")+"'>");
+                       //console.log(arr);
+                       //return false;
+                   }
+                {% endif %}
+                //return false;
+                {% if loan.loc.locKey  == "inactive_rate" %}
+                    var rowCount = $('#tablePayments tbody tr').length;
+                    var quotas = $("#appbundle_loan_loaQuotas").val();
+                    if( rowCount != quotas)
+                    {
+                        $.alert({
+                                icon: 'glyphicon glyphicon-exclamation-sign',
+                                title: 'Error!',
+                                content: 'The field Quotas has a different number than total records in the payment table',
+                                type: 'red',
+                                typeAnimated: true,
+                        });
+                        return false;
+                    }
+                {% endif %}
+
+                $("#holder_loading").show();
+            }); 
+
+            $("#formDelete").click(function(e){
+                
+                {% set loanId = app.request.get('loaId') %}
+                var hasPayments = "{{ srv_Loans.getCountLoanPaymentsDone(loanId) }}"
+                $.confirm({
+                    title: 'Confirm!',
+                    content: "Are you sure that you want to delete this record?.<br> This Loan has <strong>"+hasPayments+"</strong> payment(s) done" ,
+                    buttons: {
+                        /*
+                        confirm: function () {
+                            
+                        },
+                        */
+                        
+                        
+                        customConfirm: {
+                            text: 'Ok',
+                            btnClass: 'btn-red',
+                            keys: ['enter', 'shift'],
+                            action: function(){
+                                $("#holder_loading").show();
+                                $("#formDelete").submit();
+                                return true;
+                            }
+                        },
+                        cancel: function () {
+                            //$.alert('Canceled!');
+                            
+                        }
+                        
+                    }
+                });
+                return false;
+                //event.preventDefault();
+            });
+
+             $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }    
+        });
+    </script>    
+{% endblock %}

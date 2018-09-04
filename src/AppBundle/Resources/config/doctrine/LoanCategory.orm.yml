@@ -1,0 +1,42 @@
+AppBundle\Entity\LoanCategory:
+    type: entity
+    table: loan_category
+    id:
+        locId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: loc_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        locType:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: loc_type
+        locDescription:
+            type: string
+            nullable: false
+            length: 240
+            options:
+                fixed: false
+            column: loc_description
+        locKey:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: loc_key
+        locActive:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+            column: loc_active
+    lifecycleCallbacks: {  }

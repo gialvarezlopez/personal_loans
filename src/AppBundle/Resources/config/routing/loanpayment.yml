@@ -1,0 +1,33 @@
+loanpayment_index:
+    path:     /
+    defaults: { _controller: "AppBundle:LoanPayment:index" }
+    methods:  GET
+
+loanpayment_show:
+    path:     /{lpaId}/show
+    defaults: { _controller: "AppBundle:LoanPayment:show" }
+    methods:  GET
+
+loanpayment_quotasHistory:
+    path:     /quotasHistory
+    defaults: { _controller: "AppBundle:LoanPayment:quotasHistory" }
+    #methods:  GET  
+
+loanpayment_doPaymentNoRate:
+    path:     /doPaymentNoRate
+    defaults: { _controller: "AppBundle:LoanPayment:doPaymentNoRate" }    
+
+loanpayment_new:
+    path:     /{loaId}/new
+    defaults: { _controller: "AppBundle:LoanPayment:new" }
+    #methods:  [GET, POST]
+
+loanpayment_edit:
+    path:     /{lpaId}/edit
+    defaults: { _controller: "AppBundle:LoanPayment:edit" }
+    methods:  [GET, POST]
+
+loanpayment_delete:
+    path:     /{lpaId}/delete
+    defaults: { _controller: "AppBundle:LoanPayment:delete" }
+    methods:  DELETE

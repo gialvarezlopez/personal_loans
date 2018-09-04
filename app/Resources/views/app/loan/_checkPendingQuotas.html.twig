@@ -1,0 +1,82 @@
+{% if loan.loaCompleted == 0 %}
+    {# {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaQuotas, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
+    {% set pending =  srv_Loans.checkDeadLineToPay( rate, quotas, deadline, srv_TimeZone.getNameTimeZone() ) %}
+{% else %}
+    {% set pending = false %}
+{% endif %}
+{% if pending|length %}
+    <style>
+    .bc{
+        background-color:none !important;
+        color: red !important;
+    }
+    </style>
+    <div class="panel panel-danger">
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Pending Quotas</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-6 text-justify">
+                    This loan has <span class="badgex bc">{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
+                    <span class="badgex bc">{{ pending.days }}  day(s) of delay</span>. 
+                    The interest has been increased to <span class="badgex bc">{{ pending.rate }}%</span>.
+                    <br>
+                    <P><strong>Note:</strong> If you wish you can change the interest rate when you do the payment<p>
+                    <p>This loan was created with interest rate init at <b>{{ loan.loaRateInterestByDefault }}%</b></p> 
+                </div>
+                <div class="col-lg-6">
+                    {% set period = loan.loaRecurringDayPayment %}
+                    {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
+                    {% set maxDate = loan.loaDeadline|date('Y-m-d') %}
+                    {% set recurringDay = loan.loaRecurringDayPayment %}
+                    {% set counter = 0 %}
+
+                    <table class="table table-striped widthAuto">
+                        <thead>
+                            <th><i class="fa fa-calendar"></i> Payments Date</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {% for i in range(0, (pending.quotas -1 )) %}
+                            
+                                <tr>
+                                    <td>
+                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") %}
+
+                                        {% if counter > 0 %}
+                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date("Y-m-d") }}
+                                        {% else %}
+                                            {{ createdAt }}
+                                        {% endif %}
+                                        -
+                                        {% if (pending.quotas - 1) == i %}
+                                            <span id="pendingNextDeadlineToPaid">{{ endMaxDate }}</span>
+                                        {% else %}
+                                            {{ endMaxDate }}
+                                        {% endif %}
+                                        
+                                        {# {{ maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") }} #}
+                                    </td>
+                                    <td>
+                                        {% if (pending.quotas - 1) == i %}
+                                            <span class="badgex bc">Current period</span>
+                                        {% elseif (pending.quotas) == i %}  
+                                            <span class="badgex bc">Next Payment</span>  
+                                        {%  endif %}
+                                    </td>
+                                </tr>
+                                {% set counter =  counter + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    </table> 
+                </div> 
+            </div>       
+           
+            
+
+        </div>
+    </div>
+   
+
+                       
+{% endif %}  
+

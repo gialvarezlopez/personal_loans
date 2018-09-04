@@ -1,0 +1,303 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Loans list - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.marginBT{
+    margin-bottom:7px; 
+}
+
+.amounts{
+    font-size:14px;
+    font-weight: 600;
+    color: #34825F;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Loans list
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Loans</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        <div class="row">
+            <div class="col-md-4"><i class="fa fa-handshake-o" aria-hidden="true"></i> Total records: <span class="badge">{{ loans|length }}</span></div>
+            <div class="col-md-4 col-md-offset-4 text-right">
+               <form class="form-inline"> 
+                    <div class="form-group">
+                        <label>Status filtered by: </label> 
+                        <select class="form-control" id="statusList">
+                            <option value="all">All</option>
+                            <option value="0">Pending</option>
+                            <option value="1">Paid</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        {% set client = app.request.get('client')  %}
+        {% set sta = app.request.get('sta')  %}
+        {% if client > 0 %}
+            
+              {% if sta != "" %}
+                {% set v = "?sta="~sta %}
+              {% else %}
+                {% set v = "" %}
+              {% endif %}  
+            <div class="text-right"><a href="{{ path('loan_index')  }}{{v}}">Click here to see all loans</a></div>
+        {% endif  %}
+    </div>
+    
+    <div class="box-body">
+        <table class="table table-striped" id="loanList">
+            <thead>
+                <tr>
+                    {# <th>Loaid</th> #}
+                    <th>#</th>
+                    <th>Code</th>
+                    <th>Loan Type</th>
+                    <th>Client Name</th>
+                    <th>Requested Amount</th>
+                    {#
+                    <th>Rate Interest</th>
+                    <th>Description</th>
+                    #}
+                    {# 
+                    <th>Dead line</th>
+                    <th>Quotas</th>
+                    #}
+                    {# <th>Pending Money</th>#}
+                    <th>Status</th>
+                    {# <th>Active</th> #}
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set num = 1 %}
+            {% for loan in loans %}
+                <tr>
+                    {# <td><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">{{ loan.loaId }}</a></td> #}
+                    <td>{{ num }}</td>
+                    <td>{{ loan.loa_code }} </td>
+                    <td>{{ loan.loc_type }}</td>
+                    <td><a href="{{ loan.cli_id }}" class="btnShowClient"> {{ loan.cli_first_name ~" "~ loan.cli_middle_name ~" "~ loan.cli_first_surname ~" "~ loan.cli_second_surname }} </a></td>
+                    <td><span class="amounts">${{ loan.loa_amount|number_format(2, '.', ',') }}</span></td>
+                    {#
+                    <td>{{ loan.loaRateInterest }}%</td>
+                    <td>{{ loan.loaDescription }}</td>
+                    #}
+                    {# 
+                    <td>{% if loan.loaDeadline %}{{ loan.loaDeadline|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ loan.loaQuotas }}</td>
+                    
+                    <td>{{ loan.loaPending }}</td>
+                    #}
+                    <td>{% if loan.loa_completed %}<span class="label label-success">Paid</span>{% else %}<span class="label label-default">Pending</span>{% endif %}</td>
+                    {# <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td> #}
+                    <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
+                    <td>
+                        <ul class="list-inline">
+                            <li><a href="{{ path('loanpayment_new',{'loaId':loan.loa_id} ) }}" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                            <li>
+                                <a class="btnShow btn btn-block btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loa_id }) }}">show</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-block btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loa_id }) }}">edit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                {% set num = num + 1 %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    {#
+    <ul>
+        <li>
+            <a href="{{ path('loan_new') }}">Create a new loan</a>
+        </li>
+    </ul>
+    #}
+
+{#  {{ app.request.uri }} #}
+{{ include('app/client/_modals.html.twig' )  }}    
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+            // initialize with defaults
+            $('#loanList').DataTable({
+                //"scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                //"iDisplayLength" : 10,
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                dom: 'Blfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+
+            var cli = "{{ app.request.get('client') }}";
+            $("#statusList").change(function(){
+                $("#holder_loading").show();
+                var status = $(this).val();
+                if( cli > 0 )
+                {
+                    var routeLoad = "{{ path('loan_index') }}?client="+cli+"&sta="+status;
+                }
+                else
+                {
+                    var routeLoad = "{{ path('loan_index') }}?sta="+status
+                }
+                
+                window.location.assign(routeLoad);
+
+            });
+
+            var sta = "{{ app.request.get('sta') }} ";
+           
+            if( sta )
+            {
+                //$("#statusList").val(sta);
+                $("#statusList option[value="+sta+"]").attr('selected', 'selected');
+
+            }
+        });    
+    </script>
+{% endblock %}
+

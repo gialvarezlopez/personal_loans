@@ -1,0 +1,135 @@
+{% extends 'app/login.html.twig' %}
+
+{% block title_page %}
+    New User Registration - Doctors Billboard
+{% endblock %}
+
+{% block header %}
+    <h1>Login</h1>
+{% endblock %}
+
+{% block classbg %}
+    register-page
+{% endblock %}
+
+{% block content %}
+
+    {#
+    {% if app.user != null %}
+        {{ dump(app.user) }}
+    {% endif %}
+
+    {% if is_granted("ROLE_USER") %}
+        USUARIO NORMAL
+    {% endif %}
+    #}
+
+<div class="register-box">
+
+  {#  Check the notifications #}
+    <div class="containerx">
+      <div class="rowx">
+        <div class="col-lg-12x">
+          {% for message in app.session.flashbag().get("success") %}
+            <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message|raw}}</div>
+          {% endfor %}
+          {% for message in app.session.flashbag().get("error") %}
+            <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message|raw}} </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {# End notifications #}
+
+  <div class="register-logo">
+    <a href="{{ path('web_homepage') }}"><b>Doctors</b> Billboard</a>
+    
+  </div>
+
+  <div class="register-box-body">
+    {{ include('app/user/iconsCountries.html.twig') }}
+    <p class="login-box-msg">Register a new membership</p>
+    {{ form_start(form) }}
+        
+        
+   
+    {# <form action="{{ path('register') }}" method="post"> #}
+      {#
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" placeholder="Full name">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      #}
+      <div class="form-group has-feedback">
+        <div class="form_error">{{ form_errors(form.usrEmail)}}</div>
+        {{ form_widget(form.usrEmail,  { 'attr': {'class': 'form-control', 'placeholder':"Email"} } ) }}
+         {#<input type="email" class="form-control" placeholder="Email"> #}
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <div class="form_error">{{ form_errors(form.usrPassword)}}</div>
+        {{ form_widget(form.usrPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Password"} } ) }}
+        {#<input type="password" class="form-control" placeholder="Password"> #}
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <div class="form_error">{{ form_errors(form.repeatPassword)}}</div>
+        {{ form_widget(form.repeatPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Retype password"} } ) }}
+        {# <input type="password" class="form-control" placeholder="Retype password"> #}
+        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <div class="form_error">{{ form_errors(form.cou)}}</div>
+        {{ form_widget(form.cou,  { "required":true,'attr': {'class': 'form-control', 'placeholder':"Select a country"} } ) }}
+        {# <input type="password" class="form-control" placeholder="Retype password"> #}
+        {# <span class="glyphicon glyphicon-log-in form-control-feedback"></span> #}
+      </div>
+      <div class="row">
+        <div class="col-xs-8">
+          <div class="checkbox icheck">
+            <label>
+              <input type="checkbox" required="required"> I agree to the 
+            </label>
+            <a href="#">terms</a>
+          </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+          <br>
+        </div>
+        <!-- /.col -->
+      </div>
+     <!-- </form>-->
+     {{ form_end(form) }}
+
+    {#
+    <div class="social-auth-links text-center">
+      <p>- OR -</p>
+      <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign up using
+        Facebook</a>
+      <a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign up using
+        Google+</a>
+    </div>
+    #}
+
+    <a href="{{ path('login') }}" class="text-center">I already have a membership</a>
+  </div>
+  <!-- /.form-box -->
+</div>
+<!-- /.register-box -->
+{% endblock %}
+
+{% block codejs %}
+<script>
+$(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' /* optional */
+    });
+
+    $('[data-toggle="tooltip"]').tooltip(); 
+  });
+</script>
+{% endblock %}

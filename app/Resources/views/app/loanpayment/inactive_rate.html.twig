@@ -1,0 +1,497 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Payments Quotas - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.splitPayment{
+    padding-left:20px;
+}
+#total, #totalPaid, #pending{
+    color: green;
+}
+.pending{
+    background: #DD4B39;
+    color: #fff !important;
+}
+.nothingPending{
+    background:#00A65A;
+    color: #fff !important;
+}
+.amounts{
+    font-size:16px;
+    font-weight: 700;
+    color: #34825F;
+}
+.labelCurrency{
+    display:inline-block;
+    width: 150px;
+    font-size: 22px;
+}
+.loanCompleted{
+    color: #00A65A;
+    font-size:20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.widthAuto {
+   width: auto !important;
+}
+
+.datepicker:read-only{
+    background-color:white;
+    /*cursor:not-allowed;*/
+} 
+
+#holderPaymentDetail, form[name='appbundle_loanpayment']{
+    display:none;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Payments Quotas
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}">Edit</a></li>
+        <li><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">Show Detail</a></li>
+        <li class="active">Payments</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        
+    </div>
+    <div class="box-body">
+
+        
+        {{form_start(form,{'enctype':'multipart/form-date'})}}
+        {{form_end(form)}} 
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    {% set IsOverDueDate = 0 %}
+                    {% if loan.loaCompleted == 0 %}
+                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                        {# {% set rate = pending.rate  %} #}
+                        {% if pending %}
+                            {% set rate = pending.rate  %}
+                            {% set quotas = pending.quotas %}
+                            {% set IsOverDueDate = 1 %}
+                        {% else %}
+                            {% set rate = loan.loaRateInterest  %}
+                            {% set quotas = "" %}
+                        {% endif %}
+                    {% else %}
+                        {% set rate = loan.loaRateInterestByDefault  %}
+                        {% set quotas = "" %}
+                        <div><div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Finished</div></div>
+                    {% endif %}
+                    <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
+                    <input type="hidden" value="{{ rate }}" id="overDueDateRate">
+                    <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
+                    <div class="well">
+                        <div class="row">
+                             <div class="col-lg-4">
+                                <i class="fa fa-user-circle-o" aria-hidden="true"></i> 
+                                <span>
+                                    <a href="{{ loan.cli.cliId }}" class="btnShowClient">
+                                        {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
+                                    </a>
+                                    {# {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }} #}
+                                </span>
+                             </div>
+                            <div class="col-lg-4">
+                                <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
+                            </div>
+                            <div class="col-lg-4">    
+                                <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                            </div>
+                        </div>
+                    </div>    
+                    
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    
+                    <hr>
+                    {% set arr =  srv_Loans.getAllDeteailLoan(loan.loaId) %}
+                    {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"payment"}) }}
+
+                    <hr>
+                    <ul class="list-inline">
+                        <li>
+                            <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+                        </li>
+                        <li><a class="btn btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> Show</a></li>
+                    </ul>   
+                </div>
+
+            </div>
+               
+           
+        
+    </div>
+</div>
+{{ include('app/client/_modals.html.twig' )  }}    
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function (){
+            $("form[name='appbundle_loanpayment']").remove();
+            {% if loan.loaCompleted == 1 %}
+                //$("input, textarea").prop("disabled", true);
+                //$("#btnSend, #holderCloseLoanAndNextPayment").remove();
+            {% endif %}
+
+
+
+            $('#clientslist').DataTable({
+                "scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                'autoWidth'   : false,
+                'dom': 'Bfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+
+            $(".datepicker ").daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+                //"autoUpdateInput": false,
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+                //setNextPaymentDate();
+            });
+
+            $("#appbundle_loanpayment_loaNextPaymentDate").daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                drops:"up",
+                "autoUpdateInput": false,
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+                
+                
+            });
+
+            $(".datepicker").val("");
+
+            
+
+            $(".inputAmount").keyup(function(){
+                var btn = $(this).closest("tr").find(".btnPaymentItem");
+                var date = $(this).closest("tr").find(".datepicker");
+                var note = $(this).closest("tr").find(".note");
+                var amount = $.trim($(this).val());
+                if( $.isNumeric(amount) && amount > 0 )
+                {
+                    btn.attr("disabled", false);
+                    date.attr("disabled",false);
+                    note.attr("disabled", false);
+                }
+                else
+                {
+                    btn.attr("disabled", true);
+                    date.attr("disabled",true);
+                    date.val("");
+                    note.attr("disabled", true);
+                    note.val("");
+                }
+
+            });
+
+            $("body").on("click",".btnPaymentItem", function(){
+                var paymentId = $(this).val();
+                var tr = $(this).closest("tr");
+                var amount = tr.find(".inputAmount").val();
+                var date = tr.find(".datepicker").val();
+                var note = tr.find(".note").val();
+
+                var type = tr.find(':selected').data('type');
+                //console.log(type);
+                if( $.trim(date) == "" && type =="paid")
+                {
+                    tr.find(".datepicker").focus();
+                    $.alert({
+					    icon: 'glyphicon glyphicon-exclamation-sign',
+						title: 'Info!',
+						content: 'Select a paid date',
+						type: 'red',
+						typeAnimated: true,
+					});
+                    return false;
+                }
+                else
+                {
+                   // console.log("paso");
+                    doPayment(type, paymentId, amount, date, note)
+                }
+                //console.log(date);
+            });
+
+            $("body").on("click",".btnUnfreeze",function(){
+                var id = $(this).val();
+                var tr = $(this).closest("tr");
+                tr.find(".inputAmount").attr("disabled", false);
+                tr.find(".inputAmount").focus();
+                var btn = "<button class='btn btn-success btnPaymentItem' disabled='disabled' value='"+id+"'><i class='fa fa-check-square-o' aria-hidden='true'></i> Create </button>";
+                $(this).closest("td").html(btn);
+
+                var select = "<select class='form-control optPaymentStatus'>";
+                {% for status in paymentType %}
+                   select += "<option value='{{ status.lptId }}' data-type='{{ status.lptKey }}'>{{ status.lptName }}</option>";
+                {% endfor %}
+                select += "</select>";
+                tr.find("td").eq(2).html(select);
+            });
+
+            function doPayment(type, paymentId, amount, date, note){
+                var loanId = "{{ loan.loaId }}";
+                $("#holder_loading").show();
+                $.ajax({
+						type: "POST",
+						url: "{{ path('loanpayment_doPaymentNoRate') }}",
+						data: { loanId:loanId, type:type, paymentId:paymentId, amount: amount, date:date, note: note},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											doPayment(type, paymentId, amount, date, note);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+						},
+						success: function (data) {
+							if ( data == "success" )
+							{
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								//$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                //$("#holderBodyModal").html(data);
+
+                                //var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                //href = href.replace("PLACEHOLDER", id);    
+                                //$("body").find("#btnModalEditClient").attr("href", href);
+                                //$("body").find("#btnModalLoanClient").val(id);
+                                location.reload();
+                                //$("#holder_loading").hide();
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+            /*
+                var inputPaid = $("#alreadyPaidAmount");
+                var iniPaid = inputPaid.text();
+
+                var inputPending = $("#pendingAmount");
+                var iniPending = inputPending.text();
+                $("#appbundle_loanpayment_lpaCurrentAmount").keyup(function(){
+                    var amount = $(this).val();
+                    var amount = parseFloat(amount);
+                    
+                    if( amount > 0 )
+                    {
+                        var paid = parseFloat(iniPaid);
+                        var pending = parseFloat(iniPending);
+                        //console.log(paid);
+                        var txtPaid = (paid + amount).toFixed(2);
+                        var txtPending = (pending - amount).toFixed(2);
+                    }
+                    else
+                    {
+                        var txtPaid = iniPaid;
+                        var txtPending = iniPending;
+                    }
+
+                    
+                    inputPaid.html(txtPaid.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    inputPending.html(txtPending.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    
+                });
+            */
+
+            $(".optPaymentStatus").change(function(){
+                var opt = $(this).val();
+                var type = $(this).find(':selected').data('type');
+
+
+                if( type == "freezed") //2 = freezed
+                {
+                    $(this).closest("tr").find(".inputAmount").val("");
+                    $(this).closest("tr").find(".inputAmount").attr("disabled", true);
+                    $(this).closest("tr").find(".btnPaymentItem").attr("disabled", false);
+                    $(this).closest("tr").find(".datepicker").val("");
+
+                    $(this).closest("tr").find(".datepicker").attr("disabled", true);
+                    $(this).closest("tr").find(".note").attr("disabled", false);
+                    
+                    
+                }
+                else
+                {
+                    $(this).closest("tr").find(".inputAmount").attr("disabled", false);
+                    $(this).closest("tr").find(".btnPaymentItem").attr("disabled", true);
+
+                    $(this).closest("tr").find(".note").val("");
+                    $(this).closest("tr").find(".note").attr("disabled", true);
+                    //$(this).closest("tr").find(".note").attr("disabled", false);
+                }
+
+                //console.log(type);
+            });
+           
+
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+    
+                                $("#holder_loading").hide();
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            } 
+
+        });
+    </script>    
+{% endblock %}

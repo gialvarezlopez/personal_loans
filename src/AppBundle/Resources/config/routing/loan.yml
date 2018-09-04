@@ -1,0 +1,24 @@
+loan_index:
+    path:     /
+    defaults: { _controller: "AppBundle:Loan:index" }
+    methods:  GET
+
+loan_show:
+    path:     /{loaId}/show
+    defaults: { _controller: "AppBundle:Loan:show" }
+    methods:  GET
+
+loan_new:
+    path:     /{clientId}/new
+    defaults: { _controller: "AppBundle:Loan:new" }
+    #methods:  [GET, POST]
+
+loan_edit:
+    path:     /{loaId}/edit
+    defaults: { _controller: "AppBundle:Loan:edit" }
+    methods:  [GET, POST]
+
+loan_delete:
+    path:     /{loaId}/delete
+    defaults: { _controller: "AppBundle:Loan:delete" }
+    methods:  DELETE

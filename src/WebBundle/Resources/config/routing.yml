@@ -1,0 +1,35 @@
+web_homepage:
+    path:     /billboard
+    defaults: { _controller: WebBundle:Default:index }
+
+web_get_cities:
+  path:     /getCitiesByState
+  defaults: { _controller: "WebBundle:Default:getCitiesByState" }
+  methods:  POST
+
+web_get_country:
+  path:     /getStateByCountry
+  defaults: { _controller: "WebBundle:Default:getStateByCountry" }
+  methods:  POST
+
+web_show_profile:
+  path:     /profile/{id}
+  defaults: { _controller: "WebBundle:Default:showProfile" }
+  methods:  GET
+
+web_landing:
+  path:     /
+  defaults: { _controller: "WebBundle:Default:landing" }
+  methods:  GET
+
+web_contactus:
+  path:     /contactus
+  defaults: { _controller: "WebBundle:Default:contactus" }
+  methods:  POST
+
+web_sendContactFormToDoctor:
+  path:     /send/form/doctor
+  defaults: { _controller: "WebBundle:Default:sendContactFormToDoctor" }
+  methods:  POST
+
+

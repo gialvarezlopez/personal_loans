@@ -1,0 +1,1220 @@
+{% extends 'web/base.html.twig' %}
+
+{% block title_page %}Global Directory - Doctors Billboard{% endblock %}
+
+{% block classbg %}
+    listing-with-map-page
+{% endblock %}
+
+{% block content %}
+
+    <style type="text/css">
+        .demo {
+            margin-top: 40px;
+            vertical-align: bottom;
+            background-position: center;
+            background-size: cover;
+
+        }
+        .searchProfile:hover {
+            cursor: pointer;
+        }
+        .listing_info {
+
+            position: relative;
+        }
+        .listing_img {
+            margin-top: -40px;
+        }
+        .like_post {
+            margin-top: 40px;
+        }
+        .itemSpecialities{
+            font-size: 12px !important;
+        }
+
+        .mapnavigation a,
+        .mapzoom-in:hover,
+        .mapzoom-out:hover {
+            background: #2F3B59;
+        }
+
+        .clear{
+            clear:both;
+        }
+        /*
+        .grid-item {
+            width: 33%;
+            padding: 0 10px;
+        }
+        */
+
+        /*@media (max-width:768px) {*/
+
+
+        /*select2 */
+        .myFont {
+            font-size: 12px;
+            line-height: none !important;
+        }
+        .select2-results__option,
+        .select2-selection__choice,
+        .select2-selection__choice__remove {
+            font-size: 12px;
+            line-height: normal !important;
+            margin-bottom: 0;
+        }
+        .select2-selection__placeholder{
+            font-size: 12px;
+        }
+
+        .select2-selection--multiple {
+            overflow: hidden !important;
+            height: auto !important;
+        }
+
+        /* Make Select2 boxes match Bootstrap3 heights: */
+        .select2-selection__rendered {
+            line-height: 32px !important;
+        }
+
+        .select2-selection {
+            height: 34px !important;
+        }
+
+        #cleanSearch {
+            background: #ee3535 !important;
+        }
+
+        .fixedBottom {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .#footer {
+            padding-right: 40%;
+         }
+         .footer_bottom {
+              text-align: left;
+         }
+
+         #holderGrid{
+             position:relative;
+         }
+
+         .show{
+             display:block;
+         }
+         .hide{
+             display:none;
+         }
+
+        /*Search*/
+         #holderBtnSearch{
+             display: table;
+             width:35px;
+             height:30px;
+             background: #09B1EB;
+             color:#FFF;
+             cursor:pointer;
+             z-index:10;
+             position:absolute;
+
+         }
+         #holderIconSearch{
+            display: table-cell;
+            vertical-align: middle;
+            text-align:center;
+         }
+         #holderCloseIconSearch{
+             /*display:none;*/
+         }
+
+        .listing_map_m{
+            padding-top:5px;
+        }
+
+        .search_wrap{
+            position:absolute;
+            width:100%;
+            left:-105%;
+            z-index: 9;
+            top:0px;
+            display:none;
+           box-shadow: 0px 1px 10px 1px rgba(119, 119, 119, 0.45);
+            -moz-box-shadow: 0px 1px 10px 1px rgba(119, 119, 119, 0.45);
+            -webkit-box-shadow: 0px 1px 10px 1px rgba(119, 119, 119, 0.45);
+        }
+
+        .title-search{
+            background:#117793;
+            color:#FFF;
+            text-align:center;
+            padding:10px;
+            margin-bottom:5px;
+        }
+        .infoInputSearch{
+            font-size:12px;
+        }
+
+        .rowFilters{
+            padding:5px 2px 2px 2px;
+            margin-left: 45px;
+            position:absolute;
+        }
+
+        span.zoom-minus, span.zoom-plus{
+            font-size: 19px !important;
+            cursor:pointer;
+            margin-left:10px;
+        }
+
+        .leaflet-control-zoom{
+            padding-top: 60px;
+        }
+
+        @media(max-width:1200px) {
+            .grid-item {
+                width: 50%;
+            }
+        }
+
+        @media (max-width:900px) {
+            .grid-item {
+                width: 50%;
+            }
+        }
+
+        @media (max-width:650px) {
+            .grid-item {
+                width: 100%;
+            }
+        }
+
+        @media only screen and (max-width: 900px) {
+            .grid-item {
+                width: 50%;
+            }
+            .review_score{
+                display:none;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            .grid-item {
+                width: 50%;
+            }
+
+             #holderBtnSearch{
+                width:55px;
+                height:50px;
+             }
+
+            .rowFilters{
+                margin-left: 65px;
+                padding-top: 15px;
+            }
+            .listing_header{
+                margin-top: 55px !important;
+            }
+             .title-search{
+                 margin-top: 20px;
+             }
+        }
+
+        @media only screen and (max-width: 468px) {
+            .grid-item {
+                width: 100%;
+            }
+        }
+    </style>
+
+
+
+
+    <!-- Listings -->
+    <section id="ElemoListing_with_map">
+        <div class="ElemoListing_map">
+            <div id="map-container">
+                <div id="map" data-map-zoom="4" data-map-scroll="true">
+                    <!-- map goes here -->
+                </div>
+
+            </div>
+
+        </div>
+
+        {# {{ include('web/default/search.html.twig', { 'article': article }) }} #}
+
+
+        <div class="container" id="holderGrid">
+            {{ include('web/default/search.html.twig') }}
+            <div class="listing_header">
+                <h6>
+                    {% if medic | length %}
+                        <i class="fa fa-user-md" aria-hidden="true" style="color: grey"></i>
+                        Find Your Doctor
+                    {% else %}
+                        <div class="text-center">
+                            <i class="fa fa-warning" style="color: grey"></i>
+                            Sorry, No data found. Try again</div>
+                    {% endif %}
+
+                </h6>
+                {#
+            <div class="layout-switcher">
+                <a href="#" class="active"><i class="fa fa-th"></i></a>
+                <a href="listing-listview-map.html"><i class="fa fa-align-justify"></i></a>
+            </div>
+            #}
+            </div>
+            <div class="row ">
+                <div class="grid">
+                    {% if medic | length %}
+                        {% for m in medic %}
+
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12  grid_colx show_listingx grid-item">
+                                <div class="items-list listing_wrap " data-marker-id="1">
+                                    {# <div class="listing_img" style="height: 300px;"> #}
+                                    <div class="listing_img">
+                                        <a href="#" class="searchProfile" id="{{ m.ci_lat}}" name="{{ m.ci_lng }}">
+                                            <span class="like_post">
+                                                <i class="fa fa-map-marker"></i></span></a>
+                                        <!-- <div class="listing_cate"> <span class="cate_icon"><a href="#"><img src="{{ asset('bundles/web/template/Site/assets/images/category-icon5.png') }} " alt="icon-img"></a></span> <span class="listing_like"><a href="#"><i class="fa fa-heart-o"></i></a></span> </div> -->
+                                        {% if m.md_profile_image != "" %}
+                                            {% if file_exists('uploads/' ~ m.md_profile_image) %}
+                                                {% set imgPerfil = "uploads/" ~ m.md_profile_image %}
+                                                <a href=" {{ path ('web_show_profile',{'id': m.usr_id }) }}" target="_blank">
+                                                    <div class="text-center"><img src="{{ image(imgPerfil).cropResize(250,250)  }} " class="demo" style="max-width: 100%;" alt="image"></div>
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path ('web_show_profile',{'id': m.usr_id }) }}" target="_blank">
+                                                    <div class="text-center"><img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(250,250)  }} " class="demo" style="max-width: 100%;" alt="image"></div>
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{{ path ('web_show_profile',{'id': m.usr_id }) }}" target="_blank">
+                                                <div class="text-center"><img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(250,250)  }} " class="demo" style="max-width: 100%;" alt="image"></div>
+                                            </a>
+                                        {% endif %}
+
+                                    </div>
+                                    <div class="listing_info">
+                                        <!-- <div class="post_category"> <a href="#">{{ m.cit_name }} /{{ m.sta_code }} </a> </div>-->
+                                        <div class="containerInfo">
+                                            <h6>
+                                                <a href="{{ path ('web_show_profile',{'id': m.usr_id }) }}" target="_blank">
+                                                    {% if m.cat_id == 1 %}
+                                                        {{ m.md_first_name }}
+                                                        {{ m.md_first_surname }}
+                                                    {% else %}
+                                                        {{ m.ci_company }}
+                                                    {% endif %}
+                                                </a>
+                                            </h6>
+
+                                            <p class="itemSpecialities">
+                                                {% if m.cat_id == 1 %}
+                                                    {% if m.esp != null %}
+                                                        {{ m.esp }}
+                                                    {% else %}
+                                                        <br>
+                                                    {% endif %}
+
+                                                {% else %}
+                                                    <br>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="listing_review_info">
+                                            <div class="containerFooter">
+                                                <p>
+                                                    <span class="review_score">
+                                                        <i class="fa fa-eye"></i>
+                                                        {{ m.total }}
+                                                    </span>
+                                                    <!--<i class="fa fa-star active"></i> <i class="fa fa-star active"></i> <i class="fa fa-star active"></i> <i class="fa fa-star active"></i> <i class="fa fa-star"></i> (5 Reviews)-->
+                                                </p>
+                                                <p class="listing_map_m">
+                                                    <i class="fa fa-map-marker"></i>
+                                                    {{ m.cit_name }}
+                                                    /{{ m.sta_name }}</p>
+                                                <div class="clear"></div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-md-6 col-lg-4 grid_col show_listingx">
+                            {# No Data Found. #}
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+            <nav class="pagination_nav">
+                <div class="navigation text-center">
+                    {{ knp_pagination_render(medic) }}
+                </div>
+
+            </nav>
+
+        </div>
+    </section>
+
+    <!-- /Listings -->
+{% endblock %}
+
+{% block codejs %}
+    <script>
+
+        $(function () {
+
+
+            function setHight(elem){
+                var big = 0;
+                $(elem).each(function(){
+                    var item = parseInt($(this).height());
+
+                    if( item > big){
+                        big = item;
+                    }
+
+                    //console.log(big);
+                });
+
+                $(elem).css("height", big+"px");
+            }
+
+            setHight(".containerInfo");
+            setHight(".containerFooter");
+            $( window ).resize(function(){
+                setHight(".containerInfo");
+                setHight(".containerFooter");
+            });
+
+            $("#holderBtnSearch").on("click",function(){
+                var left = "0px";
+                var holder = $("#holderIconSearch");
+                if( holder.hasClass("btnOpen"))
+                {
+                    $(".search_wrap").removeClass("open").addClass("show");
+                    holder.removeClass("btnOpen").addClass("btnClose").html('<i class="fa fa-window-close" aria-hidden="true"></i>');
+
+                }
+                else
+                {
+                    $(".search_wrap").removeClass("show").addClass("open");
+                    holder.removeClass("btnClose").addClass("btnOpen").html('<i class="fa fa-search" aria-hidden="true"></i>');
+                    left = "-105%";
+                }
+
+                $(".search_wrap").animate({"left":left},100);
+            });
+
+            /*
+            $("#holderBtnSearch").on("click",function(){
+                $(".search_wrap").animate({"left":"0px"},500);
+                $("#holderCloseIconSearch").show();
+            });
+            */
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            /*
+            $('.grid').isotope({
+                layoutMode: 'masonry',
+                itemSelector: '.grid-item',
+                // options for masonry layout mod
+            });
+            */
+
+            {% if medic|length == 0 %}
+               // $("#footer").addClass("fixedBottom")
+            {% endif %}
+
+            $("#formSearch").submit(function () {
+                var country = $('#country').val();
+                //alert(country);
+                if (country > 0) {
+
+                } else {
+                    $.alert({icon: 'fa fa-warning', title: 'Error!', type: "red", content: 'Please use the filters'});
+                    return false;
+                }
+                //alert();
+            });
+
+            //Ocultando filtros
+
+            // States by Country
+            $('#country').change(function () {
+                var idSate = $(this).val();
+                getStates(idSate);
+
+            });
+
+            {% if app.request.query.get("country") == "" %}
+                var idSate = $('#country').val();
+                getStates(idSate);
+            {% endif %}
+
+            function getStates(idSate) {
+                if (idSate > 0) {
+                    $("#state").empty();
+                    $("#cities").empty().append("<option value=''>All</option>");
+                    $("#holder_loading").show();
+                    $.ajax({
+                        type: "post",
+                        url: "{{ path('web_get_country') }}",
+                        data: {
+                            id: idSate
+                        },
+                        error: function (data) {
+                            alert('Error : Load States');
+                        },
+                        success: function (data) {
+                            $("#state").append("<option value=''>All</option>");
+                            $.each(data, function (key, value) {
+                                $("#state").append("<option value=" + value.sta_id + ">" + value.sta_name + "</option>");
+                            });
+                            $("#holder_loading").hide();
+                        }
+                    });
+                }
+            }
+
+            $('#country').select2({dropdownCssClass: "myFont", placeholder: "Select a country", width: '100%'});
+
+            // cities by state
+            $('#state').change(function () {
+                var idSate = $(this).val();
+                getCities(idSate);
+            });
+
+            function getCities(idSate) {
+                if (idSate > 0) {
+                    $("#cities").empty();
+                    $("#holder_loading").show();
+                    $.ajax({
+                        type: "post",
+                        url: "{{ path('web_get_cities') }}",
+                        data: {
+                            id: idSate
+                        },
+                        error: function (data) {
+                            alert('Error : Load Cities');
+                        },
+                        success: function (data) {
+                            //var $this = $("#cities");
+                            //console.log(data);
+                            $("#cities").append("<option value=''></option>");
+                            $.each(data, function (key, value) {
+                                $("#cities").append("<option value=" + value.cit_id + ">" + value.cit_name + "</option>");
+                            });
+                            $("#cities").select2({dropdownCssClass: "myFont", placeholder: "Select a city", width: '100%'});
+                            $("#holder_loading").hide();
+                        }
+                    });
+                }
+            }
+
+            $('#category').select2({dropdownCssClass: "myFont", placeholder: "Select a category", width: '100%'});
+            $('#state').select2({dropdownCssClass: "myFont", placeholder: "Select a state", width: '100%'});
+            $("#cities").select2({dropdownCssClass: "myFont", placeholder: "Select a city", width: '100%'});
+            $("#speciality").select2({dropdownCssClass: "myFont", placeholder: "Select speciality", width: '100%'});
+
+            //var vh = $("#holderInputsSearch").height();
+            //$("#btnSend").css({"height":(vh-3)+"px"});
+            //alert(vh);
+        });
+        //$(document).on("ready", function(){
+        $(function () {
+
+            /*-------------------------------------------------------------------------------
+                Googl-Map
+            -------------------------------------------------------------------------------*/
+
+            function GooglMap() {
+
+                var ib = new InfoBox();
+                var test = {{ medic.items|json_encode|raw }};
+
+                $(document).ready(function () {
+                    $(".searchProfile").click(function () {
+
+                        listing_map_m($(this).attr('id'), $(this).attr('name'));
+                    });
+
+                });
+
+                function listing_map_m(lat, lng) {
+                    search(lat, lng);
+                }
+
+                function locationData(locationURL, locationImg, locationTitle, locationAddress, locationRating, locationRatingCounter) {
+                    return ('' + '<div class="map-popup-close"><i class="fa fa-times"></i></div>' + '<hr><a href="' + locationURL + '" class="map-post-thumb-m" target="_blank">' + '<img src="' + locationImg + '" width="100%" height="" alt="">' + '</a>' + '<div class="map-post-des-m">' + '<h5>' + '<a href="' + locationURL + '" target="_blank">' + locationTitle + '</a>' + '</h5>' + '<span><i class="fa fa-phone"></i> ' + locationAddress + '</span><div class="text-right"><span class="zoom-minus"><i class="fa fa-search-minus" aria-hidden="true"></i></span> <span class="zoom-plus"><i class="fa fa-search-plus" aria-hidden="true"></i></span></div>' + '</div>' + '<div class="listing-content">' + '</div>')
+                }
+                var locations = [];
+
+                $.each(test, function (k, v) {
+                    var pathUrl = "{{ url('web_show_profile',{id:'===textReplace'}) }}";
+                    pathUrl = pathUrl.replace('===textReplace', v.usr_id );
+                    if(v.cat_id == 1){
+                        locations.push([
+                            locationData( pathUrl, '{{ asset('uploads/') }}'+v.md_profile_image, v.md_first_name + ' ' + v.md_first_surname, v.ci_phone1, '5.0', '23'),
+                            v.ci_lat,
+                            v.ci_lng,
+                            2,
+                            '<i class="im-icon"><img src="{{ asset('bundles/web/template/Site/assets/images/')}}'+v.cat_icon+' "></i>'
+                        ])
+                    }else{
+                        locations.push([
+                            locationData( pathUrl, '{{ asset('uploads/') }}'+v.md_profile_image, v.ci_company , v.ci_phone1, '5.0', '23'),
+                            v.ci_lat,
+                            v.ci_lng,
+                            2,
+                            '<i class="im-icon"><img src="{{ asset('bundles/web/template/Site/assets/images/')}}'+v.cat_icon+' "></i>'
+                        ])
+                    }
+                })
+
+                var mapZoomAttr = $('#map').attr('data-map-zoom');
+
+                if (typeof mapZoomAttr !== typeof undefined && mapZoomAttr !== false) {
+                    var zoomLevel = parseInt(mapZoomAttr);
+                } else {
+                    var zoomLevel = 9;
+                }
+
+                if ({{ zoom }} == 1) {
+                    {% set lat = 0 %}
+                    {% set log = 1 %}
+                    {% if medic | length %}
+                            {% set lat = estados_d[0].sta_lat %}
+                            {% set log = estados_d[0].sta_lng %}
+                    {% else %}
+                            {% for c in country %}
+                                {% if c.couId ==  app.request.get('country') %}
+                                    {% set lat = c.staLat %}
+                                    {% set log = c.staLng %}
+                                {% endif %}
+                            {% endfor %}
+                     {% endif %}
+
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: {{ mapaZoom }},
+                        scrollwheel: false,
+                        disableDefaultUI: true,
+
+                        center: new google.maps.LatLng({{ lat }}, {{ log }}),
+
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        zoomControl: false,
+                        mapTypeControl: false,
+                        scaleControl: false,
+                        panControl: false,
+                        fullscreenControl: false,
+                        navigationControl: false,
+                        streetViewControl: false,
+                        animation: google.maps.Animation.BOUNCE,
+                        gestureHandling: 'cooperative',
+                        styles: [
+                            {
+                                "featureType": "administrative",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#444444"
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+                } else {
+
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: zoomLevel,
+                        scrollwheel: false,
+                        center: new google.maps.LatLng({{ currentUserLat }}, {{currentUserLng}}),
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        zoomControl: false,
+                        mapTypeControl: false,
+                        scaleControl: false,
+                        panControl: false,
+                        fullscreenControl: false,
+                        navigationControl: false,
+                        streetViewControl: false,
+                        animation: google.maps.Animation.BOUNCE,
+                        gestureHandling: 'cooperative',
+                        styles: [
+                            {
+                                "featureType": "administrative",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#444444"
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+                }
+
+                var boxText = document.createElement("div");
+                boxText.className = 'map-box'
+                var currentInfobox;
+                var boxOptions = {
+                    content: boxText,
+                    disableAutoPan: true,
+                    alignBottom: true,
+                    maxWidth: 0,
+                    pixelOffset: new google.maps.Size(-145, -45),
+                    zIndex: null,
+                    boxStyle: {
+                        width: "260px"
+                    },
+                    closeBoxMargin: "0",
+                    closeBoxURL: "",
+                    infoBoxClearance: new google.maps.Size(1, 1),
+                    isHidden: false,
+                    pane: "floatPane",
+                    enableEventPropagation: false
+                };
+                var markerCluster,
+                    overlay,
+                    i;
+                var allMarkers = [];
+                var clusterStyles = [
+                    {
+                        textColor: 'white',
+                        url: '',
+                        height: 50,
+                        width: 50
+                    }
+                ];
+
+                var markerIco;
+                for (i = 0; i < locations.length; i++) {
+                    markerIco = locations[i][4];
+                    //alert(locations[i][0]);
+                    var overlaypositions = new google.maps.LatLng(locations[i][1], locations[i][2]),
+                        overlay = new CustomMarker(overlaypositions, map, {
+                            marker_id: i
+                        }, markerIco);
+                    allMarkers.push(overlay);
+                    var ib = new InfoBox();
+                    //console.log(allMarkers);
+                    google.maps.event.addListener(overlay, 'click', (function (overlay, i) {
+                        return function () {
+                            ib.setOptions(boxOptions);
+                            boxText.innerHTML = locations[i][0];
+                            ib.close();
+                            ib.open(map, overlay);
+                            currentInfobox = overlay.id;
+                            var latLng = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                            map.panTo(latLng);
+                            map.panBy(0, -180);
+                            google.maps.event.addListener(ib, 'domready', function () {
+                                //var c = map.zoom;
+                                var newZoom = 17;
+                                $('.map-popup-close').click(function (e) {
+                                    e.preventDefault();
+                                    ib.close();
+                                    //$(this).find(".zoom").show();
+                                });
+                                $(".map-post-des-m .zoom-plus").click(function(e){
+                                    //map.setZoom(17);
+                                    if( newZoom < 22)
+                                    {
+                                        newZoom = newZoom + 1;
+                                        map.setZoom(newZoom);
+                                        map.setCenter(latLng);
+                                        //console.log("alert"+newZoom);
+                                        //newZoom = 17;
+                                    }
+                                });
+                                $(".map-post-des-m .zoom-minus").click(function(e){
+                                    map.setCenter(latLng);
+                                    if( newZoom > 0 ){
+                                        newZoom = newZoom - 1;
+                                        map.setZoom(newZoom);
+                                        //console.log("alert"+newZoom);
+                                    }
+                                });
+                            });
+                        }
+                    })(overlay, i));
+                }
+
+                var options = {
+                    imagePath: 'images/',
+                    styles: clusterStyles,
+                    minClusterSize: 2
+                };
+
+                // Agrupar marker cercanos
+                markerCluster = new MarkerClusterer(map, allMarkers, options);
+                google.maps.event.addDomListener(window, "resize", function () {
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                });
+
+                $('.nextmap-nav').click(function (e) {
+                    e.preventDefault();
+                    map.setZoom(9);
+                    var index = currentInfobox;
+                    if (index + 1 < allMarkers.length) {
+                        google.maps.event.trigger(allMarkers[index + 1], 'click');
+                    } else {
+                        google.maps.event.trigger(allMarkers[0], 'click');
+                    }
+                });
+
+                $('.prevmap-nav').click(function (e) {
+                    e.preventDefault();
+                    map.setZoom(9);
+                    if (typeof(currentInfobox) == "undefined") {
+                        google.maps.event.trigger(allMarkers[allMarkers.length - 1], 'click');
+                    } else {
+                        var index = currentInfobox;
+                        if (index - 1 < 0) {
+                            google.maps.event.trigger(allMarkers[allMarkers.length - 1], 'click');
+                        } else {
+                            google.maps.event.trigger(allMarkers[index - 1], 'click');
+                        }
+                    }
+                });
+
+                var zoomControlDiv = document.createElement('div');
+                var zoomControl = new ZoomControl(zoomControlDiv, map);
+
+                function ZoomControl(controlDiv, map) {
+                    zoomControlDiv.index = 1;
+                    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(zoomControlDiv);
+                    controlDiv.className = "leaflet-control-zoom";
+                    var controlWrapper = document.createElement('div');
+                    controlDiv.appendChild(controlWrapper);
+                    var zoomInButton = document.createElement('div');
+                    zoomInButton.className = "custom-zoom-in";
+                    controlWrapper.appendChild(zoomInButton);
+                    var zoomOutButton = document.createElement('div');
+                    zoomOutButton.className = "custom-zoom-out";
+                    controlWrapper.appendChild(zoomOutButton);
+                    google.maps.event.addDomListener(zoomInButton, 'click', function () {
+                        map.setZoom(map.getZoom() + 1);
+                    });
+                    google.maps.event.addDomListener(zoomOutButton, 'click', function () {
+                        map.setZoom(map.getZoom() - 1);
+                    });
+                }
+
+                $("#geoLocation, .input-with-icon.location a").click(function (e) {
+                    e.preventDefault();
+                    geolocate();
+                });
+
+                function geolocate() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                            map.setCenter(pos);
+                            map.setZoom(12);
+                        });
+                    }
+                }
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    map.setOptions({draggable: true, scrollwheel : false});
+                }
+            }
+
+            var map = document.getElementById('map');
+            if (typeof(map) != 'undefined' && map != null) {
+                google.maps.event.addDomListener(window, 'load', GooglMap);
+
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    window.addEventListener("orientationchange", function() {
+                        //alert(window.orientation);
+                        google.maps.event.addDomListener(window, 'resize', GooglMap);
+                    }, false);
+                }
+                else
+                {
+                    google.maps.event.addDomListener(window, 'resize', GooglMap);
+                }
+
+            }
+
+            function singlemap() {
+
+                var myLatlng = new google.maps.LatLng({lng: $('#singlemap').data('longitude'), lat: $('#singlemap').data('latitude')});
+
+                var single_map = new google.maps.Map(document.getElementById('singlemap'), {
+                    zoom: 15,
+                    center: myLatLng,
+                    scrollwheel: false,
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    panControl: false,
+                    navigationControl: false,
+                    streetViewControl: false,
+                    styles: [
+                        {
+                            "featureType": "landscape",
+                            "elementType": "all",
+                            "stylers": [
+                                {
+                                    "color": "#f2f2f2"
+                                }
+                            ]
+                        }
+                    ]
+                });
+
+                var marker = new google.maps.Marker({position: myLatLng, map: single_map, icon: markerIcon, title: 'Our Location'});
+
+                var zoomControlDiv = document.createElement('div');
+                var zoomControl = new ZoomControl(zoomControlDiv, single_map);
+
+                function ZoomControl(controlDiv, single_map) {
+                    zoomControlDiv.index = 1;
+                    single_map.controls[google.maps.ControlPosition.RIGHT_TOP].push(zoomControlDiv);
+                    var controlWrapper = document.createElement('div');
+                    controlDiv.appendChild(controlWrapper);
+                    var zoomInButton = document.createElement('div');
+                    zoomInButton.className = "custom-zoom-in";
+                    controlWrapper.appendChild(zoomInButton);
+                    var zoomOutButton = document.createElement('div');
+                    zoomOutButton.className = "custom-zoom-out";
+                    controlWrapper.appendChild(zoomOutButton);
+                    google.maps.event.addDomListener(zoomInButton, 'click', function () {
+                        single_map.setZoom(single_map.getZoom() + 1);
+                    });
+                    google.maps.event.addDomListener(zoomOutButton, 'click', function () {
+                        single_map.setZoom(single_map.getZoom() - 1);
+                    });
+                }
+                var singleMapIco = "<i class='im-icon'><img src='" + $('#singlemap').data('map-icon') + "'></i>";
+                new CustomMarker(myLatlng, single_map, {
+                    marker_id: '1'
+                }, singleMapIco);
+            }
+
+            var single_map = document.getElementById('singlemap');
+            if (typeof(single_map) != 'undefined' && single_map != null) {
+                google.maps.event.addDomListener(window, 'load', singlemap);
+                google.maps.event.addDomListener(window, 'resize', singlemap);
+            }
+
+            function CustomMarker(latlng, map, args, markerIco) {
+                this.latlng = latlng;
+                this.args = args;
+                this.markerIco = markerIco;
+                this.setMap(map);
+            }
+
+            CustomMarker.prototype = new google.maps.OverlayView();
+            CustomMarker.prototype.draw = function () {
+                var self = this;
+                var div = this.div;
+                if (!div) {
+                    div = this.div = document.createElement('div');
+                    div.className = 'map-marker-container';
+                    div.innerHTML = '<div class="marker-container">' + '<div class="marker-card">' + '<div class="front face">' + self.markerIco + '</div>' + self.markerIco + '</div>' + '</div>' + '</div>'
+                    google.maps.event.addDomListener(div, "click", function (event) {
+                        $('.map-marker-container').removeClass('clicked infoBox-opened');
+                        google.maps.event.trigger(self, "click");
+                        $(this).addClass('clicked infoBox-opened');
+                    });
+                    if (typeof(self.args.marker_id) !== 'undefined') {
+                        div.dataset.marker_id = self.args.marker_id;
+                    }
+                    var panes = this.getPanes();
+                    panes.overlayImage.appendChild(div);
+                }
+                var point = this.getProjection().fromLatLngToDivPixel(this.latlng);
+                if (point) {
+                    div.style.left = (point.x) + 'px';
+                    div.style.top = (point.y) + 'px';
+                }
+            };
+
+            CustomMarker.prototype.remove = function () {
+                if (this.div) {
+                    this.div.parentNode.removeChild(this.div);
+                    this.div = null;
+                    $(this).removeClass('clicked');
+                }
+            };
+            CustomMarker.prototype.getPosition = function () {
+                return this.latlng;
+            };
+
+            // Buscar en el mapa individual
+            function search(lat, lng) {
+
+                var ib = new InfoBox();
+                var test = {{ medic.items|json_encode|raw }};
+
+                function locationData(locationURL, locationImg, locationTitle, locationAddress, locationRating, locationRatingCounter) {
+                    return ('' + '<div class="map-popup-close"><i class="fa fa-times"></i></div>' + '<hr><a href="' + locationURL + '" class="map-post-thumb-m" target="_blank">' + '<img src="' + locationImg + '" width="100%" height="" alt="">' + '</a>' + '<div class="map-post-des-m">' + '<h5>' + '<a href="' + locationURL + '" target="_blank">' + locationTitle + '</a>' + '</h5>' + '<span><i class="fa fa-phone"></i> ' + locationAddress + '</span><div class="text-right"><span class="zoom-minus"><i class="fa fa-search-minus" aria-hidden="true"></i></span> <span class="zoom-plus"><i class="fa fa-search-plus" aria-hidden="true"></i></span></div>' + '</div>' + '<div class="listing-content">' + '</div>')
+                }
+                var locations = [];
+
+                $.each(test, function (k, v) {
+                    var pathUrl = "{{ url('web_show_profile',{id:'===textReplace'}) }}";
+                    pathUrl = pathUrl.replace('===textReplace', v.usr_id );
+                    if( v.cat_id ==1){
+                        locations.push([
+                            locationData(pathUrl, '{{ asset('uploads/') }}'+v.md_profile_image, v.md_first_name + ' ' + v.md_first_surname, v.ci_phone1, '5.0', '23'),
+                            v.ci_lat,
+                            v.ci_lng,
+                            2,
+                            '<i class="im-icon"><img src="{{ asset('bundles/web/template/Site/assets/images/')}}'+v.cat_icon+'"></i>'
+                        ])
+                    }else{
+                        locations.push([
+                            locationData(pathUrl, '{{ asset('uploads/') }}'+v.md_profile_image, v.ci_company , v.ci_phone1, '5.0', '23'),
+                            v.ci_lat,
+                            v.ci_lng,
+                            2,
+                            '<i class="im-icon"><img src="{{ asset('bundles/web/template/Site/assets/images/')}}'+v.cat_icon+'"></i>'
+                        ])
+                    }
+                })
+
+                var mapZoomAttr = $('#map').attr('data-map-zoom');
+                if (typeof mapZoomAttr !== typeof undefined && mapZoomAttr !== false) {
+                    var zoomLevel = 12;
+                } else {
+                    var zoomLevel = 12;
+                }
+
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: zoomLevel,
+                    scrollwheel: false,
+                    disableDefaultUI: true,
+                    center: new google.maps.LatLng(lat, lng),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    panControl: false,
+                    navigationControl: false,
+                    streetViewControl: false
+                });
+
+                $('.items-list').on('mouseover', function () {
+                    var listingAttr = $(this).data('post-id');
+                    if (listingAttr !== undefined) {
+                        var listing_id = $(this).data('post-id') - 1;
+                        var marker_div = allMarkers[listing_id].div;
+                        $(marker_div).addClass('clicked');
+                        $(this).on('mouseout', function () {
+                            if ($(marker_div).is(":not(.infoBox-opened)")) {
+                                $(marker_div).removeClass('clicked');
+                            }
+                        });
+                    }
+                });
+
+                var boxText = document.createElement("div");
+                boxText.className = 'map-box'
+                var currentInfobox;
+                var boxOptions = {
+                    content: boxText,
+                    disableAutoPan: false,
+                    alignBottom: true,
+                    maxWidth: 0,
+                    pixelOffset: new google.maps.Size(-134, -55),
+                    zIndex: null,
+                    boxStyle: {
+                        width: "290px"
+                    },
+                    closeBoxMargin: "0",
+                    closeBoxURL: "",
+                    infoBoxClearance: new google.maps.Size(25, 25),
+                    isHidden: false,
+                    pane: "floatPane",
+                    enableEventPropagation: false
+                };
+                var markerCluster,
+                    overlay,
+                    i;
+                var allMarkers = [];
+                var clusterStyles = [
+                    {
+                        textColor: 'white',
+                        url: '',
+                        height: 50,
+                        width: 50
+                    }
+                ];
+
+                var markerIco;
+
+                for (i = 0; i < locations.length; i++) {
+                    markerIco = locations[i][4];
+                    //console.log(locations[i][4]);
+
+                    var focusIcon = '<i class="im-icon"><img src="{{ asset('bundles/web/template/Site/assets/images/doctor1.png') }} "></i>';
+
+                    if (locations[i][1] == lat && locations[i][2] == lng) {
+
+                        var overlaypositions = new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            overlay = new CustomMarker(overlaypositions, map, {
+                                marker_id: i
+                            }, focusIcon);
+                        allMarkers.push(overlay);
+
+                        ib.setOptions(boxOptions);
+                        boxText.innerHTML = locations[i][0];
+                        ib.open(map, overlay);
+                        currentInfobox = locations[i][3];
+
+                        var latLng = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                        google.maps.event.addListener(ib, 'domready', function () {
+                            var newZoom = 17;
+                            $('.map-popup-close').click(function (e) {
+                                e.preventDefault();
+                                ib.close();
+                                $('.map-marker-container').removeClass('clicked infoBox-opened');
+                            });
+                            $(".map-post-des-m .zoom-plus").click(function(e){
+                                    //map.setZoom(17);
+                                    if( newZoom < 22)
+                                    {
+                                        newZoom = newZoom + 1;
+                                        map.setZoom(newZoom);
+                                        map.setCenter(latLng);
+                                        //console.log("alert"+newZoom);
+                                        //newZoom = 17;
+                                    }
+                                });
+                                $(".map-post-des-m .zoom-minus").click(function(e){
+                                    map.setCenter(latLng);
+                                    if( newZoom > 0 ){
+                                        newZoom = newZoom - 1;
+                                        map.setZoom(newZoom);
+                                        //console.log("alert"+newZoom);
+                                    }
+                                });
+                        });
+
+                    } else {
+
+                        var overlaypositions = new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            overlay = new CustomMarker(overlaypositions, map, {
+                                marker_id: i
+                            }, markerIco);
+                        allMarkers.push(overlay);
+                    }
+
+                    google.maps.event.addDomListener(overlay, 'click', (function (overlay, i) {
+                        return function () {
+                            ib.setOptions(boxOptions);
+                            boxText.innerHTML = locations[i][0];
+                            ib.close();
+                            ib.open(map, overlay);
+                            currentInfobox = overlay.id;
+                            var latLng = new google.maps.LatLng(locations[i][1], locations[i][2]);
+                            map.panTo(latLng);
+                            map.panBy(0, -180);
+                            google.maps.event.addListener(ib, 'domready', function () {
+                                var newZoom = 17;
+                                $('.map-popup-close').click(function (e) {
+                                    e.preventDefault();
+                                    ib.close();
+                                });
+                                $(".map-post-des-m .zoom-plus").click(function(e){
+                                    //map.setZoom(17);
+                                    if( newZoom < 22)
+                                    {
+                                        newZoom = newZoom + 1;
+                                        map.setZoom(newZoom);
+                                        map.setCenter(latLng);
+                                        //console.log("alert"+newZoom);
+                                        //newZoom = 17;
+                                    }
+                                });
+                                $(".map-post-des-m .zoom-minus").click(function(e){
+                                    alert();
+                                    map.setCenter(latLng);
+                                    if( newZoom > 0 ){
+                                        newZoom = newZoom - 1;
+                                        map.setZoom(newZoom);
+                                        //console.log("alert"+newZoom);
+                                    }
+                                });
+                            });
+                        }
+                    })(overlay, i));
+                }
+
+                var options = {
+                    imagePath: 'images/',
+                    styles: clusterStyles,
+                    minClusterSize: 2
+                };
+
+                // Agrupar marker cercanos
+                markerCluster = new MarkerClusterer(map, allMarkers, options);
+                google.maps.event.addDomListener(window, "resize", function () {
+                    var center = map.getCenter();
+                    google.maps.event.trigger(map, "resize");
+                    map.setCenter(center);
+                });
+
+                var zoomControlDiv = document.createElement('div');
+                var zoomControl = new ZoomControl(zoomControlDiv, map);
+
+                function ZoomControl(controlDiv, map) {
+                    zoomControlDiv.index = 1;
+                    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(zoomControlDiv);
+                    controlDiv.className = "leaflet-control-zoom";
+                    var controlWrapper = document.createElement('div');
+                    controlDiv.appendChild(controlWrapper);
+                    var zoomInButton = document.createElement('div');
+                    zoomInButton.className = "custom-zoom-in";
+                    controlWrapper.appendChild(zoomInButton);
+                    var zoomOutButton = document.createElement('div');
+                    zoomOutButton.className = "custom-zoom-out";
+                    controlWrapper.appendChild(zoomOutButton);
+                    google.maps.event.addDomListener(zoomInButton, 'click', function () {
+                        map.setZoom(map.getZoom() + 1);
+                    });
+                    google.maps.event.addDomListener(zoomOutButton, 'click', function () {
+                        map.setZoom(map.getZoom() - 1);
+                    });
+                }
+
+                $("#geoLocation, .input-with-icon.location a").click(function (e) {
+                    e.preventDefault();
+                    geolocate();
+                });
+
+                function geolocate() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                            map.setCenter(pos);
+                            map.setZoom(12);
+                        });
+                    }
+                }
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    map.setOptions({draggable: true, scrollwheel : false});
+                }
+            }
+        });
+    </script>
+{% endblock %}

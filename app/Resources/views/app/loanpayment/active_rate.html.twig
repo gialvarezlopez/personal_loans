@@ -1,0 +1,991 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Payments Quotas - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.splitPayment{
+    padding-left:20px;
+}
+
+.amounts{
+    font-size:16px;
+    font-weight: 700;
+    color: #34825F;
+}
+
+.loanCompleted{
+    color: #00A65A;
+    font-size:20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.widthAuto {
+   width: auto !important;
+}
+
+.datepicker:read-only{
+    background-color:white;
+    /*cursor:not-allowed;*/
+} 
+
+#holderPaymentDetail{
+    display:none;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Payments Quotas
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Tables</a></li>
+        <li class="active">Data tables</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        Loan created to <i class="fa fa-user-circle-o" aria-hidden="true"></i> 
+            <span>
+                <a href="{{ loan.cli.cliId }}" class="btnShowClient">
+                    {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
+                </a>
+                {# {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }} #}
+            </span>
+    </div>
+    <div class="box-body">
+        {#
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <input type="submit" value="Create" />
+        {{ form_end(form) }}
+        #}
+        
+        {{form_start(form,{'enctype':'multipart/form-date'})}}
+            <div class="row">
+                <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                    {% set IsOverDueDate = 0 %}
+                    {% if loan.loaCompleted == 0 %}
+                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                        {# {% set rate = pending.rate  %} #}
+                        {% if pending %}
+                            {% set rate = pending.rate  %}
+                            {% set quotas = pending.quotas %}
+                            {% set IsOverDueDate = 1 %}
+                        {% else %}
+                            {% set rate = loan.loaRateInterest  %}
+                            {% set quotas = "" %}
+                        {% endif %}
+                    {% else %}
+                        {% set rate = loan.loaRateInterestByDefault  %}
+                        {% set quotas = "" %}
+                        <div><div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Completed</div></div>
+                    {% endif %}
+                    <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
+                    <input type="hidden" value="{{ rate }}" id="overDueDateRate">
+                    <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
+                            </div>
+                            <div class="col-lg-6">    
+                                <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                            </div>
+                        </div>
+                    </div>    
+                    <div class="well">
+                        <div class="row">
+                            
+                            <div class="col-md-12 col-lg-6 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form_error">{{ form_errors(form.lpaMaxPaymentDate)}}</div>
+                                    <label for="" class=" control-label">Payment deadline: <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <div class="">{{ form_widget(form.lpaMaxPaymentDate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":loan.loaDeadline|date('Y-m-d'), "readonly":"true" } } ) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-lg-6 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form_error">{{ form_errors(form.lpaPaidDate)}}</div>
+                                    <label for="" class=" control-label">When was it paid?: <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <div class="">{{ form_widget(form.lpaPaidDate,  { 'attr': {'class': 'form-control datepicker', "autocomplete":"off", "readonly":"true" } } ) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {#
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.lpaPaidRateInterest)}}</div>
+                                        <label for="" class=" control-label">Paid interest rate: <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-percent"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.lpaPaidRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off"} } ) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.lpaPaidCapital)}}</div>
+                                        <label for="" class=" control-label">Paid capital: <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-usd" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.lpaPaidCapital,  { 'attr': {'class': 'form-control', "autocomplete":"off"} } ) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            #}
+                            
+                            <div class="col-md-12 col-lg-12 col-sm-12">
+                                <hr>
+                                {% set payments = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        
+                                        <span>Already paid:<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
+                                        <input type="hidden" value="{{ pendingPaid }}" id="pendingAmountWithoutRate">
+                                        <input type="hidden" value="{{ ((loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">
+                                        {#
+                                        <span>
+                                            Current Balance:<br> 
+                                            <span class="amounts">
+                                                <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
+                                            </span>
+                                            x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span>
+                                            = <span class="amounts">
+                                                <i class="fa fa-usd" aria-hidden="true"></i><span id="htmlTotalAmount" class="htmlTotalAmount">{{ (pendingPaid + (rate/100)*pendingPaid)|number_format(2, '.', ',') }}
+                                                </span>
+                                            </span>
+                                        </span>
+                                        #}
+                                         Current Balance:<br>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <span class="amounts">
+                                                        <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
+                                                        x <span class="amounts"><span id="htmlRate">{{loan.loaRateInterest}}</span>% </span> = 
+                                                    </span>
+                                                </td>
+                                                <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate">{{ ((loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}</span> </div></td>        
+                                            </tr>
+                                            <tr>
+                                                <td><div class="text-right amounts"> + </div></td>
+                                                <td><span class="amounts">&#160; <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span></span></td>        
+                                            </tr>
+                                            <tr>
+                                                <td><div class="text-right amounts">Total = </div></td>
+                                                <td>
+                                                    <span class="amounts">
+                                                        &#160; <i class="fa fa-usd" aria-hidden="true"></i><span id="" class="htmlTotalAmount">{{ (pendingPaid + (loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}
+                                                        </span>
+                                                    </span>
+                                                </td>        
+                                            </tr>    
+                                        </table>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="col-md-12 col-lg-6 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form_error">{{ form_errors(form.lpaCurrentRateInterest)}}</div>
+                                    <label for="" class=" control-label">Current interest rate: <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-percent"></i>
+                                        </div>
+                                        <div class="">
+                                            
+                                            {{ form_widget(form.lpaCurrentRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value": loan.loaRateInterest, min:0  }} ) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-lg-6 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form_error">{{ form_errors(form.lpaTotalAmountPaid)}}</div>
+                                    <label for="" class=" control-label">Total to pay: <span class="text-danger">*</span></label>
+                                    {#
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                        </div>
+                                        <div class=""></div>
+                                    </div>
+                                    #}
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                        </div>
+                                        {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }}
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info" id="btnCalculateAmounts" type="button" data-toggle="tooltip" data-placement="top" title="Calculate amounts ($)"><i class="fa fa-calculator" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                    <span id="helpBlock2" class="help-block">Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts.</span>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12 col-sm-12" id="holderPaymentDetail">
+                                <hr>
+                                    <h4 class="text-center">Payment Details</h4>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="row">
+                                                <div class="col-lg-12 col-md-12">
+                                                    <div class="row">
+                                                        <h5 class="text-center"><i class="fa fa-money"></i> Amounts</h5>
+                                                        <div class="col-lg-6 col-md-12">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Paid interests</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon">
+                                                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                                                    </div>
+                                                                    <input type="text" id="inputPaidInterest" name="inputPaidInterest" class="form-control" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6 col-md-12">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Capital</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon">
+                                                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                                                    </div>
+                                                                    <input type="text" id="inputPaidCapital" name="inputPaidCapital" class="form-control" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-12">
+                                                    <div class="row">
+                                                        <h5 class="text-center"><i class="fa fa-percent"></i> Interest Rate</h5>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Rate reached</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon">
+                                                                        <i class="fa fa-percent" aria-hidden="true"></i>
+                                                                    </div>
+                                                                    <input type="text" id="inputCompletedRate" name="inputCompletedRate" class="form-control" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label">Pending rate</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon">
+                                                                        <i class="fa fa-percent" aria-hidden="true"></i>
+                                                                    </div>
+                                                                    <input type="text" id="inputPendingRate" name="inputPendingRate" class="form-control" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            <h5 class="text-center">New Balance</h5>
+                                            <div class="text-center"><span class="amounts" id="newBalance">$0.00</span></div>
+                                        </div>
+                                        
+                                    </div>
+                              
+                            </div>
+                            
+                            <div id="holderCloseLoanAndNextPayment">
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <hr>
+                                    Does this payment end the loan?
+                                    <label class="radio-inline">
+                                    <input type="radio" name="endLoan" id="otpNo" value="0" checked="checked" required> No
+                                    </label>
+                                    <label class="radio-inline">
+                                    <input type="radio" name="endLoan" id="otpYes" value="1"> Yes
+                                    </label>
+                                    <hr>
+                                {# {{ form_widget(form.lpaOptionComplete,  { 'attr': {'class': 'radio-inline',"required":"required"} } ) }} #}
+                                </div>
+                                <div class="col-md-12 col-lg-12 col-sm-12" id="holderNextPayment">
+                                    <div class="panel panel-danger">
+                                        <div class="panel-heading">This is the information to the <b>next payment</b></div>
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                                    <div class="form-group has-danger">
+                                                        <div class="form_error">{{ form_errors(form.loaNextInterestRate)}}</div>
+                                                        <label for="" class=" control-label">Next interest rate: <span class="text-danger">*</span></label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-percent" aria-hidden="true"></i>
+                                                            </div>
+                                        
+                                                            <div class="">{{ form_widget(form.loaNextInterestRate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":"",  "required":"required",  "readonly":"true"} } ) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                                    <div class="form-group has-danger">
+                                                        <div class="form_error">{{ form_errors(form.loaNextPaymentDate)}}</div>
+                                                        <label for="" class=" control-label">Next payment date: <span class="text-danger">*</span></label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                            </div>
+                                                
+                                                            {% set modify = '+'~ loan.loaRecurringDayPayment ~'day' %}
+                                                            {% set nextPay =  loan.loaDeadline|date_modify(modify) | date("Y-m-d") %}
+                                                            <div class="">{{ form_widget(form.loaNextPaymentDate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":nextPay,  "required":"required",  "disabled":"true"} } ) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12 col-sm-12">
+                                <div class="form-group">
+                                    <div class="form_error">{{ form_errors(form.lpaNote)}}</div>
+                                    <label for="" class=" control-label">Note (optional):</label>
+                                    <div class="">{{ form_widget(form.lpaNote,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
+                                    <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    {{ form_start(form) }}
+                                        {{ form_widget(form) }}
+                                        <button type="submit" class="btn bg-olive" id="btnSend" ><i class="fa fa-money" aria-hidden="true"></i> Create Payment</button>
+                                    {{ form_end(form) }}
+                                </div>    
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
+                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
+                </div>
+
+            </div>
+               
+        {{form_end(form)}}    
+
+        <ul>
+            <li>
+                <a href="{{ path('loanpayment_index') }}">Back to the list</a>
+            </li>
+        </ul>
+    </div>
+</div>
+{{ include('app/client/_modals.html.twig' )  }}    
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function (){
+
+            {% if loan.loaCompleted == 1 %}
+                $("input, textarea").prop("disabled", true);
+                $("#btnSend, #holderCloseLoanAndNextPayment").remove();
+            {% endif %}
+
+            $('#clientslist').DataTable({
+                "scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                'autoWidth'   : false,
+                'dom': 'Bfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+           //Date picker
+            /*
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            });
+            */
+            /*
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+            });
+            */
+
+            $("#appbundle_loanpayment_lpaPaidDate").daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+                //setNextPaymentDate();
+            });
+
+            $("#appbundle_loanpayment_loaNextPaymentDate").daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                drops:"up",
+                "autoUpdateInput": false,
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+                
+                
+            });
+
+            $("#appbundle_loanpayment_loaNextPaymentDate").val("");
+
+            /*
+            startdate = "2018-10-10";
+            var new_date = moment(startdate, "YYYY-mm-dd");
+            new_date.add(5, 'days');
+            alert(new_date);
+            */
+            
+            $("#appbundle_loanpayment_lpaCurrentRateInterest").keyup(function(){
+                var rate = $(this).val();
+                var pendingAmount = $("#pendingAmount").text();
+                pendingAmount = parseFloat(pendingAmount.replace(",",""));
+                rate = ( $.trim(rate) == "" )?0:rate;
+                $("#htmlRate").html(rate);
+                var justRate = ((rate/100)*pendingAmount);
+                $("#justRate").val(justRate);
+                $("#htmlJustRate").html(justRate);
+                var pay = ( pendingAmount + justRate ).toFixed(2);
+                $(".htmlTotalAmount").html(pay);
+                //console.log(pendingAmount);
+            });
+
+            $("#appbundle_loanpayment_lpaTotalAmountPaid").focus();
+
+            $("#btnCalculateAmounts").on("click", function(){
+                $(this).blur();
+                calculateAmounts();
+            });
+            //$("#appbundle_loanpayment_lpaTotalAmountPaid").focusout(function(){
+            function calculateAmounts()
+            {    
+                //Amount to pay ioncluden the interest rate
+                var htmlTotalAmount = $("#htmlTotalAmount").text();
+                htmlTotalAmount = parseFloat(htmlTotalAmount.replace(",",""));
+
+                //Pending to pay
+                var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
+                pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate);
+
+                var justRate = parseFloat($("#justRate").val());
+
+                var amountToPay = parseFloat($("#appbundle_loanpayment_lpaTotalAmountPaid").val());
+                //alert(amountToPay);
+                if( !$.isNumeric(amountToPay) || $.trim(amountToPay) <= 0 )
+                {
+                    $("#holderPaymentDetail").hide();
+                    $("#appbundle_loanpayment_lpaTotalAmountPaid").val("");
+                    $("#appbundle_loanpayment_lpaTotalAmountPaid").focus();
+
+                    $.alert({
+							icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'The payment value must be a number',
+							type: 'red',
+							typeAnimated: true,
+					});
+                    
+                    /*
+                    $.confirm({
+                        icon: 'glyphicon glyphicon-exclamation-sign',
+                        title: 'Error!',
+                        content: 'The payment value must be a number',
+						type: 'red',
+                        typeAnimated: true,
+                        buttons: {
+                            Ok: function () {
+                                //$.alert('Confirmed!');
+                                $("#appbundle_loanpayment_lpaTotalAmountPaid").blur().focus();
+                            },
+                        }
+                    });
+                    */
+                    return false;
+                }
+
+                if( amountToPay > ( pendingAmountWithoutRate + justRate) )
+                {
+                    $.alert({
+							icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'The payment to execute is higher than the current balance',
+							type: 'red',
+							typeAnimated: true,
+					});
+                    return false;
+                }
+
+                var IsOverDueDate = $("#IsOverDueDate").val();
+                var overDueDateQuotas = $("#overDueDateQuotas").val();
+                var overDueDateRate = $("#overDueDateRate").val();
+                var resultRatePayment = 0;
+                //if( IsOverDueDate == 1 )
+                //{
+                    var resRate = (overDueDateRate/overDueDateQuotas);
+                    var r = 0;
+                    var c = 0;
+                    var pr = 0;
+                    var numQuotanumQuotaPaid = 0;
+                    /*
+                        for(var i = overDueDateQuotas; i >= 0; i--)
+                        {
+                            //resRate = resRate + ;
+                            var currentRate = (resRate*(i+1));
+                            var resultRatePayment = pendingAmountWithoutRate*(currentRate/100);
+
+                            if( amountToPay >= resultRatePayment )
+                            {
+                                r = currentRate;
+                                numQuotanumQuotaPaid = (i+1);
+                                c = (amountToPay - resultRatePayment);
+                                pr = resultRatePayment;
+                                break;
+                            }
+                            else if ( amountToPay < justRate  )
+                            {
+                                console.log("aqui");
+                            }
+                        }
+                        if( numQuotanumQuotaPaid <= overDueDateQuotas  )
+                        {
+                            if( amountToPay <= justRate )
+                            {
+                                resultRatePayment = amountToPay;
+                                console.log("-----")
+                                c = 0;
+                            }else if( amountToPay >= justRate ){
+                                //c = 0;
+                                c = amountToPay - resultRatePayment ;
+                                
+                                console.log("/////"+pr);
+                            }    
+                            
+                            if( c > 0 ) //if capital > 0 then the interest rate is reseted to original value
+                            {
+                                
+                            }
+                            
+                            console.log("if");
+                        }
+                        else
+                        {
+
+                        }
+                        //console.log(resultRatePayment +"==" +justRate);
+                        if( c > 0 || ( parseFloat(resultRatePayment) == parseFloat(justRate))  )
+                        {
+                            $("#appbundle_loanpayment_loaNextInterestRate").val("{{ loan.loaRateInterest }}");
+                        }else{
+                            var overDueDateRate = parseFloat( $("#overDueDateRate").val() );
+                            $("#appbundle_loanpayment_loaNextInterestRate").val( overDueDateRate - r );
+                        }
+                    */
+
+                    //var resultRatePayment = pendingAmountWithoutRate*(currentRate/100);
+                    
+                    //var paidRate = (amountToPay/overDueDateRate);
+                    var paidRate = ( (amountToPay/justRate)*( (overDueDateRate/100)*100));
+                    var pendingRate = (overDueDateRate - paidRate);
+
+                    paidRate = ( paidRate > overDueDateRate )?overDueDateRate:paidRate;
+                    pendingRate = ( pendingRate < 0 )?0:pendingRate;
+                    //pendingRate = (pendingRate);
+                    c = ( amountToPay <= justRate)?0:(amountToPay-justRate);
+                    pr = ( amountToPay > justRate)? justRate : amountToPay;
+                    pr = parseFloat(pr);
+                    if( c > 0 || ( pr == justRate) )
+                    {
+                        $("#appbundle_loanpayment_loaNextInterestRate").val("{{ loan.loaRateInterest }}");
+                        var htmlRate = "{{loan.loaRateInterestByDefault}}";
+                    }
+                    else
+                    {
+                        //var overDueDateRate = parseFloat( $("#overDueDateRate").val() );
+                        
+                        pendingNextRate = (Number.isInteger(pendingRate))?pendingRate + {{loan.loaRateInterestByDefault}}: ((parseFloat(pendingRate))+({{loan.loaRateInterestByDefault}})).toFixed(2);
+                        $("#appbundle_loanpayment_loaNextInterestRate").val( pendingNextRate );
+
+                        var htmlRate = $("#appbundle_loanpayment_loaNextInterestRate").val();;
+                        console.log("wwww");
+                    }
+
+
+                    //startdate = "2018-10-10";
+                    var paidDate = $("#appbundle_loanpayment_lpaPaidDate").val();
+                    if( $.trim(paidDate) == "" )
+                    {
+                        alert("Error fill the input 'when was it paid?'");
+                        return false;
+                    }
+                    else
+                    {
+                        
+                    }
+                    
+
+                    console.log("Paid Rate: "+paidRate+"% - Pending rate: "+pendingRate+"% - Capital: "+c+" - paid rate: "+pr);
+                   // console.log("Interest: "+paidRate+"% - Quota #: "+numQuotanumQuotaPaid+" - Capital: "+c+" - Rate: "+resultRatePayment);
+                    //$("#appbundle_loanpayment_lpaTotalAmountPaid").focus();
+
+                    setNextPaymentDate(pendingRate);
+                    paidRate = (Number.isInteger(paidRate))?paidRate: parseFloat(paidRate).toFixed(2);
+                    pendingRate = (Number.isInteger(pendingRate))?pendingRate: parseFloat(pendingRate).toFixed(2);
+                    $("#inputPaidInterest").val(pr.toFixed(2));
+                    $("#inputPaidCapital").val(c.toFixed(2));
+                    $("#inputCompletedRate").val(paidRate);
+                    $("#inputPendingRate").val(pendingRate);
+
+                    //show the new balance
+                    //if( c > 0 )
+                    //{
+                        var a = $("#pendingAmountWithoutRate").val();
+                        var DnewAmount = (a - c).toFixed(2);
+                        var Dnewrate = htmlRate; //$("#appbundle_loanpayment_lpaCurrentRateInterest").val();
+                        var calculate = parseFloat(DnewAmount) + parseFloat(DnewAmount * (Dnewrate/100)) ;
+                        var iconMoney = '<i class="fa fa-usd" aria-hidden="true"></i>';
+                        Dnewrate = (Number.isInteger(Dnewrate))?Dnewrate: parseFloat(Dnewrate).toFixed(2);
+                        //var result = iconMoney+DnewAmount+" x "+Dnewrate+"% = "+iconMoney+calculate.toFixed(2);
+
+                        //var cad1 = money+DnewAmount+" x "+Dnewrate+"% =
+                        var table = "<table style=''>";
+                        table += "<tr><td>"+iconMoney+DnewAmount+"x"+Dnewrate+"% =</td><td>"+iconMoney+(parseFloat(DnewAmount * (Dnewrate/100)).toFixed(2))+"</td></tr>";
+                        table += "<tr><td ><div class='text-right amounts'> + </div></td><td> &#160;"+iconMoney+DnewAmount+"</td></tr>";
+                        table += "<tr><td ><div class='text-right amounts'>Total = </div></td><td>&#160;"+iconMoney+calculate.toFixed(2)+"</td></tr>";
+                        table += "</table>"
+                        
+
+                        if( calculate == 0 )
+                        {
+                            $( "#otpYes" ).prop( "checked", true );
+                            //$("#holderNextPayment").hide();
+                            
+                        }else{
+                             $( "#otpNo" ).prop( "checked", true );
+                            //$("#holderNextPayment").show();
+                        }
+                        checkRadioEndLoan();
+
+                   // }
+                    $("#newBalance").html(table);
+                //}
+
+                
+                //console.log(amount);
+            }
+
+            $('input[name="endLoan"]').on('change', function() {
+                checkRadioEndLoan();
+            })
+            function checkRadioEndLoan()
+            {
+               // $('input[name="endLoan"]').on('change', function() {
+                    var radioValue = $('input[name="endLoan"]:checked').val();   
+                    if( radioValue == 1 )
+                    {
+                        $("#holderNextPayment").hide();
+                    }else{
+                        $("#holderNextPayment").show();
+                    }    
+                    //alert(radioValue); 
+                // });
+                
+            }
+
+            $("#appbundle_loanpayment_lpaPaidDate").focusout(function(){
+                
+            });
+            function setNextPaymentDate(pendingRate)
+            {
+                if( $("#pendingNextDeadlineToPaid").length == 1 ||  pendingRate > 0)
+                {
+                    if ( $("#pendingNextDeadlineToPaid").length == 1 )
+                    {
+                        nextDate = $("#pendingNextDeadlineToPaid").text();
+                    }
+                    else
+                    {
+                        nextDate = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
+                    }
+                     
+                    var paidDate = $("#appbundle_loanpayment_lpaPaidDate").val();
+                    if( paidDate == "" )
+                    {
+                        alert("Fill the field called 'when was it paid?'");
+                        return false;
+                    }
+                    else
+                    {
+                        if ( paidDate <  nextDate && pendingRate > 0 )
+                        {
+                            var per = nextDate;//moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+                            //console.log("xxxxx"+pendingRate);
+                        }
+                        else
+                        {
+                            //Next period
+                            var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+                            var rate = parseFloat("{{ loan.loaRateInterest }}");
+                            $("#appbundle_loanpayment_loaNextInterestRate").val( (pendingRate + rate) );
+                            //console.log("--------"+pendingRate);
+                        }
+                    }
+                   // console.log("if");
+                }
+                else
+                {
+                    $("#appbundle_loanpayment_loaNextInterestRate").val( {{ loan.loaRateInterestByDefault }} );
+                    nextDate = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
+                    //console.log("else");
+                    var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+                }
+
+                
+                //alert(per);
+                //console.log("nextDate: "+nextDate+" - {{ loan.loaRecurringDayPayment }}");
+                $("#appbundle_loanpayment_loaNextPaymentDate").val(per);
+
+                $("#appbundle_loanpayment_loaNextInterestRate").attr("readonly", false);
+                $("#appbundle_loanpayment_loaNextPaymentDate").attr("disabled", false);
+                $("#holderPaymentDetail").show();
+
+            }
+            /*
+                var inputPaid = $("#alreadyPaidAmount");
+                var iniPaid = inputPaid.text();
+
+                var inputPending = $("#pendingAmount");
+                var iniPending = inputPending.text();
+                $("#appbundle_loanpayment_lpaCurrentAmount").keyup(function(){
+                    var amount = $(this).val();
+                    var amount = parseFloat(amount);
+                    
+                    if( amount > 0 )
+                    {
+                        var paid = parseFloat(iniPaid);
+                        var pending = parseFloat(iniPending);
+                        //console.log(paid);
+                        var txtPaid = (paid + amount).toFixed(2);
+                        var txtPending = (pending - amount).toFixed(2);
+                    }
+                    else
+                    {
+                        var txtPaid = iniPaid;
+                        var txtPending = iniPending;
+                    }
+
+                    
+                    inputPaid.html(txtPaid.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    inputPending.html(txtPending.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    
+                });
+            */
+            $("#appbundle_loanpayment_lpaTotalAmountPaid").keyup(function(){
+                if( $.trim($(this).val()) <= 0 )
+                {
+                    $("#holderPaymentDetail").hide();
+                    $("#appbundle_loanpayment_loaNextInterestRate").val("");
+                    $("#appbundle_loanpayment_loaNextInterestRate").attr("readonly",true);
+                    $("#appbundle_loanpayment_loaNextPaymentDate").val("");
+                    $("#appbundle_loanpayment_loaNextPaymentDate").attr("disabled",true);
+                }
+            });
+            $("form[name='appbundle_loanpayment']").submit(function(){
+                 var amount = $("#appbundle_loanpayment_lpaTotalAmountPaid").val();
+                 //alert(amount);
+                if( $("#appbundle_loanpayment_loaNextPaymentDate").prop('disabled') || $.trim(amount) <= 0 )
+                {
+                    $("#btnCalculateAmounts").focus();
+                    
+                    $.alert({
+							icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts and the next payment date.</span>',
+							type: 'red',
+							typeAnimated: true,
+					});
+
+                    
+                    return false;
+                }
+
+                //return false;
+                $("#holder_loading").show();
+            });
+
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            } 
+
+        });
+    </script>    
+{% endblock %}

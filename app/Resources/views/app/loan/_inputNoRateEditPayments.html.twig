@@ -1,0 +1,205 @@
+<style>
+.amounts{
+    font-size:14px;
+    font-weight: 600;
+    color: #34825F;
+}
+
+.titleCurrency{
+    font-size: 18px !important;
+}
+
+.actionFreezed{
+    color: #96271b;
+    font-weight: 700;
+}
+
+.actionPaid{
+    color: #366d54;
+    font-weight: 700;
+}
+</style>
+                        
+                        
+                        <input type='hidden' value="{{ loan.loaRecurringDayPayment }}" id='curringDaySelected'>
+                        {% set firstPaymentDate = "" %}
+                        <table class="table table-striped display nowrap" id="tablePayments"  style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {# <th>#</th> #}
+                                        <th>Payment date</th>
+                                        <th>Quota to pay</th>
+                                        <th>Action</th>
+                                        <th>Paid amount</th>
+                                        <th>Paid date</th>
+                                        <th>Note</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set counter = 0 %}
+                                    {% set totalToPay = 0 %}
+                                    {% set totalPaid = 0  %}
+                                    {% for item in arr %}
+                                        {% set counter =  counter + 1 %}
+
+                                        {% if item.lpa_paid_capital %}
+                                            {% set readonly = "readonly='readonly'" %}
+                                            {% set done = "done" %} 
+                                        {% else %}
+                                            {% set readonly = "" %}
+                                            {% set done = "" %}
+                                        {% endif %}
+                                        <tr id="tr_{{ counter }}" class="{{done}} {{ item.lpt_key }}" data-paymentid="{{ item.lpa_id }}" data-paymenttypeid="{{ item.lpt_id }}">
+                                            {# <td>{{ counter }}</td> #}
+                                            <td>
+                                                {% if counter > 1 %}
+                                                    <span class='initDate'>{{ item.lpa_max_payment_date|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date("Y-m-d") }}</span>
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}    
+                                                -
+                                                <span class="maxDate">{{ item.lpa_max_payment_date }}</span>
+
+                                                {% if counter == 1 %}
+                                                    {% set firstPaymentDate = item.lpa_max_payment_date %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if  action is defined and (action == "edit" ) %}
+                                                    <div class="input-group">
+                                                        
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                                        </span>
+                                                        
+                                                        <input type="number" class="form-control inputDatePayment" id="input{{ counter }}" value="{{ item.lpa_current_amount }}" {{readonly}}>
+                                                        {% if  action is defined and ( action == "edit" ) and done %}
+                                                            <span class="input-group-btn holderEdit">
+                                                                <button class="btn btn-primary btnSetEditAmount" type="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% else %}
+                                                   <span class="amounts">${{ item.lpa_current_amount|number_format(2, '.', ',') }}</span>
+                                                {% endif %}
+                                                {% set totalToPay = totalToPay + item.lpa_current_amount %}
+                                            </td>
+                                            <td>
+                                                {% if item.lpt_id == ""  %}
+                                                    {% if  action is defined and (action == "payment" ) %}
+                                                        <select class="form-control optPaymentStatus">
+                                                        {% for status in paymentType %}
+                                                            <option value="{{ status.lptId }}" data-type="{{ status.lptKey }}">{{ status.lptName }}</option>
+                                                        {% endfor %}
+                                                        </select>
+                                                    {% else %}
+                                                        Pending    
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% for status in paymentType %}
+                                                        {% if item.lpt_id == status.lptId  %}
+                                                            {% if status.lptKey == "freezed" %}
+                                                                <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i> {{ status.lptKey|capitalize  }}</span>
+                                                            {% else %}
+                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {{ status.lptKey|capitalize  }}</span>
+                                                            {% endif %}
+                                                            
+                                                        {% endif  %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if item.lpa_paid_capital %}
+                                                    <span class="amounts">${{ item.lpa_paid_capital|number_format(2, '.', ',') }}</span> 
+                                                    {% set totalPaid = totalPaid + item.lpa_paid_capital %}
+                                                {% else %}
+                                                    {% if  action is defined and (action == "payment" ) %}
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                                        </span>
+                                                        {% if item.lpt_key == "freezed" %}
+                                                            <input type="text" class="form-control inputAmount" disabled="disabled">
+                                                        {% else %}
+                                                            <input type="text" class="form-control inputAmount">
+                                                        {% endif %}
+                                                        
+                                                    </div>   
+                                                    
+                                                    {% else %} 
+                                                        Pending
+                                                    {% endif %} 
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if item.lpa_paid_date  %} 
+                                                    {{  item.lpa_paid_date }}
+                                                {% else %} 
+                                                    {% if action is defined and action == "payment" %}
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control datepicker" disabled="disabled">
+                                                    </div>    
+                                                    {% else %}
+                                                        Pending 
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if  action is defined and action == "payment" %}
+                                                    {% if item.lpa_paid_date  %} 
+                                                        
+                                                        {% if item.lpa_note %}{{ item.lpa_note }}{% else %}N/A{% endif %}
+                                                    {% else %}
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon">
+                                                                <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
+                                                            </span>
+                                                            <input type="text" class="form-control note" disabled="disabled">
+                                                        </div>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ item.lpa_note }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if item.lpa_paid_capital > 0 %}
+                                                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                                {% else %}
+                                                    {% if  action is defined and action == "edit" %}
+                                                        <span class="btn btn-danger deleteItem"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
+                                                    {% elseif  action is defined and action == "payment" %}
+                                                        {% if item.lpt_key == "freezed" %}
+                                                            <button class="btn btn-default btnUnfreeze"  value="{{ item.lpa_id }}"><i class="fa fa-clock-o" aria-hidden="true"></i> Unfreeze </button>
+                                                        {% else %}
+                                                            <button class="btn btn-success btnPaymentItem" disabled="disabled" value="{{ item.lpa_id }}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Create </button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                        </table>
+                        <input type="hidden" value="{{ firstPaymentDate }}" id="inputfistPaymentDate">
+                        {% if  action is defined and ( action == "edit" ) %}
+                            <hr>
+                            <div class="text-right"><button id="addInput" class="btn btn-default"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</button></div>
+                        {% endif %}
+                        <div>
+                            <h3 class=""><span class="labelCurrency">Total to pay:</span> <span id="total" class="label label-default">${{ totalToPay|number_format(2, '.', ',') }}</span></h3>
+                            <h3 class=""><span class="labelCurrency">Total paid:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
+                            <h3 class="">
+                                <span class="labelCurrency">Pending to pay:</span> 
+                                {% if (totalToPay - totalPaid) >= 0 %}
+                                    {% set stalabel = "pending" %}
+                                {% else %}
+                                    {% set stalabel = "nothingPending" %}
+                                {% endif %}
+                                <span id="pending" class="label label-default {{stalabel}}">${{ (totalToPay - totalPaid)|number_format(2, '.', ',') }}</span>
+                            </h3>
+                        </div>

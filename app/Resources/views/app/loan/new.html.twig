@@ -1,0 +1,727 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Loan Creation - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+#total{
+    color: green;
+
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+    
+
+    {#
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Create" />
+    {{ form_end(form) }}
+    #}
+<section class="content-header">
+      <h1>
+        New Loan 
+        <small>Complete the form</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li class="active">New Loan</li>
+      </ol>
+</section>
+
+<hr>    
+<div class="box">
+    <div class="box-header">
+        {# <h3 class="box-title"> #}
+        
+        
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i> Client:
+            <span>
+                <a href="{{ client.cliId }}" class="btnShowClient">
+                    {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }}
+                </a>
+            </span>
+        
+      {# </h3> #}
+    </div>
+    <div class="box-body">
+    
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                {% if loanType %}
+                   
+                   <div class="well well-smX">
+                        Loan type selected: <b>{{ loanType['name'] }}</b> (Change loan type <a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}">here</a>) 
+                    </div>
+                    <div class="well">
+                        {# {{ dump(client) }} #}
+                        
+                        
+                        {{form_start(form,{'enctype':'multipart/form-date'})}}
+                            <div class="">{{ form_widget(form.loaClient,  { 'attr': {'class': 'form-control',"value":client.cliId } } ) }}</div>
+
+                           
+                            
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaLoanMade)}}</div>
+                                        <label for="" class=" control-label">Loan created at: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                        </div>
+                                        <span id="helpBlock2" class="help-block">Date when was made the loan.</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaAmount)}}</div>
+                                        <label for="" class=" control-label">Requested Amount: <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-usd" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaAmount,  { 'attr': {'class': 'form-control pull-right', "autocomplete":"off"}, type:"number" } ) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {#
+                                <div class="col-md-12 col-lg-6 col-sm-12" style="display:none">
+                                    <div class="form-group" class="holderRate">
+                                        <div class="form_error">{{ form_errors(form.loaRateInterestByDefault)}}</div>
+                                        <label for="" class=" control-label">Interest Rate by default: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-percent" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">
+                                                
+                                                {{ form_widget(form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'},type:"number" } ) }}
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                #}
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                    <div class="form-group holderRate">
+                                        <div class="form_error">{{ form_errors(form.loaRateInterestByDefault)}}</div>
+                                        <label for="" class=" control-label">Default Interest Rate: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-percent" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">
+                                                
+                                                {{ form_widget(form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'},type:"number" } ) }}
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if  loanType and loanType['key'] != "inactive_rate" %}
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <span id="helpBlock2" class="help-block">The interest rate may change due to non-compliance of payments not made on time</span>
+                                </div>
+                                {% endif %}    
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaRecurringDayPayment)}}</div>
+                                        <label for="" class=" control-label">Recurring day payment: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar-check-o" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaRecurringDayPayment,  { 'attr': {'class': 'form-control', 'placeholder':'Number days', "autocomplete":"off"},required: true } ) }}</div>
+                                        </div>
+                                        <span id="helpBlock2" class="help-block">Recurring day payment for example for every week enter number 7 </span>
+                                    </div>
+
+                                    
+                                </div>
+                                <div class="col-md-12 col-lg-6 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
+                                        <label for="" class=" control-label">First Payment Date: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                        </div>
+                                        <span id="helpBlock2" class="help-block">Max date available to client can make the payment.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        
+
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12 col-sm-12" id="holderQuotas">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaQuotas)}}</div>
+                                        <label for="" class=" control-label"># Quotas: <span class="text-danger">*</span></label>
+                                        <div class="input-group">                                            
+                                            {{ form_widget(form.loaQuotas,  { 'attr': {'class': 'form-control', 'placeholder':''},required: true } ) }}
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-info" type="button" id="setPatments">Set payments</button>
+                                            </span>                    
+                                        </div>
+                                        <span id="helpBlock2" class="help-block">Press <b>"Set payments"</b> button to get all payment date.</span>
+                                    </div>
+                                </div>
+                                
+                                
+                                
+                            </div>
+                            <div class="row">    
+                                {#
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
+                                        <label for="" class=" control-label">Dead Line: <span class="text-danger">*</span></label>
+
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            </div>
+                                            <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD'} } ) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                #}
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="form-group">
+                                        <div class="form_error">{{ form_errors(form.loaDescription)}}</div>
+                                        <label for="" class=" control-label">Description (optional):</label>
+                                        <div class="">{{ form_widget(form.loaDescription,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
+                                        <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                    </div>
+                                </div>
+                                <div class="">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        {{ form_start(form) }}
+                                            {{ form_widget(form) }}
+                                            <button type="submit" class="btn bg-navy" id="btnCreate"><i class="fa fa-check-circle" aria-hidden="true"></i> Create</button>
+                                        {{ form_end(form) }}
+                                    </div>    
+                                </div>
+                            </div>    
+                        {{form_end(form)}}
+                            
+                        </div>
+                    </div>
+                {% else %}
+                    {{ include("app/loan/_selectLoanType.html.twig") }}
+                {% endif %}
+            </div>
+            <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+                <div id="holderMainRight"></div>
+                {% if loanType %}
+                    {#
+                    <h4><span class="">Active Loans</span></h4><hr>
+                    <table class="table table-striped" id="clientslist">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Created at</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1223444</td>
+                                <td>Pedro antanio</td>
+                                <td>2017-05-05</td>
+                                <td><a href="" class="btn btn-block btn-default">View</a></td>
+                            </tr>
+                            <tr>
+                                <td>1223444</td>
+                                <td>Pedro antanio</td>
+                                <td>2017-05-05</td>
+                                <td><a href="" class="btn btn-block btn-default">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    #}
+                {% endif %}
+
+            </div>
+        </div>
+
+        <ul class="list-inline">
+            <li>
+                <a href="{{ path('loan_index') }}">Back to the list</a>
+            </li>
+        </ul>
+
+    </div>
+</div>            
+
+    
+
+{{ include('app/client/_modals.html.twig' )  }}
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        var formValidated = false;    
+        $(function (){
+
+            $("#appbundle_loan_loaRateInterest").closest("div").remove();
+            $("#appbundle_loan_loaAmount").focus();
+            /*
+            var quotas = 2;
+            var nextDate = ""
+
+            //No borrar
+            //var x = moment('2018-08-11', 'YYYY-MM-DD').add(2, 'days').format('YYYY-MM-DD'); // 2013-08-19T00:00:00-07:00
+
+            var quotas = 4;
+            var numDays = 7;
+            var nextDate = "2018-08-11";
+            var listDate = [];
+            for(var i = 0; i < quotas; i++)
+            {
+                totalDays = (i == 0 )?0:numDays;
+                nextDate = moment(nextDate, 'YYYY-MM-DD').add(totalDays, 'days').format('YYYY-MM-DD'); 
+                listDate.push(nextDate);
+            }
+
+            console.log(listDate);
+            */
+
+            $('#clientslist').DataTable({
+                "scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                'autoWidth'   : false,
+                'dom': 'Bfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+           //Date picker
+            /*
+            $('.datepicker').datepicker({
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            });
+            */
+            $('.datepicker').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+            }); 
+
+            $("#appbundle_loan_loaCompleted").closest("div").remove();
+
+            $("#appbundle_loan_loaDeadline").val("");
+
+            {% if  loanType and loanType['key'] != "inactive_rate" %}
+                $("#holderQuotas").remove();
+            {% else %}
+                ///var quotas =
+                $(".holderRate").html("<h5><i class='fa fa-percent' aria-hidden='true'></i> Interest rate not apply for this loan</h5>");
+                $("#setPatments").on("click",function(){
+                    var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
+                    var nextDate = $("#appbundle_loan_loaDeadline").val();
+                    var quotas = $("#appbundle_loan_loaQuotas").val();
+                    if( $.trim(recurringDays) == "" || $.trim(nextDate) == "" || $.trim(quotas) == "" )
+                    {
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'Make sure the fields "<b>Recurring day payment, First Payment Date and Quotas</b>" are filled',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+                    if( recurringDays <= 0 || quotas <= 0 )
+                    {
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: 'The fields "<b>Recurring day payment and Quotas</b>" must be numbers',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false; 
+                    }
+                    var dates = getPayments(quotas, nextDate, recurringDays);
+                    if( dates.length > 0 )
+                    {
+                        printPayments(dates, recurringDays);
+                    }
+                    
+                })
+
+                function getPayments(quotas, nextDate, recurringDays)
+                {
+                    var listDate = [];
+                    for(var i = 0; i < quotas; i++)
+                    {
+                        totalDays = (i == 0 )?0:recurringDays;
+                        nextDate = moment(nextDate, 'YYYY-MM-DD').add(totalDays, 'days').format('YYYY-MM-DD'); 
+                        listDate.push(nextDate);
+                    }
+
+                    return listDate;
+                }
+
+                function printPayments(arrDates, recurringDays)
+                {
+                    var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
+                    table += "<table class='table table-striped' id='tablePayments'>";
+                    table += "<thead><tr><th>Payment Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>";
+                    var firstPaymentDate = "";
+                    for(var i = 0; i < arrDates.length; i++)
+                    {
+                        if( i != 0 )
+                        {
+                            var per = moment(arrDates[i], 'YYYY-MM-DD').add(-6, 'days').format('YYYY-MM-DD'); 
+                            var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i> </span>";
+                        }else{
+                            var per = " N/A ";
+                            var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i></span>";//"";
+                            firstPaymentDate = arrDates[i];
+                        }
+
+                        var input = "<div class='input-group'><span class='input-group-addon'><i class='fa fa-usd' aria-hidden='true'></i></span><input type='number' class='form-control inputDatePayment' id='input"+i+"'></div>";
+                        table += "<tr id='tr_"+i+"'>";
+                        table += "<td> <i class='fa fa-calendarxxxxxx' aria-hidden='true'></i> <span class='initDate'>"+ per +"</span> - <span class='maxDate'>"+ arrDates[i] + "</span></td><td> "+input+"</td><td>Pendig</td><td>"+button+"</td>";
+                        table += "</tr>";
+                    }
+                    table += "</tbody>";
+                    table += "</table>";
+                    table += "<input type='hidden' value='"+firstPaymentDate+"' id='inputfistPaymentDate'>";
+                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> Add item</button></div>";
+                    var labelTotal = "<div><h2>Total: <span id='total' class='label label-default'>$0.00</span></h2></div>";
+                    
+
+                    $("#holderMainRight").html(table+addInput+labelTotal);
+                    $("#tablePayments tbody tr:first" ).find("input[type='number']").focus();
+                }
+
+                //var total = 0;
+                $("body").on("keyup",".inputDatePayment", function(){
+                    
+                    sumPayment();
+                });
+
+                function sumPayment()
+                {
+                    var inputs = 0;
+                    $(".inputDatePayment").each(function(){
+                        var item = ( $(this).val() );
+                        if( $.trim(item) != "" )
+                        {
+                            inputs = parseFloat(inputs) + parseFloat(item);
+                            //console.log("item: "+item+" - total "+total);
+                        }
+                        
+                    });
+                    var total = inputs.toFixed(2);
+                    $("#total").html("$"+total.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                }
+
+                $("body").on("click","#addInput", function(){
+                    printAddInput();
+                });
+                function printAddInput()
+                {
+                    
+                    var lastTr = $("#tablePayments tr:last" ).attr("id");
+                    var id = lastTr.replace(/[^0-9]/g, '');
+                    var newId = parseInt(id) + 1
+                    var lastDate = $("body").find("#tablePayments tr:last" ).eq(0).find(".maxDate").text();
+                    var minDate = moment(lastDate, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD');
+                    var inputDate = $("#curringDaySelected").val();
+                    var maxDate = moment(lastDate, 'YYYY-MM-DD').add(inputDate, 'days').format('YYYY-MM-DD'); 
+                    var cln = $("#tablePayments tr:last" ).clone();
+                    $("#tablePayments").append(cln);
+                    $("body").find("#tablePayments tr:last" ).attr("id","tr_"+newId);
+                    $("body").find("#tablePayments tr:last" ).find("td").eq(0).html("<i class='fa fa-calendarxxxxx' aria-hidden='true'></i> <span class='initDate'>"+minDate+"</span> - <span class='maxDate'>"+maxDate+"</span>");
+                    $("body").find("#tablePayments tr:last" ).find("td").eq(1).find("input").val("");
+
+                    var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i></span>";
+                    $("body").find("#tablePayments tr:last" ).find("td").eq(3).html(button);
+                    
+
+                    
+
+                    var rowCount = $('#tablePayments tbody tr').length;
+                    $("#appbundle_loan_loaQuotas").val(rowCount);
+                }
+
+                deleteItem();
+                function deleteItem()
+                {
+                    $("body").on("click", ".deleteItem", function(){
+                        var currentMaxDate = $(this).closest("tr").find("td").eq(0).find(".maxDate").text();
+                        var rowCount = $('#tablePayments tbody tr').length;
+                        if( rowCount >= 2 )
+                        {
+                            var inputfistPaymentDate =  $("#inputfistPaymentDate").val();
+                            
+                            
+                            //console.log(currentMaxDate);
+                            if( currentMaxDate == inputfistPaymentDate )
+                            {
+                                var newMaxDate = $(this).closest("tr" ).siblings().find("td").eq(0).find(".maxDate").text();
+                                $(this).closest("tr" ).siblings().find("td").eq(0).find(".initDate").text("N/A");
+                                $("#appbundle_loan_loaDeadline").val(newMaxDate);
+                                $("#inputfistPaymentDate").val(newMaxDate);
+                                $.alert({
+                                    icon: 'glyphicon glyphicon-exclamation-sign',
+                                    title: 'Info!',
+                                    content: "the new first payment date was setup at <b>"+newMaxDate+"</b>",
+                                    type: 'blue',
+                                    typeAnimated: true,
+                                });
+                                
+                            }
+                            
+                        }
+
+                        $(this).closest("tr").remove();
+                        
+                        $("#appbundle_loan_loaQuotas").val(rowCount);
+                        
+                        if( rowCount == 0 )
+                        {
+                            $("#addInput").closest("div").remove();
+                        }
+
+                        sumPayment();
+
+                        var resRowCount = $('#tablePayments tbody tr').length;
+                        if( resRowCount == 0 )
+                        {
+                            $("#addInput").remove();
+                            $("#appbundle_loan_loaDeadline").val("");
+                            $("#appbundle_loan_loaQuotas").val("");
+                            $.alert({
+                                    icon: 'glyphicon glyphicon-exclamation-sign',
+                                    title: 'Info!',
+                                    content: "You don't have first payment date selected, please select one",
+                                    type: 'red',
+                                    typeAnimated: true,
+                            });
+                        }
+                    });
+                }
+
+            {% endif %}
+
+            $("form[name='appbundle_loan']").submit(function(){
+            //$("#btnCreate").on("click", function(){    
+                
+
+                {% if  loanType and loanType['key'] == "inactive_rate" %}
+                   var tablePayments = $("body").find("#tablePayments").length;
+                   
+                   if( tablePayments == 0 )
+                   {
+    
+						$.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Info!',
+							content: 'Before to save the data click in "<b>Set Payments</b>" button to get all payment dates',
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;
+                   }
+                   else
+                   {
+                       var arr = [];
+                       $("#tablePayments tbody tr").each(function(){
+                           var date = $(this).find("td").eq(0).find(".maxDate").text();
+                           var amount = $(this).find("td").eq(1).find("input[type='number']").val();
+                           arr.push(date+"="+amount);
+                       });
+                       $("form[name='appbundle_loan']").append("<input name='paymentDates' id='paymentsDate' type='hidden' value='"+arr.join(",")+"'>");
+
+                        var initTotal = $("body").find("#total").text();
+                        total = initTotal.replace("$", "");
+
+                        if( parseFloat(total) <= 0 && formValidated == false)
+                        {
+                            $.confirm({
+                                icon: 'fa fa-warning',
+                                title: 'Confirm!',
+                                content: "The total is <b>"+initTotal+"</b>, Are you sure to continue?",
+                                type: 'red',
+                                typeAnimated: true,
+                                buttons: {
+                                    yes: {
+                                        text: 'Ok',
+                                        btnClass: 'btn-red',
+                                        action: function () {
+                                                $("#holder_loading").show(); 
+                                                formValidated = true;
+                                                $("form[name='appbundle_loan']").submit();
+                                        }
+                                    },
+                                    close: function () {
+                                    }
+                                }
+                            }); 
+                            return false;
+                        }
+                        //alert(total);
+                       //console.log(arr);
+                       //return false;
+                   }
+                {% endif %}
+
+                $("#holder_loading").show();
+            });
+
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            } 
+
+        });
+    </script>    
+{% endblock %}
+
+

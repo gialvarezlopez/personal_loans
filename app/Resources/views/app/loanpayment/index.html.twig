@@ -1,0 +1,115 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    ML || Clients
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.splitPayment{
+    padding-left:20px;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Loan Payment List
+        <small>advanced tables</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Tables</a></li>
+        <li class="active">Data tables</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Loan Payment List</h3>
+    </div>
+    <div class="box-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {# <th>Lpaid</th> #}
+                    <th>Max payment date</th>
+                    <th>Paid date</th>
+
+                    <th>Current interest rate</th>
+                    <th>Current amount</th>
+
+                    <th>Paid interest rate</th>
+                    <th>Paid capital</th>
+                    
+                    <th>Note</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for loanPayment in loanPayments %}
+                <tr>
+                    <td><a href="{{ path('loanpayment_show', { 'lpaId': loanPayment.lpaId }) }}">{{ loanPayment.lpaId }}</a></td>
+                    <td>{% if loanPayment.lpaMaxPaymentDate %}{{ loanPayment.lpaMaxPaymentDate|date('Y-m-d') }}{% endif %}</td>
+                    <td>{% if loanPayment.lpaPaidDate %}{{ loanPayment.lpaPaidDate|date('Y-m-d') }}{% endif %}</td>
+
+                    <td>{{ loanPayment.lpaCurrentRateInterest }}</td>
+                    <td>{{ loanPayment.lpaCurrentAmount }}</td>
+
+                    <td>{{ loanPayment.lpaPaidRateInterest }}</td>
+                    <td>{{ loanPayment.lpaPaidCapital }}</td>
+                    
+                    <td>{{ loanPayment.lpaNote }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                <a href="{{ path('loanpayment_show', { 'lpaId': loanPayment.lpaId }) }}">show</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('loanpayment_edit', { 'lpaId': loanPayment.lpaId }) }}">edit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <ul>
+            <li>
+                <a href="{{ path('loanpayment_new') }}">Create a new loanPayment</a>
+            </li>
+        </ul>
+    </div>
+</div>        
+{% endblock %}

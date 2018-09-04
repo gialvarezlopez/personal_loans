@@ -1,0 +1,9 @@
+setProfileImage_show:
+    path:   /show
+    defaults: { _controller: "AppBundle:SetProfileImage:index" }
+
+
+
+setProfileImage_upload:
+    path:   /upload
+    defaults: { _controller: "AppBundle:SetProfileImage:upload" }

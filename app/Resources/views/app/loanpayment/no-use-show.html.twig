@@ -1,0 +1,122 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    ML || Clients
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.splitPayment{
+    padding-left:20px;
+}
+
+.amounts{
+    font-size:17px;
+    font-weight: 700;
+    color: #34825F;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Payment history
+        <small>advanced tables</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Tables</a></li>
+        <li class="active">Data tables</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Loan Payment List</h3>
+    </div>
+    <div class="box-body">
+        <h1>Loanpayment</h1>
+
+        <table>
+            <tbody>
+                <tr>
+                    <th>Lpaid</th>
+                    <td>{{ loanPayment.lpaId }}</td>
+                </tr>
+                <tr>
+                    <th>Lpamaxpaymentdate</th>
+                    <td>{% if loanPayment.lpaMaxPaymentDate %}{{ loanPayment.lpaMaxPaymentDate|date('Y-m-d') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Lpapaiddate</th>
+                    <td>{% if loanPayment.lpaPaidDate %}{{ loanPayment.lpaPaidDate|date('Y-m-d') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Lpapaidrateinterest</th>
+                    <td>{{ loanPayment.lpaPaidRateInterest }}</td>
+                </tr>
+                <tr>
+                    <th>Lpapaidcapital</th>
+                    <td>{{ loanPayment.lpaPaidCapital }}</td>
+                </tr>
+                <tr>
+                    <th>Lpacurrentrateinterest</th>
+                    <td>{{ loanPayment.lpaCurrentRateInterest }}</td>
+                </tr>
+                <tr>
+                    <th>Lpacurrentamount</th>
+                    <td>{{ loanPayment.lpaCurrentAmount }}</td>
+                </tr>
+                <tr>
+                    <th>Lpanote</th>
+                    <td>{{ loanPayment.lpaNote }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ul>
+            <li>
+                <a href="{{ path('loanpayment_index') }}">Back to the list</a>
+            </li>
+            <li>
+                <a href="{{ path('loanpayment_edit', { 'lpaId': loanPayment.lpaId }) }}">Edit</a>
+            </li>
+            <li>
+                {{ form_start(delete_form) }}
+                    <input type="submit" value="Delete">
+                {{ form_end(delete_form) }}
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

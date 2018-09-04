@@ -1,0 +1,229 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    DB || Gallery
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+
+{% block header %}
+        
+{% endblock %}
+
+{% block content %}
+
+<style>
+#holderNewImage{
+    display:none;
+}
+#upload-image{
+    margin-top: 12px;
+}
+#holderNewImage{
+    margin-bottom:20px;
+}
+
+.cr-boundary{
+    margin-left: 20px !important;
+}
+.cr-slider-wrap{
+     margin-left: 0px !important;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        My Current Image Profile
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Loans</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-4">                
+                <div id="upload-image-i">
+                    {% if file_exists( 'uploads/'~image ) and image != "" %}
+                        <img src="{{ image('uploads/'~image).cropResize(250,250) }}" class="img-thumbnail">
+                    {% else %}
+                        <div class="alertx alert-infox text-center">You don't have profile image, please select one</div>
+                        <div class="text-center">
+                            <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(250,250)  }} " class="demo" style="max-width: 100%;" alt="image">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="checkbox"><label for="newImage"><span><input type="checkbox" id="newImage" name="newImage">  Select New Image</span></label></div>
+                <div id="holderNewImage">
+                    
+                    <div>
+                        <input type="file" id="images">
+                        </div>  
+                        <div id="upload-image"></div>
+                        <button class="btn btn-success cropped_image">Upload Image</button>
+                    </div>
+                </div>
+                
+            <div>
+                
+            </div> 
+        </div>
+    </div>    
+</div>
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+
+            $( '#newImage' ).on( 'click', function() {
+                if( $(this).is(':checked') ){
+                    // Hacer algo si el checkbox ha sido seleccionado
+                    $("#holderNewImage").show();
+                } else {
+                     $("#holderNewImage").hide();
+                }
+            });
+
+
+            // initialize with defaults
+
+            $image_crop = $('#upload-image').croppie({
+                enableExif: true,
+                viewport: {
+                    width: 275,
+                    height: 275,
+                    type: 'square'
+                },
+                boundary: {
+                    width: 350,
+                    height: 350
+                }
+            });
+            $('#images').on('change', function () {
+
+                var countFiles = $(this)[0].files.length;
+
+                var imgPath = $(this)[0].value;
+                var extn = imgPath.substring(imgPath.lastIndexOf('.') + 1).toLowerCase();
+
+
+                if (extn == "gif" || extn == "png" || extn == "jpg" || extn == "jpeg") {
+                    var image_holder = $("#image-holder");
+                    image_holder.empty();
+                    if (typeof (FileReader) != "undefined") {
+
+                        //loop for each file selected for uploaded.
+                        for (var i = 0; i < countFiles; i++) {
+
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                $("<img/>", {
+                                    "src": e.target.result,
+                                        "class": "thumb-image img-thumbnail"
+                                }).appendTo(image_holder);
+                            }
+
+                            image_holder.show();
+                            reader.readAsDataURL($(this)[0].files[i]);
+                        }
+
+
+                    } else {
+                        alert("This browser does not support FileReader.");
+                    }
+                } else {
+
+                    $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'Error!',
+                            type: "red",
+                            content: 'Please select only images',
+                        });
+                    $("#images").val("");
+                }
+
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $image_crop.croppie('bind', {
+                        url: e.target.result
+                    }).then(function(){
+                        console.log('jQuery bind complete');
+                    });
+                }
+                reader.readAsDataURL(this.files[0]);
+            });
+
+            $('.cropped_image').on('click', function (ev) {
+
+                var image = $("#images").val();
+                if( $.trim(image) == "" )
+                {
+                    $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'Error!',
+                        type: "red",
+                        content: 'Select an image!',
+                    });
+                    return false;
+                }
+                $image_crop.croppie('result', {
+                    type: 'canvas',
+                    size: 'viewport'
+                }).then(function (response) {
+                    $("#holder_loading").show(); 
+                    $.ajax({
+                        //url: "http://coderszine.com/demo/crop-image-and-upload-using-jquery-and-php/upload.php",
+                        url: "{{ path('setProfileImage_upload') }}",
+                        type: "POST",
+                        data: {"image":response},
+                        success: function (data) {
+                            if(data == 1 )
+                            {
+                                html = '<img src="' + response + '" />';
+                                $("#upload-image-i").html(html);
+                                location.reload();
+                            }else{
+                                $("#holder_loading").hide(); 
+                                $.alert({
+                                    icon: 'fa fa-warning',
+                                    title: 'Alert!',
+                                    type: "red",
+                                    content: 'There was an error!',
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+{% endblock %}

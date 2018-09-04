@@ -1,0 +1,128 @@
+AppBundle\Entity\Loan:
+    type: entity
+    table: loan
+    indexes:
+        FK_loan_client:
+            columns:
+                - cli_id
+        FK_loan_loan_category:
+            columns:
+                - loc_id
+    id:
+        loaId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: loa_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        loaCode:
+            type: string
+            nullable: true
+            length: 13
+            options:
+                fixed: false
+            column: loa_code
+        loaAmount:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            options:
+                comment: 'requested amount'
+            column: loa_amount
+        loaReturnAmount:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            options:
+                comment: 'return amount'
+            column: loa_return_amount
+        loaRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: loa_rate_interest
+        loaRateInterestByDefault:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: loa_rate_interest_by_default
+        loaDescription:
+            type: string
+            nullable: true
+            length: 240
+            options:
+                fixed: false
+            column: loa_description
+        loaDeadline:
+            type: date
+            nullable: true
+            column: loa_deadline
+        loaLoanMade:
+            type: date
+            nullable: true
+            column: loa_loan_made
+        loaQuotas:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+                comment: 'per days'
+            column: loa_quotas
+        loaRecurringDayPayment:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+            column: loa_recurring_day_payment
+        loaPending:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: loa_pending
+        loaCompleted:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: loa_completed
+        loaActive:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: loa_active
+        loaCreated:
+            type: datetime
+            nullable: true
+            column: loa_created
+    manyToOne:
+        cli:
+            targetEntity: Client
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                cli_id:
+                    referencedColumnName: cli_id
+            orphanRemoval: false
+        loc:
+            targetEntity: LoanCategory
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                loc_id:
+                    referencedColumnName: loc_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

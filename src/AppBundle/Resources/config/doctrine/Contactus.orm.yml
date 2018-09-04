@@ -1,0 +1,47 @@
+AppBundle\Entity\Contactus:
+    type: entity
+    table: contactus
+    id:
+        contId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: cont_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        conName:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: con_name
+        conEmail:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: con_email
+        conPhone:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: con_phone
+        conComment:
+            type: text
+            nullable: false
+            length: null
+            options:
+                fixed: false
+            column: con_comment
+        conCreate:
+            type: datetime
+            nullable: false
+            column: con_create
+    lifecycleCallbacks: {  }

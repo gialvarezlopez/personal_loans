@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="keywords" content="Doctors, Hospitals, Clinics, Pharmacies, Social Welfare, Medic Directory, Doctors Billboard, {% block keyword %}{% endblock %}">
+        <meta name="description" content="">
+
+        <title>{% block title_page %}Welcome{% endblock %}</title>
+        <meta name="description" content="{% block description_page %} {% endblock %}">
+        {# <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> #}
+        <link rel="shortcut icon" href="{{ asset('bundles/web/template/Site/assets/images/favicon.png') }}">
+
+        <meta property="og:title" content="{% block ogTitle %}{% endblock %}">
+        <meta property="og:description" content="{% block ogDescription %}{% endblock %}">
+        <meta property="og:image" content="{% block ogImage %}{% endblock %}">
+        <meta property="og:url" content="{% block ogUrl %}{% endblock %}">
+
+        <meta property="twitter:title" content="{% block twitterTitle %}{% endblock %}">
+        <meta property="twitter:description" content="{% block twitterDescription %}{% endblock %}">
+        <meta property="twitter:image" content="{% block twitterImage %}{% endblock %}">
+        <meta property="twitter:card" content="{% block twitterCard %}{% endblock %}">
+
+        {% block stylesheets %}{% endblock %}
+        
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+                <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+                <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]--> 
+    </head>
+    <body class=" {% block classbg %}{% endblock %}">    
+        {% block body_page %}{% endblock %}
+
+        {% block javascripts %}{% endblock %}
+        {% block codejs %}{% endblock %} 
+    </body>
+</html>

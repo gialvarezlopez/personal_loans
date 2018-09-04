@@ -1,0 +1,25 @@
+
+{{app.request.get('name')}}
+<div class="panel panel-info">
+  <div class="panel-heading"><h4>Select the loan type<h4></div>
+  <div class="panel-body">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th></th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for type in oLoanCategory %}
+                <tr>
+                    <td>{{ type.locType }}</td>
+                    <td><a href=" {{ path('loan_new',{ 'clientId': client.cliId }) }}?type={{ type.locId }}" class="btn btn-success">Select</a></td>
+                    <td>{{ type.locDescription }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>

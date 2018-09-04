@@ -1,0 +1,366 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Clients List - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.splitPayment{
+    padding-left:20px;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Clients list
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Client List</li>
+      </ol>
+</section>
+<hr>
+<div class="box">
+    <div class="box-header">
+        {#<h3 class="box-title">#}
+        <div class="row">
+            <div class="col-md-4"><i class="fa fa-users" aria-hidden="true"></i> Total records: <span class="badge">{{ clients|length }}</span></div>
+            <div class="col-md-4 col-md-offset-4 text-right">
+               <form class="form-inline"> 
+                    <div class="form-group">
+                        <label>Status filtered by: </label> 
+                        <select class="form-control" id="statusList">
+                            <option value="all">All Clients</option>
+                            <option value="0">Inactive Clients</option>
+                            <option value="1">Active Clients</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <hr>
+        {# </h3> #}
+    </div>
+    <div class="box-body">
+        <table class="table  table-striped" id="clientslist">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    {# 
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>First Surname</th>
+                    <th>Second Surname</th>
+                    
+                    #}
+                    <th>Full mane</th>
+                    <th>ID Number</th>
+                    <th>ID Type</th>
+                    {#
+                    <th>Address</th>
+                    <th>Phone1</th>
+                    <th>Phone2</th>
+                    <th>Email</th>
+                    <th>Note</th>
+                    #}
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set num = 1 %}
+            {% for client in clients %}
+                <tr>
+                    {# <td><a href="{{ path('client_show', { 'cliId': client.cliId }) }}">{{ client.cliId }}</a></td> #}
+                    <td>{{ num }}</td>
+                    <td>{{ client.cliFirstName }} {{ client.cliMiddleName }} {{ client.cliFirstSurname }} {{ client.cliSecondSurname }}</td>
+                    <td>{{ client.cliIdNumber }}</td>
+                    <td>{{ client.cliIdType }}</td>
+                    {#
+                    <td>{{ client.cliAddress }}</td>
+                    <td>{{ client.cliPhone1 }}</td>
+                    <td>{{ client.cliPhone2 }}</td>
+                    <td>{{ client.cliEmail }}</td>                    
+                    <td>{{ client.cliNote }}</td>
+                    #}
+                    <td>{% if client.cliActive %}Yes{% else %}No{% endif %}</td>
+                    <td>
+                        <ul class="list-inline">
+                            <li>
+                                <button class="btnShow btn btn-block btn-info" value="{{client.cliId}}"><i class="fa fa-address-card-o" aria-hidden="true"></i> Show</button>
+                            </li>
+                            <li>
+                                <a class="btn btn-block btn-primary" href="{{ path('client_edit', { 'cliId': client.cliId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+                            </li>
+                            <li>
+                                {# <button class="btn bg-olive btn-flat btnModalLoanClient" value="{{ client.cliId }}"><i class="fa fa-usd" aria-hidden="true"></i> Loans</button> #}
+                                <!-- Single button -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-handshake-o" aria-hidden="true"></i> Loans <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Create Loan</a></li>
+                                        <li><a href="{{ path('loan_index') }}?client={{client.cliId}}"><i class="fa fa-archive" aria-hidden="true"></i> My Loans</a></li>
+                                        
+                                        {% set hasLoans = srv_Loans.getClientLoans(client.cliId) %}
+                                        {% if hasLoans|length %}
+                                            <li role="separator" class="divider"></li>
+                                            <li><span class="splitPayment">Pending Loans <i class="fa fa-arrow-down" aria-hidden="true"></i></span></li>
+                                            <li role="separator" class="divider"></li>
+                                            {% for loan in hasLoans %}
+                                                <li><a href="#"><i class="fa fa-usd" aria-hidden="true"></i>{{ loan.loaCode }}</a></li>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                {% set num = num + 1%}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <ul class="list-inline">
+            <li>
+                <a class="btn btn-warning" href="{{ path('client_new') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Create a new client</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{{ include('app/client/_modals.html.twig' )  }}
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+            // initialize with defaults
+            $('#clientslist').DataTable({
+                //"scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                "iDisplayLength" : 10,
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                dom: 'Blfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+
+            //$(".holderModal").modal();
+
+            $("body").on("click",".btnShow",function(){
+                var id = $(this).val();
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+
+            $("body").on("click",".btnModalLoanClient",function(){
+                var id = $(this).val();
+                loanForm(id);
+            });
+            
+            function loanForm(id) {
+                var id = id;
+                var routeShow = "";
+                //routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											loanForm(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+								
+                                $('#modalLoans').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModalLoand").html(data);
+
+                                //var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                //href = href.replace("PLACEHOLDER", id);    
+                                //$("body").find("#btnModalEditClient").attr("href", href);
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+
+            $("#statusList").change(function(){
+                $("#holder_loading").show();
+                var status = $(this).val();
+                var routeLoad = "{{ path('client_index') }}?sta="+status
+                window.location.assign(routeLoad);
+
+            });
+
+            var sta = "{{ app.request.get('sta') }} ";
+            if( sta )
+            {
+                //$("#statusList").val(sta);
+                $("#statusList option[value="+sta+"]").attr('selected', 'selected');
+
+            }
+        });    
+    </script>
+{% endblock %}

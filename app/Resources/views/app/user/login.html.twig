@@ -1,0 +1,185 @@
+{% extends 'app/login.html.twig' %}
+
+
+{% block title_page %}
+    Login - Doctors Billboard
+{% endblock %}
+
+{% block header %}
+    <h1>Login</h1>
+{% endblock %}
+
+{% block classbg %}
+    login-page
+{% endblock %}
+
+{% block content %}
+
+    {#
+    {% if app.user != null %}
+        {{ dump(app.user) }}
+    {% endif %}
+
+    {% if is_granted("ROLE_USER") %}
+        USUARIO NORMAL
+    {% endif %}
+    #}
+
+
+  <div class="login-box">
+  {#  Check the notifications #}
+    <div class="containerx">
+      <div class="rowx">
+        <div class="col-lg-12x">
+
+          {% for message in app.session.flashbag().get("success") %}
+            <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message|raw}}</div>
+          {% endfor %}
+          {% for message in app.session.flashbag().get("error") %}
+            <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message|raw}} </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {# End notifications #}
+  <div class="login-logo">
+    <a href="{{ path('web_homepage') }}"><b>Doctors</b> Billboard</a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    {{ include('app/user/iconsCountries.html.twig') }}
+    <p class="login-box-msg">Sign in to start your session</p>
+
+    <form action="{{ path('login_check') }}" method="POST">
+      <div class="form-group has-feedback">
+        <input type="email" class="form-control" placeholder="Email" name="_username" value="{{ last_username }}" required="required">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" placeholder="Password" name="_password" required="required">
+        <input type="hidden" name="_taget_path" value="/login" >
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="row">
+        {% if error %}
+            <div class="col-lg-12"><div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div></div>
+        {% endif %}
+        <div class="col-xs-8">
+          <div class="checkbox icheck">
+            {#
+            <label>
+              <input type="checkbox"> Remember Me
+            </label>
+            #}
+          </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <br>
+        </div>
+        <!-- /.col -->
+      </div>
+    </form>
+    {#
+    <div class="social-auth-links text-center">
+      <p>- OR -</p>
+      <a href="{{ urlFacebook }}" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in using
+        Facebook</a>
+      <a href="{{ urlGoogle }}" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i> Sign in using
+        Google+</a>
+    </div>
+    #}
+    <!-- /.social-auth-links -->
+
+    <a href="#" data-toggle="modal" data-target="#message_modal">I forgot my password</a><hr>
+    <a href="{{ path('register') }}" class="text-center">Register a new membership</a>
+
+  </div>
+  <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+
+<!-- Send-Message -->
+<div id="message_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+      <h3 class="modal-title">Remember password</h3>
+      </div>
+      <div class="modal-body">
+      <form action="#" method="get" name="formSendMsg" id="formSendMsg">
+          Enter your email:
+          <div class="form-group">
+              <input type="email" class="form-control" id="inputRememberEmail" name="inputRememberEmail" placeholder="" autocomplete="off" required="required">
+          </div>
+          <div class="form-group">
+              <input value="Send Now" class="btn btn-block" type="submit">
+          </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Send-Message -->
+
+{% endblock %}
+
+{% block codejs %}
+<script>
+$(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' /* optional */
+    });
+
+    $("#formSendMsg").submit(function(event){
+      var email = $.trim($("#inputRememberEmail").val());
+      if( email == "" )
+      {
+        $.alert({icon: 'fa fa-times', title: 'Info!', content: 'Enter a valid email', type: 'red', typeAnimated: true});
+        return false;
+      }
+      event.preventDefault();
+      $("#holder_loading").show();
+      $.ajax({
+          type: "POST",
+          url: "{{ path('rememberPassword') }}",
+          dataType:'json',
+          data: {
+                email: email,
+            },
+            error: function (data) {
+                    $("#holder_loading").hide();
+                    $.alert({icon: 'fa fa-times', title: 'Info!', content: 'An error occurred while trying to send the form ', type: 'red', typeAnimated: true});
+            },
+            success: function (data) {
+              $("#holder_loading").hide();
+              //console.log(jQuery.parseJSON(JSON.stringify(data)))
+              data = jQuery.parseJSON(JSON.stringify(data));
+              switch( parseInt(data.key) )
+              {
+                case 1:
+                  $('#message_modal').modal('hide');
+                  var title = 'Success';
+                  var type = "green";
+                  var icon = "fa fa-check";
+                  //$.alert({icon: 'fa fa-check', title: 'Success', type: "green", content: "<strong>The new password was sent successfully!</strong><br> In a couple of minutes you will receive an email with your new password, it's possible the email show up in spam"});
+                  $("#formSendMsg")[0].reset();
+                break;
+                case 2:
+                  var title = 'Info!';
+                  var type = "red";
+                  var icon = "fa fa-times";
+                break;
+              }
+              $.alert({icon: icon, title: title , content: data.value, type: type, typeAnimated: true});
+            }
+      });
+    });
+  });
+</script>
+{% endblock %}

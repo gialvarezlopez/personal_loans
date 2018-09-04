@@ -1,0 +1,49 @@
+AppBundle\Entity\Country:
+    type: entity
+    table: country
+    id:
+        couId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: cou_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        couName:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: cou_name
+        couActive:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: cou_active
+        staLat:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: sta_lat
+        staLng:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: sta_lng
+        couCode:
+            type: string
+            nullable: false
+            length: 2
+            options:
+                fixed: false
+            column: cou_code
+    lifecycleCallbacks: {  }
