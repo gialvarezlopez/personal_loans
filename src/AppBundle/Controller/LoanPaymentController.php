@@ -179,10 +179,46 @@ class LoanPaymentController extends Controller
                         }
                         else
                         {
+                            $srvLoan = $this->get('srv_Loans');  
+                            $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);
+
                             if( isset($amount) && $amount > 0 )
                             {
-                                $oPayment->setLpaPaidCapital($amount);
                                 $oPayment->setLpaTotalAmountPaid($amount);
+
+
+                                //$oPayment->setLpaPaidCapital($amount);
+                                
+                                //logic here
+                                
+                                $amountRequested = $oLoan->getLoaAmount();
+                                $checkPayments[0]['paidTotal'];
+
+
+                                if( ($checkPayments[0]['paidTotal'] < $amountRequested) ||  ($amount < $amountRequested) )
+                                {
+                                    //$t = $checkPayments[0]['paidTotal'] +  $amount;
+                                    $t = $checkPayments[0]['paidCapital'] +  $amount;
+                                    if($t < $amountRequested)
+                                    {
+                                        $oPayment->setLpaPaidCapital($amount);
+                                    }
+                                    else
+                                    {
+                                        $payInterest = ($t - $amountRequested);
+                                        $payCapital = ($amount - $payInterest);
+                                        if( $payCapital > 0 ){
+                                            $oPayment->setLpaPaidCapital($payCapital);
+                                        }
+                                        if( $payInterest > 0 ){
+                                            $oPayment->setLpaPaidRateInterest( ($amount-$payCapital)/*$payInterest*/);
+                                        }
+                                        
+                                    }
+                                    
+                                }else{
+                                    $oPayment->setLpaPaidRateInterest($amount);
+                                }
                             }
 
                             if( isset($date) && $date != "" )
@@ -204,9 +240,9 @@ class LoanPaymentController extends Controller
                                 if($flus == null )
                                 {
                                     $msg = "Record processed successfully";
-                                    $this->session->getFlashBag()->add("success", $msg);
+                                    
 
-                                    $srvLoan = $this->get('srv_Loans');  
+                                    //$srvLoan = $this->get('srv_Loans');  
                                     $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);  
                                     if( $checkPayments )
                                     {
@@ -222,8 +258,8 @@ class LoanPaymentController extends Controller
                                         $em->persist($oLoan);
                                         $flus = $em->flush();
                                     }
-
-
+                                    //$msg .= "paidTotal:".$checkPayments[0]['paidTotal']." - currentAmount:".$checkPayments[0]['currentAmount'];
+                                    $this->session->getFlashBag()->add("success", $msg);
 
                                     exit("success");
                                 }else{

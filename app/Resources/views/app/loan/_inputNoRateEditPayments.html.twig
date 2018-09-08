@@ -1,3 +1,4 @@
+
 <style>
 .amounts{
     font-size:14px;
@@ -18,6 +19,39 @@
     color: #366d54;
     font-weight: 700;
 }
+
+#total, #totalPaid, #pending{
+    color: green;
+}
+.pending{
+    background: #EC971F;
+    color: #fff !important;
+}
+.nothingPending{
+    background:#00A65A;
+    color: #fff !important;
+}
+.amounts{
+    font-size:16px;
+    font-weight: 700;
+    color: #34825F;
+}
+.labelCurrency{
+    display:inline-block;
+    width: 150px;
+    font-size: 19px;
+}
+.loanCompleted{
+    color: #00A65A;
+    font-size:20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.widthAuto {
+   width: auto !important;
+}
 </style>
                         
                         
@@ -31,6 +65,12 @@
                                         <th>Quota to pay</th>
                                         <th>Action</th>
                                         <th>Paid amount</th>
+
+                                        {% if  action is defined and (action == "history" ) %}
+                                            <th>Paid Capital</th>
+                                            <th>Paid Interest</th>
+                                        {% endif %}
+
                                         <th>Paid date</th>
                                         <th>Note</th>
                                         <th></th>
@@ -40,10 +80,12 @@
                                     {% set counter = 0 %}
                                     {% set totalToPay = 0 %}
                                     {% set totalPaid = 0  %}
+                                    {% set totalPaidCapital = 0 %}
+                                    {% set totalPaidInterest = 0 %}
                                     {% for item in arr %}
                                         {% set counter =  counter + 1 %}
 
-                                        {% if item.lpa_paid_capital %}
+                                        {% if item.lpa_paid_capital or item.lpa_paid_rate_interest %}
                                             {% set readonly = "readonly='readonly'" %}
                                             {% set done = "done" %} 
                                         {% else %}
@@ -75,9 +117,11 @@
                                                         
                                                         <input type="number" class="form-control inputDatePayment" id="input{{ counter }}" value="{{ item.lpa_current_amount }}" {{readonly}}>
                                                         {% if  action is defined and ( action == "edit" ) and done %}
+                                                            {#
                                                             <span class="input-group-btn holderEdit">
                                                                 <button class="btn btn-primary btnSetEditAmount" type="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                                                             </span>
+                                                            #}
                                                         {% endif %}
                                                     </div>
                                                 {% else %}
@@ -88,31 +132,28 @@
                                             <td>
                                                 {% if item.lpt_id == ""  %}
                                                     {% if  action is defined and (action == "payment" ) %}
-                                                        <select class="form-control optPaymentStatus">
-                                                        {% for status in paymentType %}
-                                                            <option value="{{ status.lptId }}" data-type="{{ status.lptKey }}">{{ status.lptName }}</option>
-                                                        {% endfor %}
-                                                        </select>
+                                                        {% if paymentType is defined %}
+                                                            <select class="form-control optPaymentStatus">
+                                                            {% for status in paymentType %}
+                                                                <option value="{{ status.lptId }}" data-type="{{ status.lptKey }}">{{ status.lptName }}</option>
+                                                            {% endfor %}
+                                                            </select>
+                                                        {% endif %}
                                                     {% else %}
                                                         Pending    
                                                     {% endif %}
                                                 {% else %}
-                                                    {% for status in paymentType %}
-                                                        {% if item.lpt_id == status.lptId  %}
-                                                            {% if status.lptKey == "freezed" %}
-                                                                <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i> {{ status.lptKey|capitalize  }}</span>
+                                                     {% if item.lpt_key == "freezed" %}
+                                                                <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i> {{ item.lpt_key|capitalize  }}</span>
                                                             {% else %}
-                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {{ status.lptKey|capitalize  }}</span>
+                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {{ item.lpt_key|capitalize  }}</span>
                                                             {% endif %}
-                                                            
-                                                        {% endif  %}
-                                                    {% endfor %}
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if item.lpa_paid_capital %}
-                                                    <span class="amounts">${{ item.lpa_paid_capital|number_format(2, '.', ',') }}</span> 
-                                                    {% set totalPaid = totalPaid + item.lpa_paid_capital %}
+                                                {% if item.lpa_paid_capital or item.lpa_paid_rate_interest %}
+                                                    <span class="amounts">${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span> 
+                                                    {% set totalPaid = totalPaid + item.lpa_total_amount_paid %}
                                                 {% else %}
                                                     {% if  action is defined and (action == "payment" ) %}
                                                     <div class="input-group">
@@ -130,8 +171,21 @@
                                                     {% else %} 
                                                         Pending
                                                     {% endif %} 
-                                                {% endif %}
+                                                {% endif %} 
                                             </td>
+
+                                            {% if  action is defined and (action == "history" ) %}
+                                                {% if item.lpa_total_amount_paid  %}
+                                                <td><span class="amounts">${{ item.lpa_paid_capital|number_format(2, '.', ',') }}</span></td>
+                                                <td><span class="amounts">${{ item.lpa_paid_rate_interest|number_format(2, '.', ',') }}</span></td>
+                                                    {% set totalPaidCapital = totalPaidCapital + item.lpa_paid_capital %}
+                                                    {% set totalPaidInterest = totalPaidInterest + item.lpa_paid_rate_interest %}
+                                                {% else %}
+                                                    <td>Pending</td>
+                                                    <td>Pending</td>
+                                                {% endif %}
+                                            {% endif %}
+
                                             <td>
                                                 {% if item.lpa_paid_date  %} 
                                                     {{  item.lpa_paid_date }}
@@ -166,7 +220,7 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if item.lpa_paid_capital > 0 %}
+                                                {% if item.lpa_paid_capital > 0 or item.lpa_paid_rate_interest > 0 %}
                                                     <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                                                 {% else %}
                                                     {% if  action is defined and action == "edit" %}
@@ -192,6 +246,13 @@
                         {% endif %}
                         <div>
                             <h3 class=""><span class="labelCurrency">Total to pay:</span> <span id="total" class="label label-default">${{ totalToPay|number_format(2, '.', ',') }}</span></h3>
+                            
+                            {% if  action is defined and (action == "history" ) %}
+                                <hr>
+                                <h3 class=""><span class="labelCurrency">Paid capital:</span> <span id="total" class="label label-default">${{ totalPaidCapital|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency">Paid interest:</span> <span id="total" class="label label-default">${{ totalPaidInterest|number_format(2, '.', ',') }}</span></h3>
+                                <hr>
+                            {% endif %}
                             <h3 class=""><span class="labelCurrency">Total paid:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
                             <h3 class="">
                                 <span class="labelCurrency">Pending to pay:</span> 

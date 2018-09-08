@@ -29,14 +29,7 @@
 .marginBT{
     margin-bottom:10px; 
 }
-#total, #totalPaid, #pending{
-    color: green;
-}
-.labelCurrency{
-    display:inline-block;
-    width: 150px;
-    font-size: 22px;
-}
+
 
 .widthAuto {
    width: auto !important;
@@ -45,6 +38,7 @@
     display: inline-block;
     width:60px;
 }
+
 </style>
 
 {#  Check the notifications #}
@@ -284,19 +278,20 @@
                                             {{ form_start(edit_form) }}
                                                 {{ form_widget(edit_form) }}
                                                 <li><button type="submit" class="btn bg-navy marginBT"><i class="fa fa-check-circle" aria-hidden="true"></i> Save</button></li>
-                                                {% if loan.loaCompleted == 0 %}
-                                                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
-                                                {% endif %}
+                                                
                                             {{ form_end(edit_form) }}
                                             
                                             <li>
-                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Back to the list</a>
+                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
                                             </li>
                                             <li>
                                                 {{ form_start(delete_form,{'attr':{"id":'formDelete'}} )  }}
                                                     <button type="submit" class="btn btn-danger marginBT" ><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
                                                 {{ form_end(delete_form) }}
                                             </li>
+                                            {% if loan.loaCompleted == 0 %}
+                                                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                                                {% endif %}
                                         </ul>
                                         </div>    
                                     </div>

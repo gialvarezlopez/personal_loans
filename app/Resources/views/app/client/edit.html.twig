@@ -150,11 +150,12 @@
                             {{ form_widget(edit_form) }}    
                             <li> <button type="submit" class="btn bg-navy marginBT"><i class="fa fa-check-circle" aria-hidden="true"></i> Save</button></li>
                          {{ form_end(edit_form) }}
+                        
                         <li>
-                            <a class="btn btn-info marginBT" href="{{ path('client_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> Client list</a>
+                            <a class="btn btn-success marginBT" href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> New Loan</a>
                         </li>
                         <li>
-                            <a class="btn btn-success marginBT" href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> Create Loan</a>
+                            <a class="btn btn-info marginBT" href="{{ path('client_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> Clients list</a>
                         </li>
                         <li>
                             <a class="btn btn-warning marginBT" href="{{ path('client_new') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> New Client</a>

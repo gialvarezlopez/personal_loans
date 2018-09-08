@@ -36,6 +36,9 @@
     font-weight: 600;
     color: #34825F;
 }
+.label{
+    font-size:13px !important;
+}
 </style>
 
 {#  Check the notifications #}
@@ -135,7 +138,7 @@
                     
                     <td>{{ loan.loaPending }}</td>
                     #}
-                    <td>{% if loan.loa_completed %}<span class="label label-success">Paid</span>{% else %}<span class="label label-default">Pending</span>{% endif %}</td>
+                    <td>{% if loan.loa_completed %}<span class="label label-success">Finished</span>{% else %}<span class="label label-default">No finished</span>{% endif %}</td>
                     {# <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td> #}
                     <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
                     <td>

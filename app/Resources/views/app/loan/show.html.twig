@@ -26,15 +26,6 @@
     max-height: calc(100vh - 200px);
     overflow-y: auto;
 }
-#total, #totalPaid, #pending{
-    color: green;
-}
-.amounts{
-    font-size:14px;
-    font-weight: 600;
-    color: #34825F;
-}
-
 .marginBT{
     margin-bottom:10px; 
 }
@@ -42,12 +33,11 @@
 .widthAuto {
    width: auto !important;
 }
-
-.labelCurrency{
-    display:inline-block;
-    width: 150px;
-    font-size: 22px;
+.labelInfo{
+    display: inline-block;
+    width:60px;
 }
+
 </style>
 
 {#  Check the notifications #}
@@ -272,7 +262,7 @@
                     
                     <ul class="list-inline">
                         <li>
-                            <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Back to the list</a>
+                            <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
                         </li>
                         <li>
                             <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
