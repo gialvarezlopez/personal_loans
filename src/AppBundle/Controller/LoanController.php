@@ -39,6 +39,7 @@ class LoanController extends Controller
 
         switch($status)
         {
+            case "2":
             case "1":
             case "0":
                // $loans = $em->getRepository('AppBundle:Loan')->findBy( array("loaCompleted"=>$status, "loa")  );
@@ -133,6 +134,7 @@ class LoanController extends Controller
             $loan->setLoaCreated( new \DateTime() );
             $loan->setLoaCode( strtoupper( uniqid() ) );
             $loan->setLoaRateInterest( $rate );
+            $loan->setLoaCompleted(0);
             $em->persist($loan);
             $em->flush();
 
@@ -272,8 +274,12 @@ class LoanController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             date_default_timezone_set("UTC");
 
-            $rate = $editForm->get("loaRateInterestByDefault")->getData();
+            echo $rate = $editForm->get("loaRateInterestByDefault")->getData();
             $loan->setLoaRateInterest($rate);
+
+            //echo $statusList = $editForm->get("statusList")->getData();
+            //exit("xxxx");
+            //$loan->setLoaCompleted($statusList);
             //exit();
             $this->getDoctrine()->getManager()->flush();
 
@@ -345,6 +351,7 @@ class LoanController extends Controller
                     //var_dump($paymentDates);
                     //exit();
                     //check all total of payments
+                    /*
                     $srvLoan = $this->get('srv_Loans');  
                     $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);  
                     if( $checkPayments )
@@ -361,7 +368,7 @@ class LoanController extends Controller
                         $em->persist($oLoan);
                         $flus = $em->flush();
                     }    
-
+                    */
 
                 //}
                 //var_dump($paymentDates);

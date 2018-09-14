@@ -89,11 +89,16 @@ AppBundle\Entity\Loan:
             scale: 0
             column: loa_pending
         loaCompleted:
-            type: boolean
+            type: integer
             nullable: true
             options:
+                unsigned: false
                 default: '0'
             column: loa_completed
+        loaCompletedDate:
+            type: date
+            nullable: true
+            column: loa_completed_date
         loaActive:
             type: boolean
             nullable: true

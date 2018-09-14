@@ -40,6 +40,8 @@
 #holderPaymentDetail, form[name='appbundle_loanpayment']{
     display:none;
 }
+
+
 </style>
 
 {#  Check the notifications #}
@@ -58,25 +60,19 @@
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        {#
         <li><a href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}">Edit</a></li>
         <li><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">Show Detail</a></li>
+        #}
         <li class="active">Payments</li>
       </ol>
 </section>
 <hr>
 <div class="box">
-    <div class="box-headerx">
-        
-    </div>
-    <div class="box-body">
-
-        
-        {{form_start(form,{'enctype':'multipart/form-date'})}}
-        {{form_end(form)}} 
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    {% set IsOverDueDate = 0 %}
+    <div class="box-header">
+        {% set IsOverDueDate = 0 %}
                     {% if loan.loaCompleted == 0 %}
                         {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                         {# {% set rate = pending.rate  %} #}
@@ -91,8 +87,23 @@
                     {% else %}
                         {% set rate = loan.loaRateInterestByDefault  %}
                         {% set quotas = "" %}
-                        <div><div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Finished</div></div>
+                        <div>
+                            {% if loan.loaCompleted == 1 %}
+                            <div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Finished</div>
+                            {% else %}
+                            <div class="box-titlex text-center"><span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan Freezed</span></div>
+                            {% endif %}
+                        </div>
                     {% endif %}
+    </div>
+    <div class="box-body">
+
+        
+        {{form_start(form,{'enctype':'multipart/form-date'})}}
+        {{form_end(form)}} 
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    
                     <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
                     <input type="hidden" value="{{ rate }}" id="overDueDateRate">
                     <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
@@ -124,7 +135,7 @@
                             <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Note: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
                         </div>
                     <hr>
-                    {% set arr =  srv_Loans.getAllDeteailLoan(loan.loaId) %}
+                    {% set arr =  srv_Loans.getAllDetailLoan(loan.loaId) %}
                     {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"payment"}) }}
 
                     <hr>

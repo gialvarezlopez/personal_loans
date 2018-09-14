@@ -43,6 +43,7 @@ twig:
     globals:
         srv_TimeZone: "@srv_TimeZone"
         srv_Loans: "@srv_Loans"
+        srv_Dashboard: "@srv_Dashboard"
 
 # Doctrine Configuration
 doctrine:

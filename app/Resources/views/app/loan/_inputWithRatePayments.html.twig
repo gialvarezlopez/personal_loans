@@ -8,6 +8,49 @@
 .titleCurrency{
     font-size: 18px !important;
 }
+
+.actionFreezed{
+    color: #96271b;
+    font-weight: 700;
+}
+
+.actionPaid{
+    color: #366d54;
+    font-weight: 700;
+}
+
+#total, #totalPaid, #pending{
+    color: green;
+}
+.pending{
+    background: #EC971F;
+    color: #fff !important;
+}
+.nothingPending{
+    background:#00A65A;
+    color: #fff !important;
+}
+.amounts{
+    font-size:16px;
+    font-weight: 700;
+    color: #34825F;
+}
+.labelCurrency{
+    display:inline-block;
+    width: 150px;
+    font-size: 19px;
+}
+.loanCompleted{
+    color: #00A65A;
+    font-size:20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.widthAuto {
+   width: auto !important;
+}
 </style>
 
 <div class="row">
@@ -31,7 +74,8 @@
                                         <th>Paid Date</th>
                                         <th>Paid Amount</th>
                                         <th>Rate</th>
-                                        <th>Paid to Capital</th>
+                                        <th>Paid Capital</th>
+                                        <th>Paid Interest</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -39,6 +83,7 @@
                                     {% set counter = 0 %}
                                     {% set totalToPay = 0 %}
                                     {% set totalPaid = 0  %}
+                                    {% set totalInterest = 0  %}
                                     {% set totalAmount = 0  %}
                                     {% for item in arr %}
                                         {% set counter =  counter + 1 %}
@@ -74,6 +119,10 @@
                                                 {% set totalPaid = totalPaid + item.lpa_paid_capital %}
                                                 ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}</span>
                                             </td>
+                                            <td><span class="label label-success amounts">
+                                                {% set totalInterest = totalInterest + item.lpa_paid_rate_interest %}
+                                                ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}</span>
+                                            </td>
                                             <td>
                                                 {% if item.lpa_total_amount_paid > 0 %}
                                                     {# <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> #}
@@ -92,6 +141,7 @@
                                             <td><span class="label label-default amounts">${{ totalAmount|number_format(2, '.', ',') }}</span></td>
                                             <td></td>
                                             <td><span class="label label-success amounts">${{ totalPaid|number_format(2, '.', ',') }}</span></td>
+                                            <td><span class="label label-success amounts">${{ totalInterest|number_format(2, '.', ',') }}</span></td>
                                             <td></td>
                                         </tr>
                                     </tfood>
@@ -116,19 +166,28 @@
                                 {% endif %}
                                 
                                 <hr>
-                                <h3 class=""><span class="">Payments done:</span> <span id="total" class="label label-default">${{ totalAmount|number_format(2, '.', ',') }}</span></h3>
-                                <h3 class=""><span class="">Paid capital:</span> <span id="total" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
-                                <h3 class=""><span class="">Paid interest:</span> <span id="total" class="label label-default">${{ (totalAmount - totalPaid)|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency">Payments done:</span> <span id="total" class="label label-default">${{ totalAmount|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency">Paid capital:</span> <span id="total" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency">Paid interest:</span> <span id="total" class="label label-default">${{ (totalAmount - totalPaid)|number_format(2, '.', ',') }}</span></h3>
                                 {% if showResume %}
                                 <div>
-                                    <h3 class=""><span class="labelCurrencyc">Pending to pay: </span>
+                                    <h3 class=""><span class="labelCurrency">Pending to pay: </span>
                                     <span class="amountsX">
                                         ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
-                                        <span class="label label-default">${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}</span>
+
+                                        {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                                        {% if pending > 0 %}
+                                            {% set stalabel = "pending" %}
+                                        {% else %}
+                                            {% set stalabel = "nothingPending" %}
+                                        {% endif %}
+                                        <span class="label label-default {{stalabel}}">${{  pending }}</span>
                                         </span>
                                     </h3>    
                                 </div>
+                                
                                 {% endif %}
+                                <hr>
                         </div>
                     {% else %}
                         There are not payments done    

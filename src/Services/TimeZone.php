@@ -58,7 +58,12 @@ class TimeZone
             //var_dump($reader);
             // In this example, use a fixed IP address in Minnesota
 
-            $ip = "172.56.40.143"; //$_SERVER['REMOTE_ADDR'];
+            //$ip = "172.56.40.143"; //$_SERVER['REMOTE_ADDR'];
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if( $ip == "127.0.0.1" || $ip == "::1" || $ip == "localhost")
+            {
+                $ip = "172.56.40.143";
+            }
             $record = $reader->city($ip);
 
         } catch (AddressNotFoundException $ex) {

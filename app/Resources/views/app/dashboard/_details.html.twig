@@ -1,0 +1,206 @@
+<div class="row">
+        <!-- ./col -->
+        <div class="col-lg-6 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-greenx well">
+            {% set loandCompletedPeriod = srv_Dashboard.getLoansDetail(app.user.usrId, periodDate, 1) %}
+            <div class="inner">
+              <h3>{{ loandCompletedPeriod["total"]}}<sup style="font-size: 20px"></sup></h3>
+
+              
+              <h4><span class="label label-success">Loans Finished</span></h4>
+              <hr>
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                </div>
+                <div class="panel-body">      
+                  <b><p>Period detail filtered:</p></b>
+                  <table class="table table-striped">
+                    <tr>
+                      <td>Paid  to capital:</td><td> ${{ loandCompletedPeriod["periodDetail"]['periodPaidCapital']|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                    <tr>
+                      <td>Paid Interest:</td><td> ${{ loandCompletedPeriod["periodDetail"]['periodPaidRate']|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                    <tr>
+                      <td>Total money acquired:</td>
+                      <td> {{ (loandCompletedPeriod["periodDetail"]['periodPaidCapital'] + loandCompletedPeriod["periodDetail"]['periodPaidRate'])|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                  </table>
+                </div>
+              </div>  
+                  <hr>
+                  <b><p>Full History:</p></b>
+                  <table class="table table-striped">
+                    <tr>
+                      <td>Invested money:</td><td> ${{ loandCompletedPeriod["totalDetail"]['totalInvestedMoney']|number_format(2, '.', ',') }}</td>
+                    </tr>
+                    <tr>  
+                      <td>Paid  to capital:</td><td> ${{ loandCompletedPeriod["totalDetail"]['totalPaidCapital']|number_format(2, '.', ',') }}</td>
+                    </tr>
+                    <tr>  
+                      <td>Paid Interest:</td><td> ${{ loandCompletedPeriod["totalDetail"]['totalPaidRate']|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                  </table>
+                
+            </div>
+            <div class="icon">
+              <i class="fa fa-check-circle fa-2"></i>
+            </div>
+            <a href="{{ path('loan_index') }}?sta=1" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-aquax well">
+            <div class="inner">
+              {% set loandCreatedPeriod = srv_Dashboard.getLoansDetail(app.user.usrId, periodDate, 0) %}
+              <h3>{{ loandCreatedPeriod["total"] }}</h3>
+
+              <h4><span class="label label-default">Loans created no finished</span></h4>
+              <hr>
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                </div>
+                <div class="panel-body">
+                  <b><p>Period detail filtered:</p></b>
+                  <table class="table table-striped">
+                    <tr>
+                      <td>Paid  to capital:</td><td> ${{ loandCreatedPeriod["periodDetail"]['periodPaidCapital']|number_format(2, '.', ',') }}</td>
+                    </tr>
+                    <tr>  
+                      <td>Paid Interest:</td><td> ${{ loandCreatedPeriod["periodDetail"]['periodPaidRate']|number_format(2, '.', ',') }}</td>
+                    </tr>
+                    <tr>  
+                      <td>Total money acquired:</td><td> ${{ (loandCreatedPeriod["periodDetail"]['periodPaidCapital'] + loandCreatedPeriod["periodDetail"]['periodPaidRate'])|number_format(2, '.', ',') }}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <hr>
+              <b><p>Full History:</p></b>
+              <table class="table table-striped">
+                  <tr>
+                    <td>Invested money:</td> <td>${{ loandCreatedPeriod["totalDetail"]['totalInvestedMoney']|number_format(2, '.', ',') }}</td>
+                  </tr>
+                  <tr>  
+                    <td>Paid  to capital:</td><td> ${{ loandCreatedPeriod["totalDetail"]['totalPaidCapital']|number_format(2, '.', ',') }}</td>
+                  </tr>
+                  <tr>  
+                    <td>Paid Interest:</td><td> ${{ loandCreatedPeriod["totalDetail"]['totalPaidRate']|number_format(2, '.', ',') }}</td>
+                  </tr>
+              </table>
+            </div>
+            <div class="icon">
+              <i class="fa fa-handshake-o"></i>
+            </div>
+            <a href="{{ path('loan_index') }}?sta=0" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        
+
+        <!-- ./col -->
+        <div class="col-lg-6 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-redx well">
+            {% set loandFreezedPeriod = srv_Dashboard.getLoansDetail(app.user.usrId, periodDate, 2) %}
+            <div class="inner">
+              <h3>{{ loandFreezedPeriod["total"]}}<sup style="font-size: 20px"></sup></h3>
+
+              
+              <h4><span class="label label-danger">Loans Freezed</span></h4>
+              <hr>
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                </div>
+                <div class="panel-body">
+                <b><p>Period detail filtered:</p></b>
+                  <table class="table table-striped">
+                    <tr>
+                      <td>Paid  to capital:</td><td> ${{ loandFreezedPeriod["periodDetail"]['periodPaidCapital']|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                    <tr>
+                      <td>Paid Interest:</td><td> ${{ loandFreezedPeriod["periodDetail"]['periodPaidRate']|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                    <tr>
+                      <td>Total money acquired:</td>
+                      <td> ${{ (loandFreezedPeriod["periodDetail"]['periodPaidCapital'] + loandFreezedPeriod["periodDetail"]['periodPaidRate'])|number_format(2, '.', ',') }}</td>
+                    </tr>  
+                  </table>
+                </div>
+              </div>
+              <hr>
+              <b><p>Full History:</p></b>
+              <table class="table table-striped">
+                <tr>
+                  <td>Invested money:</td><td> ${{ loandFreezedPeriod["totalDetail"]['totalInvestedMoney']|number_format(2, '.', ',') }}</td>
+                </tr>
+                <tr>  
+                  <td>Paid  to capital:</td><td> ${{ loandFreezedPeriod["totalDetail"]['totalPaidCapital']|number_format(2, '.', ',') }}</td>
+                </tr>
+                <tr>  
+                  <td>Paid Interest:</td><td> ${{ loandFreezedPeriod["totalDetail"]['totalPaidRate']|number_format(2, '.', ',') }}</td>
+                </tr>  
+              </table>
+            </div>
+            <div class="icon">
+              <i class="fa fa-ban"></i>
+            </div>
+            <a href="{{ path('loan_index') }}?sta=2" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-6 col-xs-6">
+          {% set sumTotalCapital =  
+              loandFreezedPeriod["periodDetail"]['periodPaidCapital'] + loandCreatedPeriod["periodDetail"]['periodPaidCapital'] + loandCompletedPeriod["periodDetail"]['periodPaidCapital']
+          %}
+          {% set sumTotalRate = 
+            loandCompletedPeriod["periodDetail"]['periodPaidRate'] + loandCreatedPeriod["periodDetail"]['periodPaidRate'] + loandFreezedPeriod["periodDetail"]['periodPaidRate']
+          %}
+
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+            </div>
+            <div class="panel-body">
+
+              <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="fa fa-dollar"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text">
+                    Sum total capital: <b>${{ sumTotalCapital|number_format(2, '.', ',') }}</b>
+                    <br>
+                   Sum total Interest: <b>${{ sumTotalRate|number_format(2, '.', ',') }}</b>
+              
+                  </span>
+                  <span class="info-box-number">In total: {{ (sumTotalCapital + sumTotalRate)|number_format(2, '.', ',') }}</span>
+                </div>
+                <!-- /.info-box-content -->  
+              </div>
+
+              <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="fa fa-dollar"></i></span>
+
+                <div class="info-box-content">
+                  <span class="info-box-text">
+                  Invested money
+              
+                  </span>
+                  <span class="info-box-number">${{ loandCreatedPeriod["totalDetail"]['totalInvestedMoney']|number_format(2, '.', ',') }}</span>
+                </div>
+                <!-- /.info-box-content -->
+                
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <!-- ./col -->
+        
+
+      </div>

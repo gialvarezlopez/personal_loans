@@ -57,7 +57,7 @@
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">Loans</li>
       </ol>
 </section>
@@ -72,8 +72,9 @@
                         <label>Status filtered by: </label> 
                         <select class="form-control" id="statusList">
                             <option value="all">All</option>
-                            <option value="0">Pending</option>
-                            <option value="1">Paid</option>
+                            <option value="0">No Finished</option>
+                            <option value="1">Finished</option>
+                            <option value="2">Freezed</option>
                         </select>
                     </div>
                 </form>
@@ -138,7 +139,15 @@
                     
                     <td>{{ loan.loaPending }}</td>
                     #}
-                    <td>{% if loan.loa_completed %}<span class="label label-success">Finished</span>{% else %}<span class="label label-default">No finished</span>{% endif %}</td>
+                    <td>
+                        {% if loan.loa_completed == 1 %}
+                            <span class="label label-success">Finished</span>
+                        {% elseif loan.loa_completed == 2 %}
+                            <span class="label label-danger">Freezed</span>
+                        {% else %}
+                            <span class="label label-default">No finished</span>
+                        {% endif %}
+                    </td>
                     {# <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td> #}
                     <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
                     <td>

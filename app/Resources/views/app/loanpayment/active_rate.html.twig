@@ -37,12 +37,15 @@
     color: #34825F;
 }
 
-.loanCompleted{
-    color: #00A65A;
+.loanIncompleted {
+    color:red;
     font-size:20px;
     font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
+}
+.loanCompleted {
+    color:green;
+    font-size:20px;
+    font-weight: 700;
 }
 
 .widthAuto {
@@ -71,25 +74,30 @@
 
 <section class="content-header">
       <h1>
-        Payments Quotas
+        Do Payments
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="#">Tables</a></li>
-        <li class="active">Data tables</li>
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li class="active">Payments</li>
       </ol>
 </section>
 <hr>
 <div class="box">
     <div class="box-header">
-        Loan created to <i class="fa fa-user-circle-o" aria-hidden="true"></i> 
-            <span>
-                <a href="{{ loan.cli.cliId }}" class="btnShowClient">
-                    {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
-                </a>
-                {# {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }} #}
-            </span>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12"> 
+                <div class="box-titlex text-center">
+                    {% if loan.loaCompleted == 1 %}
+                        <div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Finished</div>
+                    {% elseif loan.loaCompleted == 2 %}
+                        <div class="box-titlex text-center"><span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan Freezed</span></div>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
     </div>
     <div class="box-body">
         {#
@@ -98,6 +106,29 @@
             <input type="submit" value="Create" />
         {{ form_end(form) }}
         #}
+        <div class="well ">
+            <div class="row">
+                <div class="col-lg-4">
+                    <i class="fa fa-user-circle-o" aria-hidden="true"></i> 
+                    <span>
+                        <a href="{{ loan.cli.cliId }}" class="btnShowClient">
+                            {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
+                        </a>
+                        {# {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }} #}
+                    </span>
+                </div>
+                <div class="col-lg-4">
+                    <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
+                </div>
+                <div class="col-lg-4">    
+                    <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Note: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
+        </div>
+        <hr>
         
         {{form_start(form,{'enctype':'multipart/form-date'})}}
             <div class="row">
@@ -117,21 +148,12 @@
                     {% else %}
                         {% set rate = loan.loaRateInterestByDefault  %}
                         {% set quotas = "" %}
-                        <div><div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Completed</div></div>
+                        
                     {% endif %}
                     <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
                     <input type="hidden" value="{{ rate }}" id="overDueDateRate">
                     <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
-                    <div class="well">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
-                            </div>
-                            <div class="col-lg-6">    
-                                <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
-                            </div>
-                        </div>
-                    </div>    
+                        
                     <div class="well">
                         <div class="row">
                             
@@ -199,7 +221,7 @@
                                     <div class="col-lg-6">
                                         {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
                                         <input type="hidden" value="{{ pendingPaid }}" id="pendingAmountWithoutRate">
-                                        <input type="hidden" value="{{ ((loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">
+                                        <input type="hidden" value="{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">
                                         {#
                                         <span>
                                             Current Balance:<br> 
@@ -219,10 +241,10 @@
                                                 <td>
                                                     <span class="amounts">
                                                         <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
-                                                        x <span class="amounts"><span id="htmlRate">{{loan.loaRateInterest}}</span>% </span> = 
+                                                        x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span> = 
                                                     </span>
                                                 </td>
-                                                <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate">{{ ((loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}</span> </div></td>        
+                                                <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate">{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}</span> </div></td>        
                                             </tr>
                                             <tr>
                                                 <td><div class="text-right amounts"> + </div></td>
@@ -232,7 +254,7 @@
                                                 <td><div class="text-right amounts">Total = </div></td>
                                                 <td>
                                                     <span class="amounts">
-                                                        &#160; <i class="fa fa-usd" aria-hidden="true"></i><span id="" class="htmlTotalAmount">{{ (pendingPaid + (loan.loaRateInterest/100)*pendingPaid)|number_format(2, '.', ',') }}
+                                                        &#160; <i class="fa fa-usd" aria-hidden="true"></i><span id="" class="htmlTotalAmount">{{ (pendingPaid + (rate/100)*pendingPaid)|number_format(2, '.', ',') }}
                                                         </span>
                                                     </span>
                                                 </td>        
@@ -252,7 +274,7 @@
                                         </div>
                                         <div class="">
                                             
-                                            {{ form_widget(form.lpaCurrentRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value": loan.loaRateInterest, min:0  }} ) }}
+                                            {{ form_widget(form.lpaCurrentRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value": rate, min:0  }} ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -418,10 +440,21 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    {{ form_start(form) }}
-                                        {{ form_widget(form) }}
-                                        <button type="submit" class="btn bg-olive" id="btnSend" ><i class="fa fa-money" aria-hidden="true"></i> Create Payment</button>
-                                    {{ form_end(form) }}
+                                    <ul class="list-inline">
+                                        <li>
+                                            <a href="{{ path('loan_index') }}" class="btn btn-info marginBT"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btn btn-primary marginBT"> Show</a>
+                                        </li>
+                                        <li>
+                                            {{ form_start(form) }}
+                                                {{ form_widget(form) }}
+                                                <button type="submit" class="btn bg-olive marginBT" id="btnSend" ><i class="fa fa-money" aria-hidden="true"></i> Create Payment</button>
+                                            {{ form_end(form) }}
+                                        </li>
+                                        
+                                    </ul>
                                 </div>    
                             </div>
                         </div> 
@@ -435,11 +468,6 @@
                
         {{form_end(form)}}    
 
-        <ul>
-            <li>
-                <a href="{{ path('loanpayment_index') }}">Back to the list</a>
-            </li>
-        </ul>
     </div>
 </div>
 {{ include('app/client/_modals.html.twig' )  }}    
@@ -514,7 +542,7 @@
                     format: 'YYYY-MM-DD'
                 },
                 drops:"up",
-                "autoUpdateInput": false,
+                //"autoUpdateInput": false,
             }, function(start, end, label) {
                 //var years = moment().diff(start, 'years');
                 //alert("You are " + years + " years old!");
@@ -739,6 +767,23 @@
                         var calculate = parseFloat(DnewAmount) + parseFloat(DnewAmount * (Dnewrate/100)) ;
                         var iconMoney = '<i class="fa fa-usd" aria-hidden="true"></i>';
                         Dnewrate = (Number.isInteger(Dnewrate))?Dnewrate: parseFloat(Dnewrate).toFixed(2);
+                        if( Number.isInteger(Dnewrate) )
+                        {
+                            Dnewrate = Dnewrate;
+                        }
+                        else
+                        {
+                            DnewrateSplit = Dnewrate.split(".");
+                            if(DnewrateSplit[1] > 0)
+                            {
+
+                            }
+                            else
+                            {
+                                Dnewrate = DnewrateSplit[0];
+                            }
+                        }
+
                         //var result = iconMoney+DnewAmount+" x "+Dnewrate+"% = "+iconMoney+calculate.toFixed(2);
 
                         //var cad1 = money+DnewAmount+" x "+Dnewrate+"% =

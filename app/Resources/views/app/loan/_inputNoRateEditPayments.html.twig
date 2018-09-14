@@ -49,6 +49,14 @@
     text-align: center;
 }
 
+.loanIncompleted{
+    color: #D73925;
+    font-size:20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 .widthAuto {
    width: auto !important;
 }
@@ -223,13 +231,15 @@
                                                 {% if item.lpa_paid_capital > 0 or item.lpa_paid_rate_interest > 0 %}
                                                     <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
                                                 {% else %}
-                                                    {% if  action is defined and action == "edit" %}
-                                                        <span class="btn btn-danger deleteItem"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
-                                                    {% elseif  action is defined and action == "payment" %}
-                                                        {% if item.lpt_key == "freezed" %}
-                                                            <button class="btn btn-default btnUnfreeze"  value="{{ item.lpa_id }}"><i class="fa fa-clock-o" aria-hidden="true"></i> Unfreeze </button>
-                                                        {% else %}
-                                                            <button class="btn btn-success btnPaymentItem" disabled="disabled" value="{{ item.lpa_id }}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Create </button>
+                                                    {% if loan.loaCompleted == 0 %}
+                                                        {% if  action is defined and action == "edit" %}
+                                                            <span class="btn btn-danger deleteItem"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
+                                                        {% elseif  action is defined and action == "payment" %}
+                                                            {% if item.lpt_key == "freezed" %}
+                                                                <button class="btn btn-default btnUnfreeze"  value="{{ item.lpa_id }}"><i class="fa fa-clock-o" aria-hidden="true"></i> Unfreeze </button>
+                                                            {% else %}
+                                                                <button class="btn btn-success btnPaymentItem" disabled="disabled" value="{{ item.lpa_id }}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Create </button>
+                                                            {% endif %}
                                                         {% endif %}
                                                     {% endif %}
                                                     
@@ -240,7 +250,7 @@
                                 </tbody>
                         </table>
                         <input type="hidden" value="{{ firstPaymentDate }}" id="inputfistPaymentDate">
-                        {% if  action is defined and ( action == "edit" ) %}
+                        {% if  action is defined and ( action == "edit" ) and (loan.loaCompleted == 0 ) %}
                             <hr>
                             <div class="text-right"><button id="addInput" class="btn btn-default"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</button></div>
                         {% endif %}
@@ -256,11 +266,12 @@
                             <h3 class=""><span class="labelCurrency">Total paid:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
                             <h3 class="">
                                 <span class="labelCurrency">Pending to pay:</span> 
-                                {% if (totalToPay - totalPaid) >= 0 %}
+                                {% if (totalToPay - totalPaid) > 0 %}
                                     {% set stalabel = "pending" %}
                                 {% else %}
                                     {% set stalabel = "nothingPending" %}
                                 {% endif %}
                                 <span id="pending" class="label label-default {{stalabel}}">${{ (totalToPay - totalPaid)|number_format(2, '.', ',') }}</span>
                             </h3>
+                            <hr>
                         </div>

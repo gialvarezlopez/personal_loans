@@ -1,0 +1,59 @@
+<div class-"table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <th>status</th>
+                                    <th>With percentage</th>
+                                    <th>Per Quotas</th>
+                                    <th>Total</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% set percentageCompleted = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 1) %}
+                                        <th>
+                                            <span class="label label-success">Finished:</span>
+                                        </th>
+                                        <td><span class="badge">{{ percentageCompleted[0]['total'] }}</span></td>
+                                        <td>
+                                             {% set perQuotasCompleted = srv_Dashboard.getLoans(app.user.usrId, true, "inactive_rate",false, 1) %}
+                                             <span class="badge">{{ perQuotasCompleted[0]['total'] }}</span>
+                                        </td>
+                                        <td><span class="badge">{{ percentageCompleted[0]['total'] + perQuotasCompleted[0]['total'] }}</span></td>
+                                    </tr>
+                                    <tr>     
+                                        {% set percentageNoFinished = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 0) %}
+                                        <th >
+                                            <span class="label label-default">No Finished:</span>
+                                        </th>
+                                        <td><span class="badge">{{ percentageNoFinished[0]['total'] }}</span></td>
+                                        <td>
+                                            {% set perQuotasNoFinished = srv_Dashboard.getLoans(app.user.usrId, true, "inactive_rate",false, 0) %}
+                                            <span class="badge">{{ perQuotasNoFinished[0]['total'] }}</span>
+                                        </td>
+                                        <td><span class="badge">{{ percentageNoFinished[0]['total'] + perQuotasNoFinished[0]['total'] }}</span></td> 
+                                    </tr>
+                                    <tr>     
+                                        {% set percentageFreezed = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 2) %}
+                                        <th>
+                                            <span class="label label-danger">Freezed:</span>
+                                        </th>
+                                        <td><span class="badge">{{ percentageFreezed[0]['total'] }}</span></td>
+                                        <td>
+                                            {% set perQuotasNoFreezed = srv_Dashboard.getLoans(app.user.usrId, true, "inactive_rate",false, 2) %}
+                                            <span class="badge">{{ perQuotasNoFreezed[0]['total'] }}</span>
+                                        </td>
+                                        <td><span class="badge">{{ percentageFreezed[0]['total'] + perQuotasNoFreezed[0]['total'] }}</span></td> 
+                                    </tr>
+                                        {% set subtotalPercentage = percentageCompleted[0]['total'] + percentageNoFinished[0]['total'] + percentageFreezed[0]['total'] %}
+                                    <tr>    
+                                        <th>Total:</th> <td><span class="badge">{{ subtotalPercentage }}</span></td>
+                                        <td>
+                                            {% set subtotalperquotas = perQuotasCompleted[0]['total'] + perQuotasNoFinished[0]['total'] + perQuotasNoFreezed[0]['total'] %}
+                                            <span class="badge">{{ subtotalperquotas }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge label-info">{{ subtotalPercentage + subtotalperquotas }}</span>
+                                        </td>
+                                    </tr>    
+                                </tbody>
+                            </table>
+                        </div>

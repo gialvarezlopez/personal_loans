@@ -110,7 +110,7 @@ class Loans
     }
 
     //Get all detail about the loan
-    function getAllDeteailLoan($loanId)
+    function getAllDetailLoan($loanId)
     {
         if( !empty($loanId) )
         {
@@ -159,7 +159,7 @@ class Loans
                     $newRate += $rate;
                     //echo "i - ".$i;
                }
-
+               //ECHO $newRate;
                $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate);
                return $data;
             }

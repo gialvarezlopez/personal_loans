@@ -18,3 +18,7 @@ services:
     srv_Loans:
         class:        Services\Loans
         arguments:     ["@doctrine.orm.entity_manager",  "@service_container"]    
+
+    srv_Dashboard:
+        class:        Services\Dashboard
+        arguments:     ["@doctrine.orm.entity_manager",  "@service_container"]    

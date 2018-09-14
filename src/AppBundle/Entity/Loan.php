@@ -486,4 +486,33 @@ class Loan
     {
         return $this->loc;
     }
+    /**
+     * @var \DateTime
+     */
+    private $loaCompletedDate;
+
+
+    /**
+     * Set loaCompletedDate
+     *
+     * @param \DateTime $loaCompletedDate
+     *
+     * @return Loan
+     */
+    public function setLoaCompletedDate($loaCompletedDate)
+    {
+        $this->loaCompletedDate = $loaCompletedDate;
+
+        return $this;
+    }
+
+    /**
+     * Get loaCompletedDate
+     *
+     * @return \DateTime
+     */
+    public function getLoaCompletedDate()
+    {
+        return $this->loaCompletedDate;
+    }
 }

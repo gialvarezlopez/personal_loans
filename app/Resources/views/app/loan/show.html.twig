@@ -244,8 +244,10 @@
                             <tr>
                                 <td>Status</td>
                                 <td>
-                                    {% if loan.loaCompleted %} 
-                                        <h4><span class="label label-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Completed </span></h4>
+                                    {% if loan.loaCompleted == 1 %} 
+                                        <h4><span class="label label-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Finished </span></h4>
+                                    {% elseif loan.loaCompleted == 2 %}     
+                                        <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Freezed </span></h4>
                                     {% else %} 
                                         <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Incomplete </span></h4>
                                     {% endif %}
@@ -298,7 +300,7 @@
 
 
                     <div id="holderMainRight">
-                        {% set arr =  srv_Loans.getAllDeteailLoan(loanId) %}
+                        {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
                         {% if loan.loc.locKey  == "inactive_rate" %}
                             <h4><span class="">Payments</span></h4>
                              <hr>

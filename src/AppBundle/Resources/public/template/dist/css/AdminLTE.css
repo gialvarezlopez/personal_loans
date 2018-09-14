@@ -1506,7 +1506,7 @@ a:focus {
 }
 .small-box:hover {
   text-decoration: none;
-  color: #f9f9f9;
+  /*color: #f9f9f9;*/
 }
 .small-box:hover .icon {
   font-size: 95px;

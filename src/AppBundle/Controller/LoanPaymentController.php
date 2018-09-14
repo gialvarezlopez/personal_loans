@@ -81,6 +81,8 @@ class LoanPaymentController extends Controller
                 if( $endLoan == 1 )
                 {
                     $oLoan->setLoaCompleted(1);
+                    $paidDate = $form->get("lpaPaidDate")->getData();
+                    $oLoan->setLoaCompletedDate( $paidDate );
                     //$oLoan->setLoa
                 }
                 else
@@ -250,6 +252,7 @@ class LoanPaymentController extends Controller
                                         {
                                             //$em->getRepository('AppBundle:LoanPaymentType')->findOneBy( array( "lptKey"=> $paymentType ) );
                                             $oLoan->setLoaCompleted(1);
+                                            $oLoan->setLoaCompletedDate( new \datetime($date) );
                                         }
                                         else
                                         {

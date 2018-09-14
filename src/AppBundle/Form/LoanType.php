@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckBoxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class LoanType extends AbstractType
 {
@@ -70,7 +71,26 @@ class LoanType extends AbstractType
                 ->add('loaQuotas')
                 
                 //->add('loaPending')
-                ->add('loaCompleted')
+                //->add('loaCompleted')
+                ->add('loaCompleted', ChoiceType::class, array(
+                    //'mapped'=>true,
+                    'choices' => array(
+                        'No Finished (Pending Payments)' => 0,
+                        'Already Finished' => 1,
+                        'Freezed' => 2,
+                    ),
+                    /*
+                    'choice_label' => function ($choiceValue, $key, $value) {
+                        if ($value == $choiceValue) {
+                            return 'Definitely!';
+                        }
+                
+                        return strtoupper($key);
+                
+                        // or if you want to translate some key
+                        //return 'form.choice.'.$key;
+                    }
+                    */))
                 //->add('loaActive')
                 //->add('loaCreated')
                 //->add('cli')

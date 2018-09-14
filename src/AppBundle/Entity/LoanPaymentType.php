@@ -81,4 +81,3 @@ class LoanPaymentType
         return $this->lptKey;
     }
 }
-
