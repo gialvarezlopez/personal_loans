@@ -48,7 +48,7 @@
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li class="active">Client List</li>
       </ol>
 </section>
@@ -363,9 +363,10 @@
 
             });
 
-            var sta = "{{ app.request.get('sta') }} ";
-            if( sta )
+            var sta = $.trim("{{ app.request.get('sta') }}");
+            if( sta !== 'undefined' && sta != "")
             {
+                alert(sta);
                 //$("#statusList").val(sta);
                 $("#statusList option[value="+sta+"]").attr('selected', 'selected');
 

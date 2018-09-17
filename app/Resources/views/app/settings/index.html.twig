@@ -15,7 +15,7 @@
 
 
 {% block header %}
-        <h1>My General Settings</h1>
+        
 {% endblock %}
 
 {% block content %}
@@ -29,6 +29,19 @@
         <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
     {% endfor %}
     {# End notifications #}
+
+<section class="content-header">
+      <h1>
+        My General Settings
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Setting</li>
+      </ol>
+</section>
+<hr>
+
         <div class="box  {# collapsed-box #}">
             <div class="box-header">
                 <h3 class="box-title">Set my configuration

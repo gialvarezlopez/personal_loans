@@ -50,112 +50,90 @@
       #}
 </section>
 <hr>
-
-        {# {{ app.user.usrId }} #}
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Payments</h3>
+{# {{ app.user.usrId }} #}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Payments</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </span>
+                            <input type="text" class="form-control" id="rangeDate" placeholder="">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" id="applyDate">Go!</button>
+                            </span>
+                        </div><!-- /input-group -->
                     </div>
-                    <div class="box-body">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <i class="fa fa-calendar" aria-hidden="true"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="rangeDate" placeholder="">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" id="applyDate">Go!</button>
-                                    </span>
-                                </div><!-- /input-group -->
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="text-muted wellx well-smx no-shadowx">
-                                Period
-                                <b>From</b> {{ periodDate['startDate']|date('l d, F Y') }} <b>to</b> {{ periodDate['endDate']|date('l d, F Y') }}
+                    <div class="col-lg-6">
+                        <div class="text-muted wellx well-smx no-shadowx">
+                            Period
+                            <b>From</b> {{ periodDate['startDate']|date('l d, F Y') }} <b>to</b> {{ periodDate['endDate']|date('l d, F Y') }}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                {% set loansPeriod = srv_Dashboard.getLoans(app.user.usrId, true, false, false, "0,1" , periodDate) %}
+                {{ include('app/dashboard/_details.html.twig' )  }}  
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Loans History</h3>
+            </div>
+            <div class="box-body">
+                {{ include('app/dashboard/_tableLoansDetails.html.twig' )  }}        
+            </div>
+            <div class="box-footer text-center"></div>
+        </div>
+        {% set lastLoan = srv_Dashboard.getLoans(app.user.usrId, false, false, 5, "0,1", false) %}
+        {% if lastLoan|length > 0 %}
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recently Loans Created</h3>
+                </div>
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                        {% for item in lastLoan %}
+                            <li class="item">
+                               <div class="product-img">
+                                    {% set image = item.cli_profile_image %}
+                                    {% if file_exists( 'uploads/'~image ) and image != "" %}
+                                        <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
+                                    {% else %}
+                                        <div class="text-center">
+                                            <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(50,50)  }} " class="img-thumbnail" alt="image">
+                                        </div>
+                                    {% endif %}
                                 </div>
-                            </div>
-                        </div>
-                        <hr>
-                        
-                        
-                        {% set loansPeriod = srv_Dashboard.getLoans(app.user.usrId, true, false, false, "0,1" , periodDate) %}
-                        
-
-                        {{ include('app/dashboard/_details.html.twig' )  }}  
-                    </div>
+                                <div class="product-info">
+                                    <a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a>
+                                    <div class="product-description">{{ item.cli_first_name ~" "~ item.cli_middle_name ~" "~ item.cli_first_surname ~"" ~ item.cli_second_surname}}</div>
+                                </div>
+                            </li>
+                        {% endfor %}    
+                    </ul>
                 </div>
+                <div class="box-footer text-center"><a href="{{ path('loan_index') }}">View all Loans</a></div>
             </div>
-            <div class="col-lg-4">
-                <div class="box">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Loans History</h3>
-                    </div>
-                    <div class="box-body">
-
-                        {{ include('app/dashboard/_tableLoansDetails.html.twig' )  }}        
-                    </div>
-                    <div class="box-footer text-center">
-                       
-                    </div>
-                </div>
-                
-                {% set lastLoan = srv_Dashboard.getLoans(app.user.usrId, false, false, 5, "0,1", false) %}
-                {% if lastLoan|length > 0 %}
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Recently Loans Created</h3>
-                        </div>
-                        <div class="box-body">
-                            <ul class="products-list product-list-in-box">
-                            {% for item in lastLoan %}
-                                <li class="item">
-                                    
-                                    <div class="product-img">
-                                        {# <img src="dist/img/default-50x50.gif" alt="Product Image"> #}
-                                        
-                                        {% set image = item.cli_profile_image %}
-                                        {% if file_exists( 'uploads/'~image ) and image != "" %}
-                                            <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
-                                        {% else %}
-                                            <div class="text-center">
-                                                <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(50,50)  }} " class="img-thumbnail" alt="image">
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="product-info">
-                                        <a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a>
-                                        <div class="product-description">{{ item.cli_first_name ~" "~ item.cli_middle_name ~" "~ item.cli_first_surname ~"" ~ item.cli_second_surname}}</div>
-                                    </div>
-                                </li>
-                            {% endfor %}    
-                            </ul>
-                        </div>
-                        <div class="box-footer text-center"><a href="{{ path('loan_index') }}">View all Loans</a></div>
-                    </div>
-                {% endif %}  
-
-
-                <div class="info-box">
-                    <span class="info-box-icon bg-blue"><i class="ion ion-ios-people-outline"></i></span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">Created Clients</span>
-                        {% set clients = srv_Dashboard.getClients(app.user.usrId) %}
-                        
-                        <span class="info-box-number">{{ clients }}</span>
-                        <div><a href="{{ path('client_index') }}">View all clients</a></div>
-                    </div>
-                    <!-- /.info-box-content -->
-                </div> 
-            </div>
-            
-        
-
-        
-        
+        {% endif %}  
+        <div class="info-box">
+            <span class="info-box-icon bg-blue"><i class="ion ion-ios-people-outline"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Created Clients</span>
+                {% set clients = srv_Dashboard.getClients(app.user.usrId) %}
+                <span class="info-box-number">{{ clients }}</span>
+                <div><a href="{{ path('client_index') }}">View all clients</a></div>
+             </div>
+        <!-- /.info-box-content -->
+         </div> 
     </div>
 </div>    
 {% endblock %}

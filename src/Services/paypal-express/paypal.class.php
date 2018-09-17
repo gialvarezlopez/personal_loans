@@ -290,6 +290,8 @@
 		
 		public function updateOrder( $httpParsedResponseAr )
 		{
+			date_default_timezone_set("UTC");
+			
 			$status = "";
 			if( isset($httpParsedResponseAr) )
 			{

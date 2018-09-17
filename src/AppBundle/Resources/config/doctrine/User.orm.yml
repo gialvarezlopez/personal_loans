@@ -1,13 +1,6 @@
 AppBundle\Entity\User:
     type: entity
     table: user
-    indexes:
-        fk_user_service_type1_idx:
-            columns:
-                - st_id
-        fk_user_country1_idx:
-            columns:
-                - cou_id
     uniqueConstraints:
         usr_email:
             columns:
@@ -113,25 +106,4 @@ AppBundle\Entity\User:
             options:
                 default: '1'
             column: usr_show
-    manyToOne:
-        cou:
-            targetEntity: Country
-            cascade: {  }
-            fetch: LAZY
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                cou_id:
-                    referencedColumnName: cou_id
-            orphanRemoval: false
-        st:
-            targetEntity: ServiceType
-            cascade: {  }
-            fetch: LAZY
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                st_id:
-                    referencedColumnName: st_id
-            orphanRemoval: false
     lifecycleCallbacks: {  }

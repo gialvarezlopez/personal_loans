@@ -272,6 +272,8 @@ class PaymentsController extends Controller
 
     public function freePaymentAccount( $userId, $oPricing, $months, $paymentProcessorId )
     {
+        date_default_timezone_set("UTC");
+        
         $em = $this->getDoctrine()->getManager();
         $payer = new \AppBundle\Entity\Payer();
                     

@@ -2,29 +2,15 @@ app_homepage:
     path:   /backend
     defaults: { _controller: AppBundle:Payments:checkIn }
 
-app_medicaldetail:
-    resource: "@AppBundle/Resources/config/routing/medicaldetail.yml"
-    prefix:   /backend/medicaldetail
-
-app_contactinfo:
-        resource: "@AppBundle/Resources/config/routing/contactinfo.yml"
-        prefix:   /backend/contactinfo
 
 app_gallery:
         resource: "@AppBundle/Resources/config/routing/gallery.yml"
         prefix:   /backend/gallery
 
-app_review:
-        resource: "@AppBundle/Resources/config/routing/review.yml"
-        prefix:   /backend/review
-
 app_pricing:
         resource: "@AppBundle/Resources/config/routing/pricing.yml"
         prefix:   /backend/pricing
 
-app_socialnetwork:
-        resource: "@AppBundle/Resources/config/routing/socialnetwork.yml"
-        prefix:   /backend/socialnetwork
 
 app_settings:
         resource: "@AppBundle/Resources/config/routing/settings.yml"

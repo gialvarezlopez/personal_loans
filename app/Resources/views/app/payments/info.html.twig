@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    DB || Payment Information
+    Payment Information - Personal Loans
 {% endblock %}
 
 {% block breadcrumb %}
@@ -15,7 +15,7 @@
 
 
 {% block header %}
-        <h1>Information about your pay</h1>
+        
 {% endblock %}
 
 {% block content %}
@@ -29,7 +29,20 @@
         <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
     {% endfor %}
     {# End notifications #}
-    <div class="box  ">
+    <section class="content-header">
+      <h1>
+        Information about my payments
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('payments_review') }}"><i class="fa fa-money"></i> Check membership</a></li>
+        <li class="active">My payments</li>
+      </ol>
+      
+    </section>
+    <hr>
+
+    <div class="box  showPayment">
         <div class="box-header">
             <h3 class="box-title">
                 {# <img src="https://www.paypalobjects.com/webstatic/mktg/logo-center/logotipo_paypal_tarjetas.jpg" border="0" alt="" /> #}
@@ -75,8 +88,12 @@
                                     {% endif %}
 
                                 </td>
-                                <td>{{ pay.payCreated|date("\n l jS F Y")  }}</td>
-                                <td>{{ pay.payDeadLine|date("\n l jS F Y")  }}</td>
+                                <td>{# {{ pay.payCreated|date("\n l jS F Y")  }} #}
+                                    {{ srv_TimeZone.getTimeZone(pay.payCreated|date('Y-m-d H:i:s'))|date("\n l jS F Y") }} 
+                                </td>
+                                <td>{# {{ pay.payDeadLine|date("\n l jS F Y")  }} #}
+                                    {{ srv_TimeZone.getTimeZone(pay.payDeadLine|date('Y-m-d H:i:s'))|date("\n l jS F Y") }}
+                                </td>
                                 <td>
 
                                     {#

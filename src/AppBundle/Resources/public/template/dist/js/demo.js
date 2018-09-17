@@ -347,8 +347,16 @@ $(function () {
 
   $('[data-toggle="tooltip"]').tooltip();
 
+  $(".content").show();
   if( $(".msgBoxAlert").length > 0)
   {
-    $('.msgBoxAlert').prependTo('.content-wrapper .content');
+    //
+    var payment = $("body").find(".showPayment").length;
+    //alert(payment);
+    if( payment == 0 )
+    {
+      $(".content").empty();
+      $('.msgBoxAlert').prependTo('.content-wrapper .content');
+    }
   }
 })

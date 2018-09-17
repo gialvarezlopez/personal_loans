@@ -90,3 +90,7 @@ Loading
 @-moz-keyframes cssload-spin {
 	100%{ -moz-transform: rotate(360deg); transform: rotate(360deg); }
 }
+
+.content{
+    display: none;
+}

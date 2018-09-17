@@ -214,7 +214,7 @@ class UserController extends Controller
 
                         $user->setUsrEmail($email);
 
-                        $user->setCou($form->get("cou")->getData());
+                        //$user->setCou($form->get("cou")->getData());
 
                         //Encripta el password del usuario
                         $factory = $this->get("security.encoder_factory");

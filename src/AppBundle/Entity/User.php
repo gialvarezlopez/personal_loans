@@ -61,16 +61,6 @@ class User implements AdvancedUserInterface, \Serializable
      */
     private $usrActive = true;
 
-    /**
-     * @var \AppBundle\Entity\Country
-     */
-    private $cou;
-
-    /**
-     * @var \AppBundle\Entity\ServiceType
-     */
-    private $st;
-
 
     /**
      * Get usrId
@@ -297,54 +287,6 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->usrActive;
     }
-
-    /**
-     * Set cou
-     *
-     * @param \AppBundle\Entity\Country $cou
-     *
-     * @return User
-     */
-    public function setCou(\AppBundle\Entity\Country $cou = null)
-    {
-        $this->cou = $cou;
-
-        return $this;
-    }
-
-    /**
-     * Get cou
-     *
-     * @return \AppBundle\Entity\Country
-     */
-    public function getCou()
-    {
-        return $this->cou;
-    }
-
-    /**
-     * Set st
-     *
-     * @param \AppBundle\Entity\ServiceType $st
-     *
-     * @return User
-     */
-    public function setSt(\AppBundle\Entity\ServiceType $st = null)
-    {
-        $this->st = $st;
-
-        return $this;
-    }
-
-    /**
-     * Get st
-     *
-     * @return \AppBundle\Entity\ServiceType
-     */
-    public function getSt()
-    {
-        return $this->st;
-    }
     
     //AUTH
     public function getPassword() {
@@ -474,7 +416,7 @@ class User implements AdvancedUserInterface, \Serializable
 
 
     //===============================================================
-    //Campo extra para valir
+    //Campo extra para validar
     //===============================================================
     public function isAccountNonExpired()
     {
@@ -579,5 +521,34 @@ class User implements AdvancedUserInterface, \Serializable
     public function getUsrProfileImage()
     {
         return $this->usrProfileImage;
+    }
+    /**
+     * @var integer
+     */
+    private $stId;
+
+
+    /**
+     * Set stId
+     *
+     * @param integer $stId
+     *
+     * @return User
+     */
+    public function setStId($stId)
+    {
+        $this->stId = $stId;
+
+        return $this;
+    }
+
+    /**
+     * Get stId
+     *
+     * @return integer
+     */
+    public function getStId()
+    {
+        return $this->stId;
     }
 }
