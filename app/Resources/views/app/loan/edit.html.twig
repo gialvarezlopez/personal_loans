@@ -103,7 +103,9 @@
                 <div class="col-lg-4">
                     {% set loanId = app.request.get('loaId') %}
                     {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loanId) %}
-                    This loan has <span class="badge">{{ hasPayments }}</span> payment(s) done
+                    This loan has <span class="badge">{{ hasPayments }}</span> payment(s) done,
+                    {% set hasFiles = srv_Loans.getFilesPerLoan(loanId) %}
+                    Files attached <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><span class="badge">{{ hasFiles|length }}</span></a>
                 </div>
             </div>
         </div>
@@ -283,7 +285,7 @@
                                         <div class="form_error">{{ form_errors(edit_form.loaCompleted)}}</div>
                                         <label for="appbundle_loan_loaCompleted" class=" control-label">Status: &nbsp; </label>
                                         {{ form_widget(edit_form.loaCompleted,  { 'attr': {'class': 'form-controlx'} } ) }}
-                                        <span id="helpBlock2" class="help-block">If the checkbox is checked that means the loan is completed and paid.</span>
+                                        {# <span id="helpBlock2" class="help-block">If the checkbox is checked that means the loan is completed and paid.</span> #}
                                     </div>
                                 </div>
                                 <div class="">
@@ -313,7 +315,7 @@
                                     </div>
                                 </div>    
                             {{form_end(edit_form)}}
-                                
+
                             </div>
 
                     {#
@@ -324,7 +326,8 @@
 
                     #}
                     <hr>
-                    
+                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                    <hr>
                 </div>
             </div>
             <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">

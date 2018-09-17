@@ -551,4 +551,33 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->usrShow;
     }
+    /**
+     * @var string
+     */
+    private $usrProfileImage;
+
+
+    /**
+     * Set usrProfileImage
+     *
+     * @param string $usrProfileImage
+     *
+     * @return User
+     */
+    public function setUsrProfileImage($usrProfileImage)
+    {
+        $this->usrProfileImage = $usrProfileImage;
+
+        return $this;
+    }
+
+    /**
+     * Get usrProfileImage
+     *
+     * @return string
+     */
+    public function getUsrProfileImage()
+    {
+        return $this->usrProfileImage;
+    }
 }

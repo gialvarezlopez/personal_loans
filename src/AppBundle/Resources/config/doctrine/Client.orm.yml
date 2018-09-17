@@ -44,6 +44,13 @@ AppBundle\Entity\Client:
             options:
                 fixed: false
             column: cli_second_surname
+        cliProfileImage:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: cli_profile_image
         cliIdNumber:
             type: string
             nullable: false

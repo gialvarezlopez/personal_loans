@@ -57,6 +57,13 @@ AppBundle\Entity\User:
             options:
                 default: '0'
             column: usr_status
+        usrProfileImage:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: usr_profile_image
         usrTokenConfirmation:
             type: string
             nullable: true

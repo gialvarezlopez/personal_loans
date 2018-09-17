@@ -185,4 +185,17 @@ class Loans
             return $result;
         }
     }
+
+
+    function getFilesPerLoan($loanId)
+    {
+        if( isset($loanId) && !empty($loanId) )
+        {
+            $RAW_QUERY  = "SELECT * FROM gallery where loa_id = $loanId";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return $result;
+        }
+    }
 }

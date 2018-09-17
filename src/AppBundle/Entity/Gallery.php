@@ -201,4 +201,33 @@ class Gallery
     {
         return $this->usr;
     }
+    /**
+     * @var \AppBundle\Entity\Loan
+     */
+    private $loa;
+
+
+    /**
+     * Set loa
+     *
+     * @param \AppBundle\Entity\Loan $loa
+     *
+     * @return Gallery
+     */
+    public function setLoa(\AppBundle\Entity\Loan $loa = null)
+    {
+        $this->loa = $loa;
+
+        return $this;
+    }
+
+    /**
+     * Get loa
+     *
+     * @return \AppBundle\Entity\Loan
+     */
+    public function getLoa()
+    {
+        return $this->loa;
+    }
 }

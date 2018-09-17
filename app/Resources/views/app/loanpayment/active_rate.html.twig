@@ -80,6 +80,7 @@
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
         <li class="active">Payments</li>
       </ol>
 </section>
@@ -457,7 +458,10 @@
                                     </ul>
                                 </div>    
                             </div>
-                        </div> 
+                        </div>
+                        <hr>
+                            <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                        <hr> 
                     </div>
                 </div>
                 <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">

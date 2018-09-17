@@ -87,6 +87,7 @@
                     <th>Second Surname</th>
                     
                     #}
+                    <th>Profile Imagen</th>
                     <th>Full mane</th>
                     <th>ID Number</th>
                     <th>ID Type</th>
@@ -107,6 +108,14 @@
                 <tr>
                     {# <td><a href="{{ path('client_show', { 'cliId': client.cliId }) }}">{{ client.cliId }}</a></td> #}
                     <td>{{ num }}</td>
+                    <td>
+                        {% set image = client.cliProfileImage %}
+                        {% if file_exists( 'uploads/'~image ) and image != "" %}
+                        <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
+                        {% else %}
+                            <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(50,50)  }} " class="img-thumbnail" style="" alt="image">
+                        {% endif %}
+                    </td>
                     <td>{{ client.cliFirstName }} {{ client.cliMiddleName }} {{ client.cliFirstSurname }} {{ client.cliSecondSurname }}</td>
                     <td>{{ client.cliIdNumber }}</td>
                     <td>{{ client.cliIdType }}</td>

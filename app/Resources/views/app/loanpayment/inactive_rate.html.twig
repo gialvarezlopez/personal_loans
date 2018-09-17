@@ -62,6 +62,7 @@
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
         <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
         {#
         <li><a href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}">Edit</a></li>
         <li><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">Show Detail</a></li>
@@ -133,7 +134,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="row">
                             <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Note: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
-                        </div>
+                    </div>
                     <hr>
                     {% set arr =  srv_Loans.getAllDetailLoan(loan.loaId) %}
                     {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"payment"}) }}
@@ -145,7 +146,10 @@
                         </li>
                         <li><a class="btn btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> Show</a></li>
                         <li><a class="btn btn-success marginBT" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}"> Payment Detail</a></li>
-                    </ul>   
+                    </ul> 
+                    <hr>
+                        <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                    <hr>  
                 </div>
 
             </div>

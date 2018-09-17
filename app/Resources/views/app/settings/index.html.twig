@@ -68,6 +68,7 @@
                             <div class="box-body">
                                 <form action="{{ path('settings_notifications') }}" method="POST">
                                     <div>
+                                        {#
                                        <div class="checkbox">
                                         <label>
                                             {% if app.user.usrNotificationContactForm %}
@@ -78,6 +79,7 @@
                                                 All users can send me a contact form 
                                             </label>
                                         </div>
+                                        #}
                                         <div class="checkbox">
                                             <label>
                                                 {% if app.user.usrNotificationPayment %}

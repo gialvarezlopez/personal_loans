@@ -70,5 +70,9 @@ rememberPassword:
         path: /rememberPassword
         defaults: { _controller: "AppBundle:User:rememberPassword" }
 
+user_profile_image:
+    path:     /user/profileImage
+    defaults: { _controller: "AppBundle:User:profileImage" }        
+
 
 

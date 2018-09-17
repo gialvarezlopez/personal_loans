@@ -431,6 +431,44 @@ class LoanController extends Controller
         ));
     }
 
+    public function deleteFile($loanId)
+    {
+        
+        $srvLoan = $this->get('srv_Loans');  
+        $oFiles = $srvLoan->getFilesPerLoan($loanId);
+        $arr =  array();
+        if( count($oFiles) > 0 )
+        {
+            foreach($oFiles as $item)
+            {
+                array_push($arr, $item["ga_name"]);
+            }
+        }
+        if( count($arr) > 0 )
+        {
+            $em = $this->getDoctrine()->getManager();
+            //$imp = implode(',',$arr);
+            $q = $em->createQuery("DELETE FROM AppBundle\Entity\Gallery tb WHERE tb.loa = ".$loanId ."" );
+            //echo $sql = $q->getSQL();
+            if( $q->execute() )
+            {
+                for($i = 0; $i < count($arr); $i++)
+                {
+                    @unlink( __DIR__.'/../../../web/uploads/'.$arr[$i]);
+                }
+
+                return 1;
+            }else{
+                return 0;
+            }
+        }
+        else
+        {
+            return 1;
+        }
+        //var_dump($arr);
+    }
+
     /**
      * Deletes a loan entity.
      *
@@ -442,8 +480,37 @@ class LoanController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($loan);
-            $em->flush();
+
+            $loanId = $request->get("loaId");
+            if( $loanId > 0 )
+            {
+                $userId = $this->getUser()->getUsrId();
+                if( $loan )
+                {
+                    if( $userId != $loan->getCli()->getUsr()->getUsrId() )
+                    {
+                        throw new AccessDeniedHttpException("Access Denied");
+                    }
+                }
+                else
+                {
+                    throw new NotFoundHttpException("Record not found");
+                }
+            }
+
+            //$loanId = $request->get("loaId");
+            $res = $this->deleteFile($loanId);
+            //exit();
+            if( $res == 1 )
+            {
+                $em->remove($loan);
+                $em->flush();
+            }
+            else
+            {
+                throw new AccessDeniedHttpException("The loan couldn't be delete");
+            }
+            
         }
 
         return $this->redirectToRoute('loan_index');

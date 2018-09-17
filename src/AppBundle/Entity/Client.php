@@ -457,4 +457,33 @@ class Client
     {
         return $this->usr;
     }
+    /**
+     * @var string
+     */
+    private $cliProfileImage;
+
+
+    /**
+     * Set cliProfileImage
+     *
+     * @param string $cliProfileImage
+     *
+     * @return Client
+     */
+    public function setCliProfileImage($cliProfileImage)
+    {
+        $this->cliProfileImage = $cliProfileImage;
+
+        return $this;
+    }
+
+    /**
+     * Get cliProfileImage
+     *
+     * @return string
+     */
+    public function getCliProfileImage()
+    {
+        return $this->cliProfileImage;
+    }
 }

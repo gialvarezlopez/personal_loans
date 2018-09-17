@@ -22,3 +22,7 @@ gallery_delete:
     path:     /{id}/delete
     defaults: { _controller: "AppBundle:Gallery:delete" }
     methods:  [GET, POST]
+
+gallery_readTxt:
+    path:     /readTxt
+    defaults: { _controller: "AppBundle:Gallery:readFileTxt" }

@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    DB || Gallery
+    Image profile - Personal Loans
 {% endblock %}
 
 {% block breadcrumb %}
@@ -51,12 +51,17 @@
 
 <section class="content-header">
       <h1>
-        My Current Image Profile
+        {% if app.request.get('clientId') > 0  %}
+            Client Image Profile
+        {% else %}
+            My Current Image Profile
+        {% endif %}
+         
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Loans</li>
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Image Profile</li>
       </ol>
 </section>
 <hr>
@@ -65,20 +70,44 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-4">                
+            {% if app.request.get('clientId') > 0  %}
+                <div class="col-lg-12">
+                    <div class="well">
+                        <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  Client:</span>
+                        <a href="{{ profile.cliId }}" class="btnShowClient">
+                            {{ profile.cliFirstName ~" "~ profile.cliMiddleName ~" "~ profile.cliFirstSurname ~" "~ profile.cliSecondSurname }}
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="col-md-4">
+                <span><b>Current Image</b></span>
+                <hr>                
                 <div id="upload-image-i">
                     {% if file_exists( 'uploads/'~image ) and image != "" %}
                         <img src="{{ image('uploads/'~image).cropResize(250,250) }}" class="img-thumbnail">
                     {% else %}
-                        <div class="alertx alert-infox text-center">You don't have profile image, please select one</div>
+                        <div class="alertx alert-infox text-center">
+                            <b>
+                            {% if app.request.get('clientId') > 0  %}
+                                Client doesn't have profile image, please select one
+                            {% else %}
+                                You don't have profile image, please select one
+                            {% endif %}   
+                            </b> 
+                        </div>
                         <div class="text-center">
                             <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(250,250)  }} " class="demo" style="max-width: 100%;" alt="image">
                         </div>
                     {% endif %}
                 </div>
+                
             </div>
             <div class="col-md-4">
-                <div class="checkbox"><label for="newImage"><span><input type="checkbox" id="newImage" name="newImage">  Select New Image</span></label></div>
+                <div class="checkbox" style="margin-bottom: 0px;margin-top: 0px;">
+                    <label for="newImage"><span><input type="checkbox" id="newImage" name="newImage">  Select New Image</span></label>
+                </div>
+                <hr>
                 <div id="holderNewImage">
                     
                     <div>
@@ -90,11 +119,12 @@
                 </div>
                 
             <div>
-                
+              <hr class="col-lg-12">  
             </div> 
         </div>
     </div>    
 </div>
+{{ include('app/client/_modals.html.twig' )  }}   
 {% endblock %}
 
 {% block codejs %}
@@ -199,9 +229,16 @@
                     size: 'viewport'
                 }).then(function (response) {
                     $("#holder_loading").show(); 
+                    var clientId = "{{ app.request.get('clientId') }}";
+                    if( clientId !="" )
+                    {
+                        var url = "{{ path('setProfileImage_upload') }}?clientId="+clientId;
+                    }else{
+                        var url = "{{ path('setProfileImage_upload') }}";
+                    }
                     $.ajax({
                         //url: "http://coderszine.com/demo/crop-image-and-upload-using-jquery-and-php/upload.php",
-                        url: "{{ path('setProfileImage_upload') }}",
+                        url: url,
                         type: "POST",
                         data: {"image":response},
                         success: function (data) {
@@ -219,10 +256,98 @@
                                     content: 'There was an error!',
                                 });
                             }
+                        },
+                        error:function($data){
+                            $("#holder_loading").hide(); 
+                                $.alert({
+                                    icon: 'fa fa-warning',
+                                    title: 'Alert!',
+                                    type: "red",
+                                    content: 'There was an error!',
+                                });
                         }
                     });
                 });
             });
+
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
 
         });
     </script>

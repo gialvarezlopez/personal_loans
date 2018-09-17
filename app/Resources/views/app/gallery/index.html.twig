@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    DB || Gallery
+    Upload files - Personal Loans
 {% endblock %}
 
 {% block breadcrumb %}
@@ -15,15 +15,58 @@
 
 
 {% block header %}
-        <h1>My Images Gallery</h1>
+        
 {% endblock %}
 
 {% block content %}
 
-
-<div class="file-loading">
-    <input id="images" name="images[]" type="file" multiple accept="image">
+<section class="content-header">
+      <h1>
+        {% if app.request.get('loanId') > 0  %}
+            Loan - Upload files
+        {% else %}
+            Upload files
+        {% endif %}
+         
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Upload File</li>
+      </ol>
+</section>
+<hr>
+<div class="boxx">
+    <div class="box-headerx">
+    </div>
+    <div class="box-bodyx">
+        {% if app.request.get('loanId') > 0  %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="well">
+                        <span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i>  Loan:</span>
+                        <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btnShowClient">
+                            {{ loan.loaCode }}
+                        </a>
+                        -
+                        <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  Client:</span>
+                    <a href="{{ loan.cli.cliId }}" class="btnShowClient">
+                        {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
+                    </a>
+                    </div>
+                </div>
+            </div>   
+            {% endif %}
+            <div>
+                Note: files are supported: "jpg, jpeg, png, gif, pdf, txt"
+                <hr>
+            </div>
+        <div class="file-loading">
+            <input id="images" name="images[]" type="file" multiple accept="image" data-preview-file-type="text">
+        </div>
+    </div>
 </div>
+
 
 {#
     <table>
@@ -66,6 +109,7 @@
         </li>
     </ul>
     #}
+{{ include('app/client/_modals.html.twig' )  }}     
 {% endblock %}
 
 {% block codejs %}
@@ -79,31 +123,70 @@
                 return cnt === 0 ? 'You have no files remaining.' :
                     'You have ' +  cnt + ' file' + (cnt > 1 ? 's' : '') + ' remaining.';
             };
+
+           var loanId = "{{ app.request.get('loanId') }}"; 
+            /*
+            if( loanId !="" )
+            {
+                var url = "{{ path('gallery_new') }}?loanId="+loanId;
+                var loanId = loanId;
+            }else{
+                //var url = "{{ path('gallery_new') }}";
+            }
+            */
            $("#images").fileinput({
                 theme: "explorer-fa",
                 uploadUrl: "{{ path('gallery_new') }}",
-                allowedFileExtensions: ['jpg', 'png', 'gif'],
+                allowedFileExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt'/*, 'doc', 'docx', 'xls', 'xlsx'*/],
                 overwriteInitial: false,
                 maxFileSize: 5120,
                 maxFileCount: 8,
                 initialPreviewAsData: true,
                 validateInitialCount: true,
-                
+               // initialPreviewFileType: 'image', // image is the default and can be overridden in config below
                 //dragIcon: false,
+                
                 initialPreview: [
                     {% for gallery in galleries %}
                         {% if file_exists( 'uploads/'~gallery.gaName ) %}
-                        "{{ image('uploads/'~gallery.gaName).cropResize(900,900) }}",
+                            {% set type = ((gallery.gaName|split("."))|last)|lower %}
+                            {% if type == "jpg" or type=="jpeg" or type == "png" or type=="gif" %}
+                                "{{ image('uploads/'~gallery.gaName).cropResize(900,900) }}",
+                            {% elseif type  =="txt" %}
+                                {% set txt = render(controller('AppBundle:Gallery:readFileTxt',{'txt': gallery.gaName} )) %}
+                                {% set txt = txt|replace({"\n":' ', "\r":' '}) %}
+                                "{{ txt }}",
+                            {% else %}
+                                "{{ asset('uploads/'~gallery.gaName) }}",    
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                     //"https://picsum.photos/1920/1080?image=101",
                 ],
                 initialPreviewConfig: [
                     {% for gallery in galleries %}
-                        { caption: "", size: 329892, width: "120px", url: "{{ path('gallery_delete',{id:gallery.gaId}) }}", key: "{{ gallery.gaName }}"},
+                        {% set typeFile = ((gallery.gaName|split("."))|last)|lower %}
+                            {% if typeFile == "jpg" or typeFile=="jpeg" or typeFile == "png" or typeFile=="gif" %}
+                               { caption: "", size: 329892, width: "120px", url: "{{ path('gallery_delete',{id:gallery.gaId}) }}?loanId="+loanId, key: "{{ gallery.gaName }}"},
+                            {% else %}
+                                {% if typeFile == "doc" or typeFile=="docx" or typeFile == "xlsx" or typeFile=="xls" %}
+                                    {% set file = "office" %}
+                                {% elseif typeFile == "txt" %}
+                                    {% set file = "text" %}
+                                {% else %}    
+                                    {% set file = "pdf" %}
+                                {% endif %}
+                                {type: "{{file}}", size: "1430", caption: "", url: "{{ path('gallery_delete',{id:gallery.gaId}) }}?loanId="+loanId, key: "{{ gallery.gaName }}"},   
+                        {% endif %}
+                        
                     {% endfor %}
                     //{caption: "picture-1.jpg", size: 329892, width: "120px", url: "/site/file-delete", key: 101},
                 ],
+                purifyHtml: true, // this by default purifies HTML data for preview
+                uploadExtraData: {
+                    loanId: loanId,
+                //    img_keywords: "happy, places"
+                },
                 initialPreviewDownloadUrl: "{{ asset('uploads/')}}"+'{key}' //'https://picsum.photos/1920/1080?image={key}' // the key will be dynamically replaced
                 /*
                 uploadExtraData: function() {
@@ -113,6 +196,7 @@
                     };
                 }
                 */ 
+
             }).on('filebeforedelete', function() {
                     return new Promise(function(resolve, reject) {
                         $.confirm({
@@ -135,7 +219,7 @@
                     });
                 }).on('filedeleted', function() {
                     setTimeout(function() {
-                        $.alert('File deletion was successful! ' + krajeeGetCount('images'));
+                       // $.alert('File deletion was successful! ' + krajeeGetCount('images'));
                     }, 900);
                 });
             /*.on('filebatchuploadcomplete', function(event, files, extra) {
@@ -144,6 +228,84 @@
                     console.log('File batch upload complete');
                 });
                 */
+            $("body").on("click",".btnShowClient",function(event){
+                event.preventDefault();
+                var id = $(this).attr("href");
+                showClient(id);
+            });
+
+            function showClient(id) {
+                var id = id;
+                var routeShow = "{{ path('client_show', { 'cliId': 'PLACEHOLDER'}) }}";
+                routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { id:id},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											showClient(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+
+							if (data != "")
+							{
+
+								//$('form[name$=appbundle_paciente]')[0].reset();
+								//var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+								//window.location.assign(routeShow);
+								$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                $("#holderBodyModal").html(data);
+
+                                var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                href = href.replace("PLACEHOLDER", id);    
+                                $("body").find("#btnModalEditClient").attr("href", href);
+                                $("body").find("#btnModalLoanClient").val(id);
+        
+
+                                $("#holder_loading").hide();
+                                /*
+                                $.alert({
+                                    icon: 'fa fa-address-card-o',
+                                    title: 'Client',
+                                    type: "green",
+                                    content: 'Full information'+data,
+                                });
+                                */
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to save the information <br>' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }    
         });
     </script>
 {% endblock %}        

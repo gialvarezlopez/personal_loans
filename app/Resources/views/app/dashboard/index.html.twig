@@ -59,20 +59,28 @@
                         <h3 class="box-title">Payments</h3>
                     </div>
                     <div class="box-body">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <i class="fa fa-calendar" aria-hidden="true"></i>
-                            </span>
-                            <input type="text" class="form-control" id="rangeDate" placeholder="">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" id="applyDate">Go!</button>
-                            </span>
-                            </div><!-- /input-group -->
-                        <hr>
-                        <div class="text-muted well well-sm no-shadow">
-                        Period
-                        <b>From</b> {{ periodDate['startDate']|date('l d, F Y') }} <b>to</b> {{ periodDate['endDate']|date('l d, F Y') }}
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="rangeDate" placeholder="">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" id="applyDate">Go!</button>
+                                    </span>
+                                </div><!-- /input-group -->
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="text-muted wellx well-smx no-shadowx">
+                                Period
+                                <b>From</b> {{ periodDate['startDate']|date('l d, F Y') }} <b>to</b> {{ periodDate['endDate']|date('l d, F Y') }}
+                                </div>
+                            </div>
                         </div>
+                        <hr>
+                        
+                        
                         {% set loansPeriod = srv_Dashboard.getLoans(app.user.usrId, true, false, false, "0,1" , periodDate) %}
                         
 
@@ -107,7 +115,15 @@
                                     
                                     <div class="product-img">
                                         {# <img src="dist/img/default-50x50.gif" alt="Product Image"> #}
-                                        <i class="fa fa-user-circle-o fa-2" aria-hidden="true"></i>
+                                        
+                                        {% set image = item.cli_profile_image %}
+                                        {% if file_exists( 'uploads/'~image ) and image != "" %}
+                                            <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
+                                        {% else %}
+                                            <div class="text-center">
+                                                <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(50,50)  }} " class="img-thumbnail" alt="image">
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div class="product-info">
                                         <a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a>

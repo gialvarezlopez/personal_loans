@@ -2,7 +2,8 @@
  * bootstrap-fileinput v4.5.1
  * http://plugins.krajee.com/file-input
  *
- * Krajee Explorer theme style for bootstrap-fileinput. Load this theme file after loading `fileinput.css`.
+ * Krajee Explorer Font Awesome 5.x theme style for bootstrap-fileinput. Load this theme file after loading
+ * font awesome 5.x CSS and `fileinput.css`.
  *
  * Author: Kartik Visweswaran
  * Copyright: 2014 - 2018, Kartik Visweswaran, Krajee.com
@@ -10,17 +11,17 @@
  * Licensed under the BSD 3-Clause
  * https://github.com/kartik-v/bootstrap-fileinput/blob/master/LICENSE.md
  */
-.theme-explorer .file-upload-indicator, .theme-explorer .file-drag-handle, .theme-explorer .explorer-frame .kv-file-content, .theme-explorer .file-actions, .explorer-frame .file-preview-other {
+.theme-explorer-fas .file-upload-indicator, .theme-explorer-fas .file-drag-handle, .theme-explorer-fas .explorer-frame .kv-file-content, .theme-explorer-fas .file-actions, .explorer-frame .file-preview-other {
     text-align: center;
 }
 
-.theme-explorer .file-thumb-progress .progress, .theme-explorer .file-thumb-progress .progress-bar {
+.theme-explorer-fas .file-thumb-progress .progress, .theme-explorer-fas .file-thumb-progress .progress-bar {
     height: 13px;
     font-size: 11px;
     line-height: 13px;
 }
 
-.theme-explorer .file-upload-indicator, .theme-explorer .file-drag-handle {
+.theme-explorer-fas .file-upload-indicator, .theme-explorer-fas .file-drag-handle {
     position: absolute;
     display: inline-block;
     top: 0;
@@ -30,46 +31,46 @@
     font-size: 16px;
 }
 
-.theme-explorer .file-thumb-progress .progress, .theme-explorer .explorer-caption {
+.theme-explorer-fas .file-thumb-progress .progress, .theme-explorer-fas .explorer-caption {
     display: block;
 }
 
-.theme-explorer .explorer-frame td {
+.theme-explorer-fas .explorer-frame td {
     vertical-align: middle;
     text-align: left;
 }
 
-.theme-explorer .explorer-frame .kv-file-content {
+.theme-explorer-fas .explorer-frame .kv-file-content {
     width: 80px;
     height: 80px;
     padding: 5px;
 }
 
-.theme-explorer .file-actions-cell {
+.theme-explorer-fas .file-actions-cell {
     position: relative;
     width: 120px;
     padding: 0;
 }
 
-.theme-explorer .file-thumb-progress .progress {
+.theme-explorer-fas .file-thumb-progress .progress {
     margin-top: 5px;
 }
 
-.theme-explorer .explorer-caption {
+.theme-explorer-fas .explorer-caption {
     color: #777;
 }
 
-.theme-explorer .kvsortable-ghost {
+.theme-explorer-fas .kvsortable-ghost {
     opacity: 0.6;
     background: #e1edf7;
     border: 2px solid #a1abff;
 }
 
-.theme-explorer .file-preview .table {
+.theme-explorer-fas .file-preview .table {
     margin: 0;
 }
 
-.theme-explorer .file-error-message ul {
+.theme-explorer-fas .file-error-message ul {
     padding: 5px 0 0 20px;
 }
 
@@ -95,51 +96,51 @@
 }
 
 @media only screen and (max-width: 767px) {
-    .theme-explorer .table, .theme-explorer .table tbody, .theme-explorer .table tr, .theme-explorer .table td {
+    .theme-explorer-fas .table, .theme-explorer-fas .table tbody, .theme-explorer-fas .table tr, .theme-explorer-fas .table td {
         display: block;
         width: 100% !important;
     }
 
-    .theme-explorer .table {
+    .theme-explorer-fas .table {
         border: none;
     }
 
-    .theme-explorer .table tr {
+    .theme-explorer-fas .table tr {
         margin-top: 5px;
     }
 
-    .theme-explorer .table tr:first-child {
+    .theme-explorer-fas .table tr:first-child {
         margin-top: 0;
     }
 
-    .theme-explorer .table td {
+    .theme-explorer-fas .table td {
         text-align: center;
     }
 
-    .theme-explorer .table .kv-file-content {
+    .theme-explorer-fas .table .kv-file-content {
         border-bottom: none;
         padding: 4px;
         margin: 0;
     }
 
-    .theme-explorer .table .kv-file-content .file-preview-image {
+    .theme-explorer-fas .table .kv-file-content .file-preview-image {
         max-width: 100%;
         font-size: 20px;
     }
 
-    .theme-explorer .file-details-cell {
+    .theme-explorer-fas .file-details-cell {
         border-top: none;
         border-bottom: none;
         padding-top: 0;
         margin: 0;
     }
 
-    .theme-explorer .file-actions-cell {
+    .theme-explorer-fas .file-actions-cell {
         border-top: none;
         padding-bottom: 4px;
     }
 
-    .theme-explorer .explorer-frame .explorer-caption {
+    .theme-explorer-fas .explorer-frame .explorer-caption {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;

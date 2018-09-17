@@ -27,16 +27,19 @@
             <li class="header">MAIN NAVIGATION</li>
             <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard" aria-hidden="true"></i> <span>Dashboard</span></a></li>
             <li><a href="{{ path('client_index') }}"><i class="fa fa-users" aria-hidden="true"></i> <span>Clients</span></a></li>
-            <li><a href="{{ path('loan_index') }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> <span>Loans</span></a></li>
+            <li><a href="{{ path('loan_index') }}?sta=0"><i class="fa fa-handshake-o" aria-hidden="true"></i> <span>Loans</span></a></li>
             <li><a href="{{ path('setProfileImage_show') }}"><i class="fa fa-file-image-o" aria-hidden="true"></i></i> <span>Image Profile</span></a></li>
+            {# 
             <li><a href="{{ path('medicaldetail_index') }}"><i class="fa fa-address-card-o" aria-hidden="true"></i></i> <span>Profile Info</span></a></li>
-            {# <li><a href="{{ path('speciality_index') }}"><i class="fa fa-circle-o text-aqua"></i> <span>Specialities</span></a></li> #}
             <li><a href="{{ path('contactinfo_index') }}"><i class="fa fa-map-marker" aria-hidden="true"></i> <span>Contact Info</span></a></li>
-            <li><a href="{{ path('gallery_index') }}"><i class="fa fa-file-image-o" aria-hidden="true"></i> <span>Gallery</span></a></li>
+            #}
+            <li><a href="{{ path('gallery_index') }}"><i class="fa fa-upload" aria-hidden="true"></i> <span>Upload File</span></a></li>
+            {#
             <li class="header">My Curriculum</li>
             <li>
               <a href="{{ path('review_index') }}"><i class="fa fa-sitemap" aria-hidden="true"></i> <span>Review</span></a>
             </li>
+            #}
             {% if app.user != null %}
               <li class="header">Security</li>
               <li>

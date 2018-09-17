@@ -460,4 +460,19 @@ class UserController extends Controller
             }
         }
     }
+
+    public function profileImageAction(Request $request, $max = null, $iClass = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $userId = $this->getUser()->getUsrId();
+        $oInfo = $em->getRepository('AppBundle:User')->findOneBy( array( "usrId"=> $userId) );
+        $image = "";
+        if( $oInfo &&  $oInfo->getUsrProfileImage() != "")
+        {
+            $image = $oInfo->getUsrProfileImage();
+        }
+
+        return $this->render('app/user/profileImage.html.twig', array("image"=>$image,"max"=>$max,"iClass"=>$iClass));
+
+    }
 }

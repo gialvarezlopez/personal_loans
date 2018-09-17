@@ -1,7 +1,7 @@
 {% extends 'app/login.html.twig' %}
 
 {% block title_page %}
-    New User Registration - Doctors Billboard
+    New User Registration - Personal Loans
 {% endblock %}
 
 {% block header %}
@@ -42,12 +42,12 @@
     {# End notifications #}
 
   <div class="register-logo">
-    <a href="{{ path('web_homepage') }}"><b>Doctors</b> Billboard</a>
+    <a href="{{ path('web_homepage') }}"><b>Personal</b> Loans</a>
     
   </div>
 
   <div class="register-box-body">
-    {{ include('app/user/iconsCountries.html.twig') }}
+    {# {{ include('app/user/iconsCountries.html.twig') }} #}
     <p class="login-box-msg">Register a new membership</p>
     {{ form_start(form) }}
         

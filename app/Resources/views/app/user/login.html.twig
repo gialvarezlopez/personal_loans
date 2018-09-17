@@ -2,7 +2,7 @@
 
 
 {% block title_page %}
-    Login - Doctors Billboard
+    Login - Perosnal Lonas
 {% endblock %}
 
 {% block header %}
@@ -43,11 +43,11 @@
     </div>
     {# End notifications #}
   <div class="login-logo">
-    <a href="{{ path('web_homepage') }}"><b>Doctors</b> Billboard</a>
+    <a href="{{ path('web_homepage') }}"><b>Personal</b> loans</a>
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body">
-    {{ include('app/user/iconsCountries.html.twig') }}
+    {# {{ include('app/user/iconsCountries.html.twig') }} #}
     <p class="login-box-msg">Sign in to start your session</p>
 
     <form action="{{ path('login_check') }}" method="POST">

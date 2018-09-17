@@ -155,6 +155,9 @@
                             <a class="btn btn-success marginBT" href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-handshake-o" aria-hidden="true"></i> New Loan</a>
                         </li>
                         <li>
+                            <a class="btn btn-primary marginBT" href="{{ path('setProfileImage_show') }}?clientId={{client.cliId}}"><i class="fa fa-address-card-o" aria-hidden="true"></i> Set Profile Image</a>
+                        </li>
+                        <li>
                             <a class="btn btn-info marginBT" href="{{ path('client_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> Clients list</a>
                         </li>
                         <li>
