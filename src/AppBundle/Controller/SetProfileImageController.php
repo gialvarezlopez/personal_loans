@@ -184,7 +184,7 @@ class SetProfileImageController extends Controller
 			{
 				@unlink($fullPath);
 			}else{
-                echo "fileexiste";
+                //echo "fileexiste";
             }
 		}		
 	}

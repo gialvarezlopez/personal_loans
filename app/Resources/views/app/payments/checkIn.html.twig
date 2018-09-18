@@ -101,13 +101,13 @@
         <div class="box-body pad">
             <h4>Our plans</h4><hr>
             <div class="row">
-                <div class="col-lg-9">
+                <div class="col-lg-8">
                     <table class="table table-striped">
                         <thead class="">
                             <tr>
                                 <th>Select an<br> Option</th>
                                 <th>Plan</th>
-                                <th>Months</th>
+                                {# <th>Months</th> #}
                                 <th>Price</th>
                                 <th></th>
                             </tr>
@@ -133,14 +133,14 @@
                                             {{ value.prPlan }}    
                                         {% endif %}
                                     </td>
-                                    <td>{{ value.prMonths }}</td>
+                                    {# <td>{{ value.prMonths }}</td> #}
                                     <td>
                                         {% if value.prPrice == 0 %}
                                             {% set existFree = value.prId %}
                                             <input type = "hidden" id="f" value="{{ existFree }}">
                                             <h4 ><span class="label label-success">$ {{ value.prPrice|number_format(2, '.', ',') }}</span></h4>
                                         {% else %}
-                                        $ {{ value.prPrice|number_format(2, '.', ',') }}
+                                        $ {{ value.prPrice|number_format(2, '.', ',') }} /  Per <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}Month{% else %}Monts{% endif %}
                                         {% endif %}
                                         
                                     </td>
