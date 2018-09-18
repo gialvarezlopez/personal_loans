@@ -1,6 +1,6 @@
 web_homepage:
-    path:     /billboard
-    defaults: { _controller: WebBundle:Default:index }
+    path:     /
+    defaults: { _controller: WebBundle:Default:landing }
 
 web_get_cities:
   path:     /getCitiesByState
@@ -17,10 +17,6 @@ web_show_profile:
   defaults: { _controller: "WebBundle:Default:showProfile" }
   methods:  GET
 
-web_landing:
-  path:     /
-  defaults: { _controller: "WebBundle:Default:landing" }
-  methods:  GET
 
 web_contactus:
   path:     /contactus

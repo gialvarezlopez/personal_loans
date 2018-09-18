@@ -26,7 +26,7 @@ class UserType extends AbstractType
             //->add('usrCreated', 'datetime')
             //->add('usrUpdated', 'datetime')
             //->add('usrActive')
-            ->add('cou')
+            //->add('cou')
             //->add('st')
         ;
         $builder->add('repeatPassword', PasswordType::class,  array(

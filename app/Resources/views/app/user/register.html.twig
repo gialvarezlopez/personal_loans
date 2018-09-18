@@ -48,6 +48,8 @@
 
   <div class="register-box-body">
     {# {{ include('app/user/iconsCountries.html.twig') }} #}
+    <div class="text-center"><img src="{{ asset('bundles/app/images/logo.png')  }}"/></div>
+    <hr>
     <p class="login-box-msg">Register a new membership</p>
     {{ form_start(form) }}
         
@@ -78,20 +80,16 @@
         {# <input type="password" class="form-control" placeholder="Retype password"> #}
         <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
       </div>
-      <div class="form-group has-feedback">
-        <div class="form_error">{{ form_errors(form.cou)}}</div>
-        {{ form_widget(form.cou,  { "required":true,'attr': {'class': 'form-control', 'placeholder':"Select a country"} } ) }}
-        {# <input type="password" class="form-control" placeholder="Retype password"> #}
-        {# <span class="glyphicon glyphicon-log-in form-control-feedback"></span> #}
-      </div>
       <div class="row">
         <div class="col-xs-8">
+          {#
           <div class="checkbox icheck">
             <label>
               <input type="checkbox" required="required"> I agree to the 
             </label>
             <a href="#">terms</a>
           </div>
+          #}
         </div>
         <!-- /.col -->
         <div class="col-xs-4">

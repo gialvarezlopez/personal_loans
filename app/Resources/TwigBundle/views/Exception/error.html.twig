@@ -1,38 +1,62 @@
-{% extends 'web/base.html.twig' %}
+{% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Oops! Something went wrong
-{% endblock %}
-
-{% block classbg %}
-
+    Error - Personal Loans
 {% endblock %}
 
 {% block content %}
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="text-center">
-                    <hr>
-                    <h4 class="alert alert-info">Oops! Something went wrong.</h4>
-                    {# ejemplo de parte de la página que sólo se muestra a usuario identificado #}
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+{#  Check the notifications #}
+    {% set created = 0 %}
+    {% for message in app.session.flashbag().get("success") %}
+        <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+    {% endfor %}
+    {% for message in app.session.flashbag().get("error") %}
+        <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+    {% endfor %}
+    {# End notifications #}
+    <section class="content-header">
+      <h1>
+        Error Page
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboad</a></li>
+        <li><a href="{{ path('settings_show') }}">Setting</a></li>
+        <li class="active">Error</li>
+      </ol>
+    </section>
+    <div class="error-page">
+        <h2 class="headline text-yellow"> Error</h2>
+
+        <div class="error-content">
+          <h3><i class="fa fa-warning text-yellow"></i> Oops! Something went wrong.</h3>
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         {# ... #}
-                    {% endif %}
+            {% endif %}
 
-                    {% if exception.message %}
-                        <div class="alert alert-warning">{{ exception.message }}</div>
-                    {% endif %}
+            {% if exception.message %}
+                <div class="well">{{ exception.message }}</div>
+            {% endif %}
+          <p>
+            We could not find the page you were looking for.
+            Meanwhile, you may <a href="{{ path('dashboard_index') }}">return to dashboard</a>
+          </p>
+          {#  
+          <form class="search-form">
+            <div class="input-group">
+              <input type="text" name="search" class="form-control" placeholder="Search">
 
-                    <p>We are fixing it! Please come back in a while.</p>
-                    <p>
-                        The requested page could not be located. Checkout for any URL misspelling or <a href="{{ path('web_homepage') }}">Back Home</a>.
-                    </p>
-                </div>
+              <div class="input-group-btn">
+                <button type="submit" name="submit" class="btn btn-warning btn-flat"><i class="fa fa-search"></i>
+                </button>
+              </div>
             </div>
+            <!-- /.input-group -->
+          </form>#}
         </div>
-    </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
 
 {% endblock %}
 

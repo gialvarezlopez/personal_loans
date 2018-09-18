@@ -48,6 +48,8 @@
   <!-- /.login-logo -->
   <div class="login-box-body">
     {# {{ include('app/user/iconsCountries.html.twig') }} #}
+    <div class="text-center"><img src="{{ asset('bundles/app/images/logo.png')  }}"/></div>
+    <hr>
     <p class="login-box-msg">Sign in to start your session</p>
 
     <form action="{{ path('login_check') }}" method="POST">
