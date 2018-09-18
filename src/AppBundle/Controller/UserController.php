@@ -412,7 +412,7 @@ class UserController extends Controller
 			$mail->Password = $this->getParameter('mailer_password'); // A RELLENAR. Aqui pondremos la contraseña de la cuenta de correo
 			$mail->Port = $this->getParameter('mailer_port'); // Puerto de conexión al servidor de envio.
 
-            $mail->setFrom("support@doctorsbillboard.com","DoctorsBillboard");
+            $mail->setFrom("support@loansbillboard.com","Personal Loans Software");
             $mail->addAddress($email);
             //Content
             $mail->isHTML(true);   // Set email format to HTML
@@ -446,7 +446,7 @@ class UserController extends Controller
 			$mail->Password = $this->getParameter('mailer_password'); // A RELLENAR. Aqui pondremos la contraseña de la cuenta de correo
 			$mail->Port = $this->getParameter('mailer_port'); // Puerto de conexión al servidor de envio.
 
-            $mail->setFrom("support@doctorsbillboard.com","DoctorsBillboard");
+            $mail->setFrom("support@loansbillboard.com","Personal Loans Software");
             $mail->addAddress($email);
             //Content
             $mail->isHTML(true);   // Set email format to HTML
