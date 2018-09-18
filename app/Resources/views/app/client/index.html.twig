@@ -113,7 +113,7 @@
                         {% if file_exists( 'uploads/'~image ) and image != "" %}
                         <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
                         {% else %}
-                            <img src="{{ image('bundles/web/template/Site/assets/images/pindingProfileImage.png').cropResize(50,50)  }} " class="img-thumbnail" style="" alt="image">
+                            <img src="{{ image('bundles/app/images/user.png').cropResize(50,50)  }} " class="img-thumbnail" style="" alt="image">
                         {% endif %}
                     </td>
                     <td>{{ client.cliFirstName }} {{ client.cliMiddleName }} {{ client.cliFirstSurname }} {{ client.cliSecondSurname }}</td>
