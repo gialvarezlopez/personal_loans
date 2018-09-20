@@ -35,15 +35,15 @@ class ClientController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $status = $request->get("sta");
-
+        $userId = $this->getUser()->getUsrId();
         switch($status)
         {
             case "1":
             case "0":
-                $clients = $em->getRepository('AppBundle:Client')->findBy( array("cliActive"=>$status)  );
+                $clients = $em->getRepository('AppBundle:Client')->findBy( array("cliActive"=>$status, "usrId"=> $userId)  );
                 break;
             default:
-                $clients = $em->getRepository('AppBundle:Client')->findAll(); 
+                $clients = $em->getRepository('AppBundle:Client')->findAll( array("usrId"=> $userId) ); 
                  
                 break;    
         }
