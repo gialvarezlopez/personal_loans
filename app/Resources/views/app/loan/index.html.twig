@@ -152,7 +152,8 @@
                     <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
                     <td>
                         <ul class="list-inline">
-                            <li><a href="{{ path('loanpayment_new',{'loaId':loan.loa_id} ) }}" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                            <li><a href="{{ path('loanpayment_new',{'loaId':loan.loa_id} ) }}" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Do Payment</a></li>
+                            <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loa_id}}" class="btn btn-default marginBT ">Payment History</a></li>
                             <li>
                                 <a class="btnShow btn btn-block btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loa_id }) }}">show</a>
                             </li>
@@ -192,7 +193,7 @@
                 //'searching'   : false,
                 //'ordering'    : true,
                 //'info'        : true,
-                //"iDisplayLength" : 10,
+                "iDisplayLength" : 10,
                 "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
                 'autoWidth'   : false,
                 //'dom': 'Bfrtip',

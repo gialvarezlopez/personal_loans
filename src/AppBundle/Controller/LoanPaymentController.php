@@ -26,13 +26,15 @@ class LoanPaymentController extends Controller
      */
     public function indexAction()
     {
+        /*
         $em = $this->getDoctrine()->getManager();
-
+        echo "aqui";
         $loanPayments = $em->getRepository('AppBundle:LoanPayment')->findAll();
 
         return $this->render('app/loanpayment/index.html.twig', array(
             'loanPayments' => $loanPayments,
         ));
+        */
     }
 
     /**

@@ -40,11 +40,12 @@ class ClientController extends Controller
         {
             case "1":
             case "0":
-                $clients = $em->getRepository('AppBundle:Client')->findBy( array("cliActive"=>$status, "usrId"=> $userId)  );
+                $clients = $em->getRepository('AppBundle:Client')->findBy( array("cliActive"=>$status, "usr"=> $userId)  );
+                //echo "case";
                 break;
             default:
-                $clients = $em->getRepository('AppBundle:Client')->findAll( array("usrId"=> $userId) ); 
-                 
+                $clients = $em->getRepository('AppBundle:Client')->findBy( array("usr"=> $userId) ); 
+                //echo "defaul";
                 break;    
         }
 

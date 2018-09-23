@@ -129,6 +129,10 @@ class LoanController extends Controller
             }
            
             $rate = $form->get("loaRateInterestByDefault")->getData();
+            if( trim($rate) == "" || !is_numeric($rate) || $rate < 0 )
+            {
+                $rate = 0;
+            }
             //exit("sali");
             $loan->setCli($oUser);
             $loan->setLoaCreated( new \DateTime() );
@@ -161,11 +165,12 @@ class LoanController extends Controller
             else if( $oLoanCategory->getLocKey() == "active_rate"  )
             {
                 $deadline = $form->get("loaDeadline")->getData();
-                $rate = $form->get("loaRateInterest")->getData();
+               // $rate = $form->get("loaRateInterest")->getData();
                 $oLoanPayment = new LoanPayment();
                 $oLoanPayment->setLpaMaxPaymentDate( $deadline );
                 $oLoanPayment->setLoa( $loan );
                 $oLoanPayment->setLpaCurrentRateInterest( $rate );
+                $oLoanPayment->setLpaNextRateInterest( $rate );
                 //$oLoanPayment->setLpaCurrentAmount( $amount );
                 $em->persist($oLoanPayment);
                 $em->flush();
