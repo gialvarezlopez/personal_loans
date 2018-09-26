@@ -38,7 +38,11 @@ app_loanpayment:
 
 app_dashboard:
         resource: "@AppBundle/Resources/config/routing/dashboard.yml"
-        prefix:   /backend/dashboard         
+        prefix:   /backend/dashboard 
+
+app_reports:
+        resource: "@AppBundle/Resources/config/routing/reports.yml"
+        prefix:   /backend/reports                 
 
 register:
         path: /register

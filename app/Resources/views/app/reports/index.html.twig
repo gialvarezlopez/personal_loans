@@ -1,0 +1,213 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Reports - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+.table .label{
+    font-size: 13px !important;
+}
+</style>
+
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Dashboard
+        <small></small>
+      </h1>
+      {#
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Client List</li>
+      </ol>
+      #}
+</section>
+<hr>
+{# {{ app.user.usrId }} #}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Payments</h3>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </span>
+                            <input type="text" class="form-control" id="rangeDate" placeholder="">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" id="applyDate">Go!</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-muted wellx well-smx no-shadowx">
+                            Period
+                            <b>From</b> {{ periodDate['startDate']|date('l d, F Y') }} <b>to</b> {{ periodDate['endDate']|date('l d, F Y') }}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                 
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Loans History</h3>
+            </div>
+            <div class="box-body">
+                {{ include('app/dashboard/_tableLoansDetails.html.twig' )  }}        
+            </div>
+            <div class="box-footer text-center"></div>
+        </div>
+        {% set lastLoan = srv_Dashboard.getLoans(app.user.usrId, false, false, 5, "0,1", false) %}
+        {% if lastLoan|length > 0 %}
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recently Loans Created</h3>
+                </div>
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                        {% for item in lastLoan %}
+                            <li class="item">
+                               <div class="product-img">
+                                    {% set image = item.cli_profile_image %}
+                                    {% if file_exists( 'uploads/'~image ) and image != "" %}
+                                        <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
+                                    {% else %}
+                                        <div class="text-center">
+                                            <img src="{{ image('bundles/app/images/user.png').cropResize(50,50)  }} " class="img-thumbnail" alt="image">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="product-info">
+                                    <a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a>
+                                    <div class="product-description">{{ item.cli_first_name ~" "~ item.cli_middle_name ~" "~ item.cli_first_surname ~"" ~ item.cli_second_surname}}</div>
+                                </div>
+                            </li>
+                        {% endfor %}    
+                    </ul>
+                </div>
+                <div class="box-footer text-center"><a href="{{ path('loan_index') }}">View all Loans</a></div>
+            </div>
+        {% endif %}  
+        <div class="info-box">
+            <span class="info-box-icon bg-blue"><i class="ion ion-ios-people-outline"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Created Clients</span>
+                {% set clients = srv_Dashboard.getClients(app.user.usrId) %}
+                <span class="info-box-number">{{ clients }}</span>
+                <div><a href="{{ path('client_index') }}">View all clients</a></div>
+             </div>
+        <!-- /.info-box-content -->
+         </div> 
+    </div>
+</div>    
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+
+            var urlFrom = "{{app.request.get('from')}}";
+            var urlTo = "{{app.request.get('to')}}";
+
+            if( urlFrom != "" && urlTo != "" )
+            {
+                var start = urlFrom;
+                var end = urlTo;
+            }
+            else
+            {
+                var start = "{{ periodDate['startDate'] }}"//moment().subtract(7, 'days');
+                var end = "{{ periodDate['endDate'] }}"//moment();
+            }
+            
+
+            function cb(start, end) {
+               // $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            }
+
+            $('#rangeDate').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    format: 'YYYY/MM/DD'
+                }
+            }, cb);
+
+            cb(start, end);
+            // initialize with defaults
+            $('#clientslist').DataTable({
+                //"scrollX": true,
+                //'paging'      : true,
+                //'lengthChange': false,
+                //'searching'   : false,
+                //'ordering'    : true,
+                //'info'        : true,
+                //"iDisplayLength" : 10,
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                dom: 'Blfrtip',
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+            });
+
+            $("#applyDate").on("click", function(){
+                $("#holder_loading").show();
+                var txt = $.trim($('#rangeDate').val());
+                txt = txt.split("-");
+                var from = $.trim(txt[0]);
+                var to = $.trim(txt[1]);
+                window.location.href = "{{ path('report_index') }}?from="+from+"&to="+to;
+            })
+        });    
+    </script>
+{% endblock %}
+
