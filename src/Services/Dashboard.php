@@ -143,6 +143,111 @@ class Dashboard
         return $result;
     }
 
+    public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false)
+    {
+        $itemLoans = array();
+        $arrIdLoans = array();
+        if( is_array($periodDays) )
+        {
+            $RAW_QUERY  = " SELECT * FROM loan_payment lp
+                            INNER JOIN loan l ON l.loa_id = lp.loa_id
+                            INNER JOIN `client` c ON c.cli_id = l.cli_id
+
+                            WHERE c.usr_id = $userId ";
+
+            if( is_array($periodDays) )
+            {
+                //echo "ayy";
+                $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."' ";
+            }
+            //echo $RAW_QUERY;
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            if( count($result) > 0 )
+            {
+                foreach($result as $value)
+                {
+                    $itemLoans[$value["loa_id"]] = array(
+                                                        "lpa_id"=>$value["lpa_id"],  
+                                                        "paid"=>$value["lpa_total_amount_paid"],
+                                                        "loa_id"=>$value["loa_id"], 
+                                                        "note"=>$value["lpa_note"],
+                                                        "rate"=>$value["lpa_current_rate_interest"]
+                                                    );
+                }
+            }
+        }
+        //var_dump( $itemLoans);
+        if( count($itemLoans) > 0 )
+        {
+            foreach($itemLoans as $v)
+            {
+                array_push($arrIdLoans, $v["loa_id"]);
+            }
+            $RAW_QUERY  = "SELECT";
+            
+            if( $count )
+            {
+                $RAW_QUERY .= " COUNT(*) AS total ";
+            }
+            else
+            {
+                $RAW_QUERY  .= " l.loa_id, l.loa_code, loc.loc_key, 
+                            CONCAT('', c.cli_first_name, c.cli_middle_name, c.cli_first_surname, c.cli_second_surname) AS name, 
+                            l.loa_rate_interest, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount ";
+            }
+            $RAW_QUERY  .= " FROM loan l 
+                            INNER JOIN `client` c ON l.cli_id = c.cli_id
+                            INNER JOIN `user` u ON c.usr_id = u.usr_id
+                            INNER JOIN loan_category loc ON l.loc_id = loc.loc_id
+                            WHERE l.loa_active = 1 AND l.loa_id in (".implode(',', $arrIdLoans) .") ";
+
+      echo      $RAW_QUERY  .= " AND u.usr_id = $userId ";
+            //$category = "";
+            if( $category )
+            {
+                $RAW_QUERY .= " AND loc.loc_key = '".$category."'"; 
+            }
+
+            if( $completed >=0 )
+            {
+                $RAW_QUERY .= " AND l.loa_completed in (".$completed.")"; 
+            }
+
+            if( $limit )
+            {
+                $RAW_QUERY .= " ORDER BY l.loa_id DESC LIMIT ".$limit; 
+            }
+
+            $arr = array();
+            //echo $RAW_QUERY;
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            //var_dump($result);
+            $num = 0;
+            foreach( $result  as $item)
+            {
+                //echo $item["name"]."- ";
+                $arr[$num]["loa_id"] = $item["loa_id"];
+                $arr[$num]["loa_code"] = $item["loa_code"];
+                $arr[$num]["loc_key"] = $item["loc_key"];
+                $arr[$num]["name"] = $item["name"];
+                $arr[$num]["loa_rate_interest"] = $item["loa_rate_interest"];
+                $arr[$num]["loa_recurring_day_payment"] = $item["loa_recurring_day_payment"];
+                $arr[$num]["loa_deadline"] = $item["loa_deadline"];
+                $arr[$num]["loa_amount"] = $item["loa_amount"];
+
+                $arr[$num]["amount_paid"] =  $itemLoans[$item["loa_id"]]["paid"];
+                $arr[$num]["note"] =  $itemLoans[$item["loa_id"]]["note"];
+                $arr[$num]["rate"] =  $itemLoans[$item["loa_id"]]["rate"];
+                $num++;
+            }
+            return $arr;
+        }
+    }
+
     public function getLoansDetail($userId, $periodCompletedDate=false, $statusCompleted)
     {
         $RAW_QUERY  = "SELECT l.*, c.* FROM loan l 

@@ -39,7 +39,7 @@
 
 <section class="content-header">
       <h1>
-        Dashboard
+        Reports
         <small></small>
       </h1>
       {#
@@ -55,7 +55,7 @@
     <div class="col-lg-8">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Payments</h3>
+                <h3 class="box-title">Filter date</h3>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -78,7 +78,83 @@
                     </div>
                 </div>
                 <hr>
-                 
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate) %}
+                        {% if lastLoan|length > 0 %}
+                            <table class="table table-striped" id="clientslist">
+                                <thead>
+                                    <tr>
+                                        <td>Code</td>
+                                        <td>
+                                            Interest %
+                                        </td>
+                                        <td>Name</td>
+                                        <td></td>
+                                        <td>Pending to pay </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in lastLoan %}
+                                    <tr>
+                                        <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
+                                        <td>
+                                            {#
+                                            {% if  item.loc_key == "active_rate" %}
+                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {% if pending %}
+                                                    {% set rate = pending.rate %}   
+                                                    <span class="amounts">{{ rate }}%</span> 
+                                                {% else %}
+                                                    {% set rate = item.loa_rate_interest %}
+                                                    <span class="amounts">{{ rate }}%</span>     
+                                                {% endif %}
+                                            {% endif %}
+                                            -
+                                            #}
+                                            {% set rate =  item.rate %}
+                                            <span class="amounts">{{ item.rate }}%</span>
+                                        </td>
+                                        <td>
+                                            {{ item.name }}
+                                        </td>
+                                        <td>
+                                        Esto esta malo corregir y poner filtro de fecha
+                                        {% if item.loc_key == "active_rate" %}
+                                            {% set paidAmount = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+                                            {% if paidAmount %}
+                                                {% set money = (item.loa_amount - paidAmount[0]['paidCapital']) %}
+                                            {% else %}
+                                                {% set money = item.loa_amount %}
+                                            {% endif %}
+                                            
+                                                Pending amount of interest rate
+                                                <span class="amounts">
+                                                    
+                                                    ${{  ((money) * (rate/100))|number_format(2, '.', ',') }} - 
+                                                </span>
+                                            
+                                                
+                                                
+                                                    <span class="amounts">
+                                                    Capital = ${{ money|number_format(2, '.', ',') }} 
+                                                      
+                                                    </span>
+                                                
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if  item.loc_key == "active_rate" %}
+                                                ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>    
+                                {% endfor %}
+                                </tbody>    
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,37 +168,7 @@
             </div>
             <div class="box-footer text-center"></div>
         </div>
-        {% set lastLoan = srv_Dashboard.getLoans(app.user.usrId, false, false, 5, "0,1", false) %}
-        {% if lastLoan|length > 0 %}
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Recently Loans Created</h3>
-                </div>
-                <div class="box-body">
-                    <ul class="products-list product-list-in-box">
-                        {% for item in lastLoan %}
-                            <li class="item">
-                               <div class="product-img">
-                                    {% set image = item.cli_profile_image %}
-                                    {% if file_exists( 'uploads/'~image ) and image != "" %}
-                                        <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
-                                    {% else %}
-                                        <div class="text-center">
-                                            <img src="{{ image('bundles/app/images/user.png').cropResize(50,50)  }} " class="img-thumbnail" alt="image">
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                <div class="product-info">
-                                    <a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a>
-                                    <div class="product-description">{{ item.cli_first_name ~" "~ item.cli_middle_name ~" "~ item.cli_first_surname ~"" ~ item.cli_second_surname}}</div>
-                                </div>
-                            </li>
-                        {% endfor %}    
-                    </ul>
-                </div>
-                <div class="box-footer text-center"><a href="{{ path('loan_index') }}">View all Loans</a></div>
-            </div>
-        {% endif %}  
+          
         <div class="info-box">
             <span class="info-box-icon bg-blue"><i class="ion ion-ios-people-outline"></i></span>
             <div class="info-box-content">
@@ -186,7 +232,7 @@
                 //'searching'   : false,
                 //'ordering'    : true,
                 //'info'        : true,
-                //"iDisplayLength" : 10,
+                "iDisplayLength" : 10,
                 "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
                 'autoWidth'   : false,
                 //'dom': 'Bfrtip',
