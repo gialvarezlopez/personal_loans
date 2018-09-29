@@ -1,0 +1,108 @@
+AppBundle\Entity\LoanPayment:
+    type: entity
+    table: loan_payment
+    indexes:
+        FK_loan_payment_loan:
+            columns:
+                - loa_id
+        lpa_max_payment_date:
+            columns:
+                - lpa_max_payment_date
+        lpa_paid_date:
+            columns:
+                - lpa_paid_date
+        FK_loan_payment_loan_payment_type:
+            columns:
+                - lpt_id
+    id:
+        lpaId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: lpa_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        lpaMaxPaymentDate:
+            type: date
+            nullable: false
+            column: lpa_max_payment_date
+        lpaPaidDate:
+            type: date
+            nullable: true
+            column: lpa_paid_date
+        lpaPaidRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_paid_rate_interest
+        lpaPaidCapital:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_paid_capital
+        lpaCurrentRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_current_rate_interest
+        lpaCurrentAmount:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            options:
+                comment: 'just for loan with no interest rate'
+            column: lpa_current_amount
+        lpaTotalAmountPaid:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_total_amount_paid
+        lpaNextRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_next_rate_interest
+        lpaNote:
+            type: string
+            nullable: true
+            length: 240
+            options:
+                fixed: false
+            column: lpa_note
+        lpaIsPayment:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: lpa_is_payment
+    manyToOne:
+        loa:
+            targetEntity: Loan
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                loa_id:
+                    referencedColumnName: loa_id
+            orphanRemoval: false
+        lpt:
+            targetEntity: LoanPaymentType
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                lpt_id:
+                    referencedColumnName: lpt_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }
