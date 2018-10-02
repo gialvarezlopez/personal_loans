@@ -171,7 +171,7 @@ class LoanController extends Controller
                 $oLoanPayment->setLoa( $loan );
                 $oLoanPayment->setLpaCurrentRateInterest( $rate );
                 $oLoanPayment->setLpaNextRateInterest( $rate );
-                //$oLoanPayment->setLpaCurrentAmount( $amount );
+                $oLoanPayment->setLpaCurrentAmount( $form->get("loaAmount")->getData() );
                 $em->persist($oLoanPayment);
                 $em->flush();
             }
@@ -392,7 +392,8 @@ class LoanController extends Controller
                     if( $oLoanPayment )
                     {
                         //echo "dentro";
-                        if( $oLoanPayment->getLpaTotalAmountPaid() > 0 )
+                        //if( $oLoanPayment->getLpaTotalAmountPaid() > 0 )
+                        if( count($oLoanPayment) == 0 )
                         {
                             //$oLoanPayment->setLpaMaxPaymentDate($deadline);
                             $oLoanPayment = new LoanPayment();

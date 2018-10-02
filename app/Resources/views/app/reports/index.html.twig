@@ -39,7 +39,7 @@
 
 <section class="content-header">
       <h1>
-        Reports
+        Last payments report
         <small></small>
       </h1>
       {#
@@ -90,8 +90,17 @@
                                             Interest %
                                         </td>
                                         <td>Name</td>
-                                        <td></td>
+                                        <td>Paid Interest</td>
+                                        <td>Paid Capital</td>
+                                        
                                         <td>Pending to pay </td>
+                                        <td>Note</td>
+
+                                        <td>Next Interest</td>
+                                        <td>Next Interest amont </td>
+                                        <td>Next Capita Capital amount</td>
+                                        <td>Total Payment </td>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -112,42 +121,97 @@
                                             {% endif %}
                                             -
                                             #}
-                                            {% set rate =  item.rate %}
-                                            <span class="amounts">{{ item.rate }}%</span>
+                                            {% set rate =  item.lpa_current_rate_interest %}
+                                            <span class="amounts">{{ item.lpa_current_rate_interest }}%</span>
                                         </td>
                                         <td>
                                             {{ item.name }}
                                         </td>
                                         <td>
-                                        Esto esta malo corregir y poner filtro de fecha
-                                        {% if item.loc_key == "active_rate" %}
-                                            {% set paidAmount = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
-                                            {% if paidAmount %}
-                                                {% set money = (item.loa_amount - paidAmount[0]['paidCapital']) %}
-                                            {% else %}
-                                                {% set money = item.loa_amount %}
-                                            {% endif %}
+                                        {# Esto esta malo corregir y poner filtro de fecha #}
+                                            {% if item.loc_key == "active_rate" %}
+                                            {#
+                                                {% set paidAmount = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+                                                {% if paidAmount %}
+                                                    {% set money = (item.loa_amount - paidAmount[0]['paidCapital']) %}
+                                                {% else %}
+                                                    {% set money = item.loa_amount %}
+                                                {% endif %}
                                             
                                                 Pending amount of interest rate
                                                 <span class="amounts">
                                                     
                                                     ${{  ((money) * (rate/100))|number_format(2, '.', ',') }} - 
                                                 </span>
-                                            
-                                                
-                                                
                                                     <span class="amounts">
                                                     Capital = ${{ money|number_format(2, '.', ',') }} 
                                                       
                                                     </span>
+                                             #}       
+                                                ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}    
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.loc_key == "active_rate" %}
+                                                ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {% set pendingPayment = (item.loa_amount - item.lpa_paid_capital)  %}
+                                                ${{ pendingPayment|number_format(2, '.', ',')  }}
+                                            {% endif %}
+                                            {#
+                                            {% if  item.loc_key == "active_rate" %}
+                                                ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
+                                            {% endif %}
+                                            #}
+                                        </td>
+                                        <td>{{ item.note }}</td>
+                                        <td>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# next Interest #}
+
+                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {% if pending %}
+                                                
+                                                    {% set rate = pending.rate %}   
+                                                    <span class="amounts">{{ rate }}%</span> 
+                                                        
+                                                {% else %}
+                                                    Current Interest Rate
+                                                    {% set rate = item.loa_rate_interest %}
+                                                    <span class="amounts">{{ item.loa_rate_interest }}%</span>
+                                                         
+                                                {% endif %}
+
+                                                {# {{ item.lpa_next_rate_interest }}% #}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# Next Interest amont #}
+                                                ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
                                                 
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if  item.loc_key == "active_rate" %}
-                                                ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# Next Capita Capital amount #}
+                                                ${{ (pendingPayment)|number_format(2, '.', ',')  }}
+
                                             {% endif %}
                                         </td>
+                                        <td>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# Next Capita Capital amount #}
+                                                ${{  ((pendingPayment) * (item.lpa_next_rate_interest/100) + (pendingPayment))|number_format(2, '.', ',') }}
+                                                
+                                            {% endif %}
+                                        </td>
+                                       
+                                      
+                                        
                                     </tr>    
                                 {% endfor %}
                                 </tbody>    

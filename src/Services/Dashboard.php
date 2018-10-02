@@ -170,10 +170,16 @@ class Dashboard
                 {
                     $itemLoans[$value["loa_id"]] = array(
                                                         "lpa_id"=>$value["lpa_id"],  
-                                                        "paid"=>$value["lpa_total_amount_paid"],
+                                                        
                                                         "loa_id"=>$value["loa_id"], 
                                                         "note"=>$value["lpa_note"],
-                                                        "rate"=>$value["lpa_current_rate_interest"]
+                                                        "lpa_current_rate_interest"=>$value["lpa_current_rate_interest"],
+                                                        "lpa_paid_rate_interest"=>$value["lpa_paid_rate_interest"],
+                                                        "lpa_paid_capital"=>$value["lpa_paid_capital"],
+                                                        "lpa_total_amount_paid"=>$value["lpa_total_amount_paid"],
+                                                        "lpa_current_amount"=>$value["lpa_current_amount"], // just no rate
+                                                        "lpa_next_rate_interest"=>$value["lpa_next_rate_interest"]
+                                                        
                                                     );
                 }
             }
@@ -203,7 +209,7 @@ class Dashboard
                             INNER JOIN loan_category loc ON l.loc_id = loc.loc_id
                             WHERE l.loa_active = 1 AND l.loa_id in (".implode(',', $arrIdLoans) .") ";
 
-      echo      $RAW_QUERY  .= " AND u.usr_id = $userId ";
+            $RAW_QUERY  .= " AND u.usr_id = $userId ";
             //$category = "";
             if( $category )
             {
@@ -239,9 +245,16 @@ class Dashboard
                 $arr[$num]["loa_deadline"] = $item["loa_deadline"];
                 $arr[$num]["loa_amount"] = $item["loa_amount"];
 
-                $arr[$num]["amount_paid"] =  $itemLoans[$item["loa_id"]]["paid"];
+                $arr[$num]["lpa_current_rate_interest"] =  $itemLoans[$item["loa_id"]]["lpa_current_rate_interest"];
+                $arr[$num]["lpa_paid_rate_interest"] =  $itemLoans[$item["loa_id"]]["lpa_paid_rate_interest"];  
+                $arr[$num]["lpa_paid_capital"] =  $itemLoans[$item["loa_id"]]["lpa_paid_capital"]; 
+                $arr[$num]["lpa_total_amount_paid"] =  $itemLoans[$item["loa_id"]]["lpa_total_amount_paid"];
+                $arr[$num]["lpa_current_amount"] =  $itemLoans[$item["loa_id"]]["lpa_current_amount"];
+                $arr[$num]["lpa_next_rate_interest"] =  $itemLoans[$item["loa_id"]]["lpa_next_rate_interest"];    
+
+                
                 $arr[$num]["note"] =  $itemLoans[$item["loa_id"]]["note"];
-                $arr[$num]["rate"] =  $itemLoans[$item["loa_id"]]["rate"];
+                
                 $num++;
             }
             return $arr;

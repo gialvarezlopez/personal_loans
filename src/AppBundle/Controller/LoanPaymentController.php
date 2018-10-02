@@ -67,13 +67,18 @@ class LoanPaymentController extends Controller
                 {
                     throw new AccessDeniedHttpException("Access Denied");
                 }
+
+               
             }
         }
 
         
-
+        $loanType = $oLoan->getLoc()->getLocKey();
         if ($form->isSubmitted() && $form->isValid()) {
             //$em = $this->getDoctrine()->getManager();
+            
+            //exit();
+
             $endLoan = $request->get("endLoan");
             $nextRate = $form->get("loaNextInterestRate")->getData();
             $nextPayment = $form->get("loaNextPaymentDate")->getData();
@@ -125,6 +130,11 @@ class LoanPaymentController extends Controller
             $loanPayment->setLpaNextRateInterest( $nextRate );
             $loanPayment->setLpaTotalAmountPaid($totalAmountPaid);
 
+            if( $loanType == "active_rate" )
+            {
+                $loanPayment->setLpaCurrentAmount($oLoan->getLoaAmount());
+            }
+
             $loanPayment->setLoa($oLoan);
             $em->persist($loanPayment);
             $em->flush();
@@ -132,7 +142,7 @@ class LoanPaymentController extends Controller
             return $this->redirectToRoute('loanpayment_quotasHistory', array('loaId' => $loanId ));
         }
 
-        $loanType =  $oLoan->getLoc()->getLocKey();
+        //$loanType =  $oLoan->getLoc()->getLocKey();
         if( $loanType == "active_rate" )
         {
             $template = "active_rate";
