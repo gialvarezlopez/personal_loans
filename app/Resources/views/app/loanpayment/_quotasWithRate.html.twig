@@ -17,8 +17,8 @@
                     <th><div class="col text-center">A</div>#</th>
                     <th><div class="col text-center">B</div>Date paid quota</th>
                     <th><div class="col text-center">C</div>Max date to payment</th>
-                    
-                    <th><div class="col text-center">D</div>Amount</th>
+                    <th class="no-sort"></th>
+                    <th colspan><div class="col text-center">D</div>Amount</th>
                     <th><div class="col text-center">E</div>Interest</th>
                     <th><div class="col text-center">F</div>Col(D) x Col(E)<div class="col text-center">Sub Total</div></th>
                     <th style="background-color: #d2d6de"><div class="col text-center">G<br>Col(D) + Col(F)</div><div class="col text-center">Total</div></th>
@@ -41,8 +41,10 @@
                 {% set totalPaid = 0 %} 
                 {% set totalCapital = 0 %}
                 {% set totalRate = 0 %}
+
+                {% set last = 0 %}
                 {% for payment in payments %}
-                    
+                    {% set iniAmount = payment.lpaCurrentAmount %}
                     {% set pendingAmount =  (iniAmount  -  payment.lpaPaidCapital)  %}
                     {% set  iniAmount =  pendingAmount %}
 
@@ -53,15 +55,37 @@
                         <td>{{ num }}</td>
                         <td>{{ payment.lpaPaidDate|date('Y-m-d') }}</td>
                         <td>{{ payment.lpaMaxPaymentDate|date("Y-m-d") }}</td>
-                        <td>
-                            {% if lastP == 0 %}
+                        {% if lastP == 0 %}
                                 {% set prev = (pendingAmount +  payment.lpaPaidCapital) %}
                                 {# ${{ (pendingAmount +  payment.lpaPaidCapital)|number_format(2, '.', ',') }} #}
                             {% else %}
                                 {% set prev = lastP %}
                                
-                            {% endif %}  
+                        {% endif %}  
+
+                            
+
+                        {% if last != payment.lpaCurrentAmount %}
+                            {% set prev =  payment.lpaCurrentAmount  %}
+                            {# {% else %} #}
+                                
+                        {% endif %}
+                        <td>
+                            {% if last > 0 %}
+                                {% set added = payment.lpaCurrentAmount - last %}
+                                {% if added !="" %}
+                                    {% if added > 0 %}+{% else %}+{% endif %}
+                                    ${{ added|number_format(2, '.', ',') }} = 
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            
+
+
                              <span class="label label-default amounts">${{ prev|number_format(2, '.', ',')  }}</span>  
+                            
+                             
                         </td>
                         <td>
                             <span class="label label-default amounts">
@@ -117,6 +141,9 @@
                         {% set totalPaid = totalPaid + payment.lpaTotalAmountPaid %}
                         {% set totalCapital = totalCapital + payment.lpaPaidCapital %}
                         {% set totalRate = totalRate + payment.lpaPaidRateInterest %}
+
+
+                        {% set last =  payment.lpaCurrentAmount  %}
                     </tr>
                     {#
                     <tr>
@@ -158,6 +185,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    
                     
                     
                     <th><span class="label label-success amounts">${{ totalPaid|number_format(2, '.', ',') }}</span></th>
