@@ -25,6 +25,22 @@
 .table .label{
     font-size: 13px !important;
 }
+.titleTypeColumn{
+    display:inline-block;
+    width:170px;
+}
+#prevP, .prevP{
+    background:#D2D6DE;
+}
+#nextP, .nextP{
+    background: #00C0EF;
+}
+
+#prevP, #nextP{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
 </style>
 
 {#  Check the notifications #}
@@ -82,31 +98,65 @@
                     <div class="col-lg-12">
                         {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate) %}
                         {% if lastLoan|length > 0 %}
-                            <table class="table table-striped" id="clientslist">
+                            {#
+                            <span id="prevP">&#160;</span> Previous Payment
+                            <span id="nextP">&#160;</span> Next Payment
+                            <br><br>
+                            #}
+                            <div id="headerToggle">
+                                <p>
+                                <span class="titleTypeColumn">Previous Payment Columns: </span>
+                                    {#
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="0" checked/>Code</label>
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="1" checked/>Name</label> 
+                                    #}
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="2" />Previous interest %</label>
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="3"/>Paid interest</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="4"/>Paid capital</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="5"/>Pending to pay</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="6"/>Note</label>
+                                </p>    
+                                <p>
+                                    <span class="titleTypeColumn">Next Payment Columns:</span> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="7" checked/>Next interest</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="8" checked/>Next interest amount</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="9" checked/>Next capita amount</label> 
+                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="10" checked/>Total payment</label>
+                                </p>
+                                <hr>
+                            </div>
+                            <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
                                 <thead>
                                     <tr>
+                   
+                                        <th colspan="2" class="text-center"></th>
+
+                                        <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">Previous Payments</th>
+                                        <th colspan="4" style="background-color: #00C0EF; color: #fff" class="text-center">Next Payment</th>
+
+                                    </tr>
+                                    <tr>
                                         <td>Code</td>
-                                        <td>
-                                            Interest %
-                                        </td>
                                         <td>Name</td>
-                                        <td>Paid Interest</td>
-                                        <td>Paid Capital</td>
-                                        
+                                        <td>Previous interest %</td>
+                                        <td>Paid interest</td>
+                                        <td>Paid capital</td>
                                         <td>Pending to pay </td>
                                         <td>Note</td>
-
-                                        <td>Next Interest</td>
-                                        <td>Next Interest amont </td>
-                                        <td>Next Capita Capital amount</td>
-                                        <td>Total Payment </td>
-                                        
+                                        <td>Next interest</td>
+                                        <td>Next interest amount </td>
+                                        <td>Next capita amount</td>
+                                        <td>Total payment </td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {% for item in lastLoan %}
                                     <tr>
                                         <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
+                                        
+                                        <td>
+                                            {{ item.name }}
+                                        </td>
                                         <td>
                                             {#
                                             {% if  item.loc_key == "active_rate" %}
@@ -121,11 +171,17 @@
                                             {% endif %}
                                             -
                                             #}
-                                            {% set rate =  item.lpa_current_rate_interest %}
-                                            <span class="amounts">{{ item.lpa_current_rate_interest }}%</span>
-                                        </td>
-                                        <td>
-                                            {{ item.name }}
+                                            {% if item.loc_key == "active_rate" %}
+                                                {% set rate =  item.lpa_current_rate_interest %}
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                        <span class="amounts">{{ item.lpa_current_rate_interest }}%</span>
+                                                {% else %}
+                                                        N/A      
+                                                {% endif %}
+                                            {% else %}
+                                                N/A    
+                                            {% endif %}
+                                            
                                         </td>
                                         <td>
                                         {# Esto esta malo corregir y poner filtro de fecha #}
@@ -147,25 +203,43 @@
                                                     Capital = ${{ money|number_format(2, '.', ',') }} 
                                                       
                                                     </span>
-                                             #}       
-                                                ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}    
+                                             #}   
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                    ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}  
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
-                                                ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}
+                                                
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                    ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}
                                             {% endif %}
+
+                                            
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {% set pendingPayment = (item.loa_amount - item.lpa_paid_capital)  %}
-                                                ${{ pendingPayment|number_format(2, '.', ',')  }}
+                                                
+
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                    ${{ pendingPayment|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}
                                             {% endif %}
                                             {#
                                             {% if  item.loc_key == "active_rate" %}
                                                 ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
                                             {% endif %}
                                             #}
+                                           
                                         </td>
                                         <td>{{ item.note }}</td>
                                         <td>
@@ -179,7 +253,7 @@
                                                     <span class="amounts">{{ rate }}%</span> 
                                                         
                                                 {% else %}
-                                                    Current Interest Rate
+                                                    
                                                     {% set rate = item.loa_rate_interest %}
                                                     <span class="amounts">{{ item.loa_rate_interest }}%</span>
                                                          
@@ -291,8 +365,8 @@
 
             cb(start, end);
             // initialize with defaults
-            $('#clientslist').DataTable({
-                //"scrollX": true,
+            var table = $('#clientslist').DataTable({
+                "scrollX": true,
                 //'paging'      : true,
                 //'lengthChange': false,
                 //'searching'   : false,
@@ -307,9 +381,33 @@
                     'copyHtml5',
                     'excelHtml5',
                     'csvHtml5',
-                    'pdfHtml5'
+                    'pdfHtml5',
+                    //'colvis'
                 ],
+                
+                
             });
+            $("#headerToggle input:checkbox").each(function(){
+                if( !$(this).is(':checked') )
+                {
+                    // Get the column API object
+                    var column = table.column( $(this).attr('data-column') );
+            
+                    // Toggle the visibility
+                    column.visible( ! column.visible() );
+                }
+            });
+            $('.toggle-vis').change(function () {
+            //$('a.toggle-vis').on( 'click', function (e) {
+                //e.preventDefault();
+        
+                // Get the column API object
+                var column = table.column( $(this).attr('data-column') );
+        
+                // Toggle the visibility
+                column.visible( ! column.visible() );
+            } );
+            
 
             $("#applyDate").on("click", function(){
                 $("#holder_loading").show();

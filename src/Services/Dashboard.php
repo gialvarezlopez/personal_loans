@@ -158,7 +158,10 @@ class Dashboard
             if( is_array($periodDays) )
             {
                 //echo "ayy";
-                $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."' ";
+                $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."' 
+                        OR
+                    (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL)
+                ";
             }
             //echo $RAW_QUERY;
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
@@ -190,6 +193,7 @@ class Dashboard
             foreach($itemLoans as $v)
             {
                 array_push($arrIdLoans, $v["loa_id"]);
+                //echo $v["loa_id"]." - ";
             }
             $RAW_QUERY  = "SELECT";
             
@@ -200,7 +204,7 @@ class Dashboard
             else
             {
                 $RAW_QUERY  .= " l.loa_id, l.loa_code, loc.loc_key, 
-                            CONCAT('', c.cli_first_name, c.cli_middle_name, c.cli_first_surname, c.cli_second_surname) AS name, 
+                            CONCAT_WS(' ', c.cli_first_name, c.cli_middle_name, c.cli_first_surname, c.cli_second_surname) AS name, 
                             l.loa_rate_interest, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount ";
             }
             $RAW_QUERY  .= " FROM loan l 
