@@ -143,7 +143,7 @@ class Dashboard
         return $result;
     }
 
-    public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false)
+    public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false, $optOption = false)
     {
         $itemLoans = array();
         $arrIdLoans = array();
@@ -157,11 +157,25 @@ class Dashboard
 
             if( is_array($periodDays) )
             {
-                //echo "ayy";
-                $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."' 
-                        OR
-                    (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL)
-                ";
+                //echo "ayy"; 
+                // 1 = Next Payment, 2 = Prev Payment, 3 = Both
+                if( $optOption == 3 )
+                {
+                    $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."'
+                            OR
+                        (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL)
+                    ";
+                }
+                else
+                { 
+                    if( $optOption == 1 )
+                    {
+                        $RAW_QUERY .=  " AND (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL) ";
+                    }else if( $optOption == 2 ) {
+                        $RAW_QUERY .=  " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."'";
+                    }
+
+                }
             }
             //echo $RAW_QUERY;
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);

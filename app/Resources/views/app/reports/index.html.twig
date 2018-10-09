@@ -75,6 +75,20 @@
             </div>
             <div class="box-body">
                 <div class="row">
+                    <div class="col-lg-12">
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked> Next Payment
+                        </label>
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio2" value="2"> Previous Payment
+                        </label>
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio3" value="3"> Show Both
+                        </label>
+                    </div>
+                    <br><br>
+                </div>
+                <div class="row">
                     <div class="col-lg-6">
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -96,20 +110,17 @@
                 <hr>
                 <div class="row">
                     <div class="col-lg-12">
-                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate) %}
+                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate, opt) %}
                         {% if lastLoan|length > 0 %}
                             {#
                             <span id="prevP">&#160;</span> Previous Payment
                             <span id="nextP">&#160;</span> Next Payment
                             <br><br>
                             #}
+                            {#
                             <div id="headerToggle">
                                 <p>
                                 <span class="titleTypeColumn">Previous Payment Columns: </span>
-                                    {#
-                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="0" checked/>Code</label>
-                                    <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="1" checked/>Name</label> 
-                                    #}
                                     <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="2" />Previous interest %</label>
                                     <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="3"/>Paid interest</label> 
                                     <label class="checkbox-inline"><input type="checkbox" class="toggle-vis" data-column="4"/>Paid capital</label> 
@@ -125,6 +136,7 @@
                                 </p>
                                 <hr>
                             </div>
+                            #}
                             <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
                                 <thead>
                                     <tr>
@@ -279,7 +291,7 @@
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Capita Capital amount #}
-                                                ${{  ((pendingPayment) * (item.lpa_next_rate_interest/100) + (pendingPayment))|number_format(2, '.', ',') }}
+                                                ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
                                                 
                                             {% endif %}
                                         </td>
@@ -387,6 +399,7 @@
                 
                 
             });
+            /*
             $("#headerToggle input:checkbox").each(function(){
                 if( !$(this).is(':checked') )
                 {
@@ -407,15 +420,23 @@
                 // Toggle the visibility
                 column.visible( ! column.visible() );
             } );
+            */
             
+            var radio = "{{ app.request.get('opt') }}";
+            if( radio > 0 && radio < 4 )
+            {
+                $("input[name=optFilter][value=" + radio + "]").prop('checked', true);
+            }
 
             $("#applyDate").on("click", function(){
                 $("#holder_loading").show();
+                var opt = $("input[name='optFilter']:checked").val();
+                //alert(opt);
                 var txt = $.trim($('#rangeDate').val());
                 txt = txt.split("-");
                 var from = $.trim(txt[0]);
                 var to = $.trim(txt[1]);
-                window.location.href = "{{ path('report_index') }}?from="+from+"&to="+to;
+                window.location.href = "{{ path('report_index') }}?from="+from+"&to="+to+"&opt="+opt;
             })
         });    
     </script>

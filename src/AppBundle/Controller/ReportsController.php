@@ -32,6 +32,7 @@ class ReportsController extends Controller
 
         $from = $request->get("from");
         $to = $request->get("to");
+        $opt = $request->get("opt");
 
         if( isset($from) && $from != "" && isset($to) && $to != "")
         {
@@ -42,7 +43,15 @@ class ReportsController extends Controller
         else
         {
             $periodDate =  $this->inicio_fin_semana();
+
             //echo "else";
+        }
+
+        if( isset($opt) && ( $opt > 0 && $opt < 4) )
+        {
+            $radioOpt = $opt;
+        }else{
+            $radioOpt = 1; //1 = Next patment, 2 = prev payment, 3 = both
         }
         //$week =  $this->inicio_fin_semana();
         //var_dump($res);
@@ -51,6 +60,7 @@ class ReportsController extends Controller
         //$loans = $dashboard->getLoans($userId, $count = false,  $category=false, $limit=false);
         return $this->render('app/reports/index.html.twig', array(
             'periodDate' => $periodDate,
+            "opt" => $radioOpt 
         ));
         //return $this->render("AppBundle:user:login.html.twig");
     }
