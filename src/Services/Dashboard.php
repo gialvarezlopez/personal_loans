@@ -217,9 +217,9 @@ class Dashboard
             }
             else
             {
-                $RAW_QUERY  .= " l.loa_id, l.loa_code, loc.loc_key, 
+                $RAW_QUERY  .= " l.loa_id, l.loa_code, loc.loc_key,loc.loc_type, 
                             CONCAT_WS(' ', c.cli_first_name, c.cli_middle_name, c.cli_first_surname, c.cli_second_surname) AS name, 
-                            l.loa_rate_interest, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount ";
+                            l.loa_rate_interest, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount";
             }
             $RAW_QUERY  .= " FROM loan l 
                             INNER JOIN `client` c ON l.cli_id = c.cli_id
@@ -257,6 +257,7 @@ class Dashboard
                 $arr[$num]["loa_id"] = $item["loa_id"];
                 $arr[$num]["loa_code"] = $item["loa_code"];
                 $arr[$num]["loc_key"] = $item["loc_key"];
+                $arr[$num]["loc_type"] = $item["loc_type"];
                 $arr[$num]["name"] = $item["name"];
                 $arr[$num]["loa_rate_interest"] = $item["loa_rate_interest"];
                 $arr[$num]["loa_recurring_day_payment"] = $item["loa_recurring_day_payment"];
@@ -389,6 +390,27 @@ class Dashboard
             $periodDetail["periodPaidRate"] = $periodPaidRate; 
         }
         return array("total"=>count($result), "totalDetail" => $totalDetail, "periodDetail"=> $periodDetail); 
+    }
+
+    public function getPrevAndNextPaymentNoRate($loanId, $type=false)
+    {
+        if( !empty($loanId) && $type !="" )
+        {
+            if($type == "prev")
+            {
+                $filter  = " AND lpa_total_amount_paid IS NOT NULL ORDER BY lpa_id DESC LIMIT 1";
+            }
+            else
+            {
+                $filter  = " AND lpa_total_amount_paid IS NULL ORDER BY lpa_id ASC LIMIT 1 ";
+            }
+            $RAW_QUERY  = "SELECT * FROM loan_payment WHERE loa_id = $loanId  $filter ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return $result;
+            
+        }
     }
 
     public function getClients($userId)

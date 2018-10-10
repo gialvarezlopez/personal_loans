@@ -131,7 +131,7 @@
                                     <td>Payments done</td>
                                     <td>
                                         <span class="amounts">
-                                        {% set totalReturnAmountPaid = srv_Loans.getTotalReturnAmountPaid(loanId) %}
+                                        {% set totalReturnAmountPaid = srv_Loans.getTotalAmountPaid(loanId) %}
                                         ${{ totalReturnAmountPaid|number_format(2, '.', ',') }}
                                         </span>
                                     </td>

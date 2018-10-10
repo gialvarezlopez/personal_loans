@@ -77,10 +77,10 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <label class="radio-inline">
-                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked> Next Payment
+                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked> Next Payments(Payments to do in selected dates)
                         </label>
                         <label class="radio-inline">
-                        <input type="radio" name="optFilter" id="inlineRadio2" value="2"> Previous Payment
+                        <input type="radio" name="optFilter" id="inlineRadio2" value="2"> Previous Payments(Payments done in selected dates)
                         </label>
                         <label class="radio-inline">
                         <input type="radio" name="optFilter" id="inlineRadio3" value="3"> Show Both
@@ -141,7 +141,7 @@
                                 <thead>
                                     <tr>
                    
-                                        <th colspan="2" class="text-center"></th>
+                                        <th colspan="3" class="text-center"></th>
 
                                         <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">Previous Payments</th>
                                         <th colspan="4" style="background-color: #00C0EF; color: #fff" class="text-center">Next Payment</th>
@@ -149,6 +149,7 @@
                                     </tr>
                                     <tr>
                                         <td>Code</td>
+                                        <td>Loan Type</td>
                                         <td>Name</td>
                                         <td>Previous interest %</td>
                                         <td>Paid interest</td>
@@ -157,7 +158,7 @@
                                         <td>Note</td>
                                         <td>Next interest</td>
                                         <td>Next interest amount </td>
-                                        <td>Next capita amount</td>
+                                        <td>Next capital amount</td>
                                         <td>Total payment </td>
                                     </tr>
                                 </thead>
@@ -165,7 +166,7 @@
                                 {% for item in lastLoan %}
                                     <tr>
                                         <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
-                                        
+                                        <td>{{ item.loc_type }}</td>
                                         <td>
                                             {{ item.name }}
                                         </td>
@@ -192,6 +193,11 @@
                                                 {% endif %}
                                             {% else %}
                                                 N/A    
+                                                {# No Interesrt Rate#}
+                                                {% set prevData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "prev") %}
+                                                {% set nextData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "next") %}
+                                                {% set returnAmount = srv_Loans.getTotalReturnAmountRequested(item.loa_id) %} 
+                                                {% set totalReturnAmountPaid = srv_Loans.getTotalAmountPaid(item.loa_id) %}
                                             {% endif %}
                                             
                                         </td>
@@ -220,8 +226,12 @@
                                                     ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}
                                                 {% else %}
                                                     N/A      
-                                                {% endif %}  
+                                                {% endif %}
+                                            {% else %}
+                                                ${{ prevData[0].lpa_paid_rate_interest|number_format(2, '.', ',')  }}
                                             {% endif %}
+
+                                             
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
@@ -231,8 +241,12 @@
                                                 {% else %}
                                                     N/A      
                                                 {% endif %}
+                                            {% else %}
+                                                
+                                                ${{ prevData[0].lpa_paid_capital|number_format(2, '.', ',')  }}    
                                             {% endif %}
 
+                                            
                                             
                                         </td>
                                         <td>
@@ -245,7 +259,11 @@
                                                 {% else %}
                                                     N/A      
                                                 {% endif %}
+                                            {% else %} 
+                                                ${{ (returnAmount - totalReturnAmountPaid)|number_format(2, '.', ',') }}
                                             {% endif %}
+
+                                            
                                             {#
                                             {% if  item.loc_key == "active_rate" %}
                                                 ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
@@ -272,27 +290,32 @@
                                                 {% endif %}
 
                                                 {# {{ item.lpa_next_rate_interest }}% #}
+                                            {% else %}
+                                                N/A    
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Interest amont #}
                                                 ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
-                                                
+                                            {% else %}
+                                                N/A     
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Capita Capital amount #}
                                                 ${{ (pendingPayment)|number_format(2, '.', ',')  }}
-
+                                            {% else %}
+                                                N/A 
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Capita Capital amount #}
                                                 ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
-                                                
+                                            {% else %}
+                                                 ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }}
                                             {% endif %}
                                         </td>
                                        

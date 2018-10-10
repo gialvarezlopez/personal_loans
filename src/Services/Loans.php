@@ -96,6 +96,18 @@ class Loans
         }
     }
 
+    function getTotalAmountPaid($loanId)
+    {
+        if( !empty($loanId) )
+        {
+            $RAW_QUERY  = "SELECT SUM(lpa_total_amount_paid) as total FROM loan_payment WHERE loa_id = $loanId AND lpa_paid_date !='' ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return ($result[0]["total"]);   
+        }
+    }
+
     //Get last payment done for the client
     function getLastPayment($loanId)
     {
