@@ -4,12 +4,12 @@ client_index:
     methods:  GET
 
 client_show:
-    path:     /{cliId}/show
+    path:     /{cliId}/show/
     defaults: { _controller: "AppBundle:Client:show" }
     methods:  [GET, POST]
 
 client_new:
-    path:     /new
+    path:     /new/
     defaults: { _controller: "AppBundle:Client:new" }
     methods:  [GET, POST]
 

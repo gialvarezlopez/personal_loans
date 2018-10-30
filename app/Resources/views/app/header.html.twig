@@ -142,8 +142,14 @@
               </li>
               #}
               <!-- Tasks: style can be found in dropdown.less -->
-              {#
+             
               <li class="dropdown tasks-menu">
+                {% if app.request.getLocale() == "en" %}
+                  <a href="{{ path('app_lang',{_locale:'es'}) }}"><img src="{{ asset('bundles/app/images/es-flag.png') }}" class="" title="Español" alt="Español"></a>
+                {% else %}
+                  <a href="{{ path('app_lang',{_locale:'en'}) }}"><img src="{{ asset('bundles/app/images/us-flag.png') }}" class="" title="English" alt="English"></a>
+                {% endif %}
+                {#
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-flag-o"></i>
                   <span class="label label-danger">9</span>
@@ -182,45 +188,17 @@
                           </div>
                         </a>
                       </li>
-                      <!-- end task item -->
-                      <li><!-- Task item -->
-                        <a href="#">
-                          <h3>
-                            Some task I need to do
-                            <small class="pull-right">60%</small>
-                          </h3>
-                          <div class="progress xs">
-                            <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar"
-                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                              <span class="sr-only">60% Complete</span>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <!-- end task item -->
-                      <li><!-- Task item -->
-                        <a href="#">
-                          <h3>
-                            Make beautiful transitions
-                            <small class="pull-right">80%</small>
-                          </h3>
-                          <div class="progress xs">
-                            <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar"
-                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                              <span class="sr-only">80% Complete</span>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <!-- end task item -->
+                      
+                      
                     </ul>
                   </li>
                   <li class="footer">
                     <a href="#">View all tasks</a>
                   </li>
                 </ul>
+                #}
               </li>
-              #}
+
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 {% if app.user != null %}

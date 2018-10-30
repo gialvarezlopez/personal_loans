@@ -23,31 +23,31 @@
           <!-- /.search form -->
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu" data-widget="tree">
-            <li class="header">Payment Gateways</li>
-            <li><a href="{{ path('payments_review') }}"><i class="fa fa-money" aria-hidden="true"></i> <span>Check membership</span></a></li>
-            <li><a href="{{ path('payments_info') }}"><i class="fa fa-book" aria-hidden="true"></i> <span>My transactions</span></a></li>
-            <li class="header">MAIN NAVIGATION</li>
-            <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard" aria-hidden="true"></i> <span>Dashboard</span></a></li>
-            <li><a href="{{ path('report_index') }}"><i class="fa fa-th" aria-hidden="true"></i> <span>Reports</span></a></li>
+            <li class="header">{% trans %}menu_left_payment_gateways{% endtrans %}</li>
+            <li><a href="{{ path('payments_review') }}"><i class="fa fa-money" aria-hidden="true"></i> <span>{% trans %}menu_left_check_membership{% endtrans %}</span></a></li>
+            <li><a href="{{ path('payments_info') }}"><i class="fa fa-book" aria-hidden="true"></i> <span>{% trans %}menu_left_my_transactions{% endtrans %}</span></a></li>
+            <li class="header">{% trans %}menu_left_main_navigation{% endtrans %}</li>
+            <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard" aria-hidden="true"></i> <span>{% trans %}menu_left_dashboard{% endtrans %}</span></a></li>
+            <li><a href="{{ path('report_index') }}"><i class="fa fa-th" aria-hidden="true"></i> <span>{% trans %}menu_left_reports{% endtrans %}</span></a></li>
             <li class="treeview">
               <a href="#">
-                <i class="fa fa-users"></i> <span>Clients</span>
+                <i class="fa fa-users"></i> <span>{% trans %}menu_left_clients{% endtrans %}</span>
                 <span class="pull-right-container">
                   <i class="fa fa-angle-left pull-right"></i>
                 </span>
               </a>
               <ul class="treeview-menu">
-                <li><a href="{{ path('client_index') }}"><i class="fa fa-list"></i> Clients List</a></li>
-                <li><a href="{{ path('client_new') }}"><i class="fa fa-user-plus"></i> New Client</a></li>
+                <li><a href="{{ path('client_index') }}"><i class="fa fa-list"></i> {% trans %}menu_left_client_list{% endtrans %}</a></li>
+                <li><a href="{{ path('client_new') }}"><i class="fa fa-user-plus"></i>{% trans %}menu_left_new_client{% endtrans %}</a></li>
               </ul>
             </li>
-            <li><a href="{{ path('loan_index') }}?sta=0"><i class="fa fa-handshake-o" aria-hidden="true"></i> <span>Loans</span></a></li>
-            <li><a href="{{ path('setProfileImage_show') }}"><i class="fa fa-file-image-o" aria-hidden="true"></i> <span>Image Profile</span></a></li>
+            <li><a href="{{ path('loan_index') }}?sta=0"><i class="fa fa-handshake-o" aria-hidden="true"></i> <span>{% trans %}menu_left_loans{% endtrans %}</span></a></li>
+            <li><a href="{{ path('setProfileImage_show') }}"><i class="fa fa-file-image-o" aria-hidden="true"></i> <span>{% trans %}menu_left_image_profile{% endtrans %}</span></a></li>
             {# 
             <li><a href="{{ path('medicaldetail_index') }}"><i class="fa fa-address-card-o" aria-hidden="true"></i></i> <span>Profile Info</span></a></li>
             <li><a href="{{ path('contactinfo_index') }}"><i class="fa fa-map-marker" aria-hidden="true"></i> <span>Contact Info</span></a></li>
             #}
-            <li><a href="{{ path('gallery_index') }}"><i class="fa fa-upload" aria-hidden="true"></i> <span>Upload File</span></a></li>
+            <li><a href="{{ path('gallery_index') }}"><i class="fa fa-upload" aria-hidden="true"></i> <span>{% trans %}menu_left_upload_file{% endtrans %}</span></a></li>
             {#
             <li class="header">My Curriculum</li>
             <li>
@@ -55,12 +55,12 @@
             </li>
             #}
             {% if app.user != null %}
-              <li class="header">Security</li>
+              <li class="header">{% trans %}menu_left_security{% endtrans %}</li>
               <li>
-                <a href="{{ path('settings_show') }}"><i class="fa fa-gears" aria-hidden="true"></i><span>Settings</span></a>
+                <a href="{{ path('settings_show') }}"><i class="fa fa-gears" aria-hidden="true"></i><span>{% trans %}menu_left_setting{% endtrans %}</span></a>
               </li>
               <li>
-                <a href="{{ path("logout") }}"><i class="fa fa-external-link" aria-hidden="true"></i><span>Sign out</span></a>
+                <a href="{{ path("logout") }}"><i class="fa fa-external-link" aria-hidden="true"></i><span>{% trans %}menu_left_logout{% endtrans %}</span></a>
               </li>
             {% endif %}
             

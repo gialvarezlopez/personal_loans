@@ -204,6 +204,10 @@
                     'csvHtml5',
                     'pdfHtml5'
                 ],
+                "language": {
+                    //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                    {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
+                }
             });
 
             $("body").on("click",".btnShowClient",function(event){

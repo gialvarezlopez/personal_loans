@@ -21,4 +21,16 @@ services:
 
     srv_Dashboard:
         class:        Services\Dashboard
-        arguments:     ["@doctrine.orm.entity_manager",  "@service_container"]    
+        arguments:     ["@doctrine.orm.entity_manager",  "@service_container", "%kernel.root_dir%"] 
+
+    app_bundle.locale_listener:
+        class: AppBundle\EventListener\LocaleListener
+        arguments: ["%kernel.default_locale%"]
+        tags:
+            - { name: kernel.event_subscriber }
+            
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }        
+       

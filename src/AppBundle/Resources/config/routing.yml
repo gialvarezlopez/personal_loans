@@ -64,5 +64,9 @@ user_profile_image:
     path:     /user/profileImage
     defaults: { _controller: "AppBundle:User:profileImage" }        
 
+app_lang:    
+    path:       backend/lang/{_locale}/
+    defaults: { _controller: "AppBundle:Default:lang" }   
+
 
 

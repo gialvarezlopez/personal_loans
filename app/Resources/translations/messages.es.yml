@@ -1,0 +1,46 @@
+menu_left_payment_gateways: VIA DE PAGO
+menu_left_main_navigation: NAVEGACIÓN PRINCIPAL
+menu_left_security: SEGURIDAD
+menu_left_check_membership: Ver membrecías
+menu_left_my_transactions: Mis transacciones
+menu_left_dashboard: Dashboard
+menu_left_reports: Reportes
+menu_left_clients: Clientes
+menu_left_client_list: Listado de clientes 
+menu_left_new_client: Crear nuevo cliente
+menu_left_loans: Prestamos
+menu_left_image_profile: Imagen de perfil
+menu_left_upload_file: Carga de archivos
+menu_left_setting: Ajustes
+menu_left_logout: Salir
+
+dashboard_payments: Pagos
+dashboard_btn_filter_date: Filtrar
+dashboard_period: Periodo
+dashboard_btn_filter_info_from: Desde
+dashboard_btn_filter_info_to: Hasta
+dashboard_loans_history_title: Histórico  de prestamos
+dashboard_loans_history_finished: Finalizados
+dashboard_loans_history_no_finished: No finalizados
+dashboard_loans_history_freezed: Congelados
+dashboard_loans_history_status: Estatus
+dashboard_loans_history_with_percentage: Con porcentaje
+dashboard_loans_history_per_cuotas: Por cuotas
+dashboard_loans_history_total: Total
+dashboard_loans_finished: Prestamos finalizados
+dashboard_loans_created_no_finished: Prestamos creados pero no finalizados
+dashboard_loans_full_history: Historial completo
+dashboard_period_detail_filtered: Detalles del periodo filtrado
+dashboard_loans_freezed: Prestamos congelados
+dashboard_loans_paid_to_capital:  Capital pagado
+dashboard_loans_paid_to_interest: Interes pagado
+dashboard_loans_total_money_acquired: Total adquirido
+dashboard_loans_invested money: Dinero invertido
+dashboard_sum_total_capital: SUMA TOTAL DEL CAPITAL
+dashboard_sum_total_interest: SUMA TOTAL DEL INTERES
+dashboard_invested_money: DINERO INVERTIDO
+dashboard_more_info: Más información
+dashboard_created_clients: Clientes creados
+dashboard_recently_loans_created: Prestamos creados recientemente
+dashboard_view_all_loans: Ver todos los prestamos
+dashboard_view_all_clients: Ver todos los clientes

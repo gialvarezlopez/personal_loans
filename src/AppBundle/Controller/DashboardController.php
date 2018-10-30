@@ -46,11 +46,18 @@ class DashboardController extends Controller
         }
         //$week =  $this->inicio_fin_semana();
         //var_dump($res);
+        //var_dump($request->getLocale());
+        //echo $this->get('translator')->trans('dashboard_payments');
+
+        //var_dump($request->getSession()->get("_locale"));
 
         
         //$loans = $dashboard->getLoans($userId, $count = false,  $category=false, $limit=false);
         return $this->render('app/dashboard/index.html.twig', array(
             'periodDate' => $periodDate,
+            'base_dir' => realpath($this->container->getParameter('kernel.root_dir') . '/..'),
+            'locale' => $request->getLocale(),
+
         ));
         //return $this->render("AppBundle:user:login.html.twig");
     }

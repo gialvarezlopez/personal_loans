@@ -1,0 +1,46 @@
+menu_left_payment_gateways: PAYMENTS GATEWAYS
+menu_left_main_navigation: MAIN NAVIGATION
+menu_left_security: SECURITY
+menu_left_check_membership: Check membership
+menu_left_my_transactions: My transactions
+menu_left_dashboard: Dashboard
+menu_left_reports: Reports
+menu_left_clients: Clients
+menu_left_client_list: Client list 
+menu_left_new_client: New client
+menu_left_loans: Loans
+menu_left_image_profile: Image profile
+menu_left_upload_file: Upload file
+menu_left_setting: Setting
+menu_left_logout: Sing out
+
+dashboard_payments: Payments
+dashboard_btn_filter_date: Go
+dashboard_period: Period
+dashboard_btn_filter_info_from: From
+dashboard_btn_filter_info_to: To
+dashboard_loans_history_title: Loans History
+dashboard_loans_history_finished: Finished
+dashboard_loans_history_no_finished: No finished
+dashboard_loans_history_freezed: Freezed
+dashboard_loans_history_status: Status
+dashboard_loans_history_with_percentage: With percentage
+dashboard_loans_history_per_cuotas: Per quotas
+dashboard_loans_history_total: Total
+dashboard_loans_finished: Loans finished
+dashboard_loans_created_no_finished: Loans created no finished
+dashboard_loans_full_history: Full history
+dashboard_period_detail_filtered: Period detail filtered
+dashboard_loans_freezed: Loans Freezed
+dashboard_loans_paid_to_capital: Paid  to capital
+dashboard_loans_paid_to_interest: Paid Interest
+dashboard_loans_total_money_acquired: Total money acquired
+dashboard_loans_invested money: Invested money
+dashboard_sum_total_capital: SUM TOTAL CAPITAL
+dashboard_sum_total_interest: SUM TOTAL INTEREST
+dashboard_invested_money: INVESTED MONEY
+dashboard_more_info: More info
+dashboard_created_clients: CREATED CLIENTS
+dashboard_recently_loans_created: Recently Loans Created
+dashboard_view_all_loans: View all loans
+dashboard_view_all_clients: View all clients

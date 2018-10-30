@@ -1,16 +1,16 @@
 <div class-"table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                    <th>status</th>
-                                    <th>With percentage</th>
-                                    <th>Per Quotas</th>
-                                    <th>Total</th>
+                                    <th>{% trans %} dashboard_loans_history_status {% endtrans %}</th>
+                                    <th>{% trans %} dashboard_loans_history_with_percentage {% endtrans %}</th>
+                                    <th>{% trans %} dashboard_loans_history_per_cuotas {% endtrans %} </th>
+                                    <th>{% trans %} dashboard_loans_history_total {% endtrans %} </th>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         {% set percentageCompleted = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 1) %}
                                         <th>
-                                            <span class="label label-success">Finished:</span>
+                                            <span class="label label-success">{% trans %}dashboard_loans_history_finished{% endtrans %}:</span>
                                         </th>
                                         <td><span class="badge">{{ percentageCompleted[0]['total'] }}</span></td>
                                         <td>
@@ -22,7 +22,7 @@
                                     <tr>     
                                         {% set percentageNoFinished = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 0) %}
                                         <th >
-                                            <span class="label label-default">No Finished:</span>
+                                            <span class="label label-default">{% trans %}dashboard_loans_history_no_finished{% endtrans %}:</span>
                                         </th>
                                         <td><span class="badge">{{ percentageNoFinished[0]['total'] }}</span></td>
                                         <td>
@@ -34,7 +34,7 @@
                                     <tr>     
                                         {% set percentageFreezed = srv_Dashboard.getLoans(app.user.usrId, true, "active_rate", false, 2) %}
                                         <th>
-                                            <span class="label label-danger">Freezed:</span>
+                                            <span class="label label-danger">{% trans %}dashboard_loans_history_freezed{% endtrans %}:</span>
                                         </th>
                                         <td><span class="badge">{{ percentageFreezed[0]['total'] }}</span></td>
                                         <td>
@@ -45,7 +45,7 @@
                                     </tr>
                                         {% set subtotalPercentage = percentageCompleted[0]['total'] + percentageNoFinished[0]['total'] + percentageFreezed[0]['total'] %}
                                     <tr>    
-                                        <th>Total:</th> <td><span class="badge">{{ subtotalPercentage }}</span></td>
+                                        <th>{% trans %} dashboard_loans_history_total {% endtrans %}:</th> <td><span class="badge">{{ subtotalPercentage }}</span></td>
                                         <td>
                                             {% set subtotalperquotas = perQuotasCompleted[0]['total'] + perQuotasNoFinished[0]['total'] + perQuotasNoFreezed[0]['total'] %}
                                             <span class="badge">{{ subtotalperquotas }}</span>

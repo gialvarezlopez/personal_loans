@@ -1,5 +1,5 @@
 settings_show:
-    path:   /show
+    path:   /show/
     defaults: { _controller: "AppBundle:Settings:index" }
 
 settings_changepassword:

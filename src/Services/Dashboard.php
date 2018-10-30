@@ -428,6 +428,20 @@ class Dashboard
             
         }
     }
+
+
+    public function langDatata($lang)
+    {
+        //header('Content-Type: text/html; charset=utf-8');
+        $lang = ( $lang == "es")?"datatable-es.json":"datatable-en.json";
+        $content = file_get_contents('../web/'.$lang);
+        echo utf8_decode($content);
+        //return json_decode($content, true);
+        //return new JsonResponse(json_encode($content, true));
+        
+
+        //exit();
+    }
     
 
 }
