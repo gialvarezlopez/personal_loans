@@ -322,3 +322,28 @@ merbership_table_td_day: dia
 merbership_table_td_days: dias
 merbership_table_td_tran: transaccion
 merbership_table_td_trans: transacciones
+
+payment_rata_title: Creación de pago
+payment_rata_payment_deadline: Fecha maxima de pago
+payment_rata_when_was_it_paid: Cuando fue pagada la cuota?
+payment_rata_already_paid: Ya pagado
+payment_rata_current_balance: Balance actual
+payment_rata_current_rate: Tasa de interes actual
+payment_rata_press_calculator: Click <i class='fa fa-calculator' aria-hidden='true'></i> para obtener los meses.
+payment_rate_date_end_loan: Este pago finaliza el prestamo?
+payment_rate_next_payment_title: Información para el siguiente pago
+payment_rate_next_interest: Próxima tasa de interes
+payment_rate_next_paymente_date: Próxima fecha de pago
+payment_rate_btn_tooltip_calculator: Calcular montos ($)
+payment_rate_subtitle: Detalles del pago
+payment_rate_amounts: Montos
+payment_rate_new_balance: Nuevo balance
+payment_rate_label_total_to_pay: Total a pagar
+payment_rate_label_interest_rate: Interes a pagar
+payment_rate_label_capital_to_pay: Capital a pagar
+payment_rate_label_interest_rate: Tasa de interes
+payment_rate_label_rate_reached: Tasa alcanzada
+payment_rate_label_pending_rate: Interes pendiente
+payment_rate_msg_amount_must_number: El pago debe ser un valor mayor a cero
+payment_rate_msg_amount_higher: El pago a ejecutar es superior al saldo actual
+payment_rate_msg_fill_when_was_it_paid: Complete el campo llamado 'Cuando fue pagada la cuota?'

@@ -322,3 +322,28 @@ merbership_table_td_day: day
 merbership_table_td_days: days
 merbership_table_td_tran: transaction
 merbership_table_td_trans: transactions
+
+payment_rata_title: Payments creation
+payment_rata_payment_deadline: Payment deadline
+payment_rata_when_was_it_paid: When was it paid?
+payment_rata_already_paid: Already paid
+payment_rata_current_balance: Current Balance
+payment_rata_current_rate: Current interest rate
+payment_rata_press_calculator: Press <i class='fa fa-calculator' aria-hidden='true'></i> to get the amounts.
+payment_rate_date_end_loan: Does this payment end the loan?
+payment_rate_next_payment_title: This is the information to the next payment
+payment_rate_next_interest: Next interest rate
+payment_rate_next_paymente_date: Next payment date
+payment_rate_btn_tooltip_calculator: Calculate amounts ($)
+payment_rate_subtitle: Payment Details
+payment_rate_amounts: Amounts
+payment_rate_new_balance: New Balance
+payment_rate_label_total_to_pay: Total to pay
+payment_rate_label_interest_rate: Interest to pay
+payment_rate_label_capital_to_pay: Capital to pay
+payment_rate_label_interest_rate: Interest Rate
+payment_rate_label_rate_reached: Rate reached
+payment_rate_label_pending_rate: Pending rate
+payment_rate_msg_amount_must_number: The payment value must be a number
+payment_rate_msg_amount_higher: The payment to execute is higher than the current balance
+payment_rate_msg_fill_when_was_it_paid: Fill the field called 'when was it paid?

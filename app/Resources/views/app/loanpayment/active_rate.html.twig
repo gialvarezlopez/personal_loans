@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Payments Quotas - Personal Loans
+     {% trans %}payment_rata_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -74,14 +74,13 @@
 
 <section class="content-header">
       <h1>
-        Do Payments
+       {% trans %}payment_rata_title{% endtrans %}
         <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ path('loan_index') }}">Loans</a></li>
-        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
-        <li class="active">Payments</li>
+        <li><a href="{{ path('loan_index') }}">{% trans %}menu_left_loans{% endtrans %}</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}menu_left_history{% endtrans %}</a></li>
       </ol>
 </section>
 <hr>
@@ -90,10 +89,22 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12"> 
                 <div class="box-titlex text-center">
+                    {#
                     {% if loan.loaCompleted == 1 %}
                         <div class="loanCompleted"><i class="fa fa-check-circle" aria-hidden="true"></i> Loan Finished</div>
                     {% elseif loan.loaCompleted == 2 %}
                         <div class="box-titlex text-center"><span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan Freezed</span></div>
+                    {% endif %}
+                    #}
+
+                    {% if loan.loaCompleted == 1 %}
+                    <span class="loanCompleted">
+                        <i class="fa fa-check-circle" aria-hidden="true"></i> 
+                        {% trans %}general_msg_status_loan_finished{% endtrans %}
+                    </span>
+                    {% elseif loan.loaCompleted == 2 %}
+                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_status_loan_freezed{% endtrans %}</span>
+
                     {% endif %}
                 </div>
             </div>
@@ -119,15 +130,15 @@
                     </span>
                 </div>
                 <div class="col-lg-4">
-                    <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
+                    <i class="fa fa-barcode" aria-hidden="true"></i> {% trans %}loan_edit_code{% endtrans %}: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
                 </div>
                 <div class="col-lg-4">    
-                    <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Note: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
+            <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> {% trans %}reports_table_title_note{% endtrans %}: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
         </div>
         <hr>
         
@@ -161,7 +172,7 @@
                             <div class="col-md-12 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaMaxPaymentDate)}}</div>
-                                    <label for="" class=" control-label">Payment deadline: <span class="text-danger">*</span></label>
+                                    <label for="" class=" control-label">{% trans %}payment_rata_payment_deadline{% endtrans %}: <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
@@ -174,7 +185,7 @@
                             <div class="col-md-12 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaPaidDate)}}</div>
-                                    <label for="" class=" control-label">When was it paid?: <span class="text-danger">*</span></label>
+                                    <label for="" class=" control-label">{% trans %}payment_rata_when_was_it_paid{% endtrans %}: <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
@@ -183,33 +194,6 @@
                                     </div>
                                 </div>
                             </div>
-                            {#
-                                <div class="col-md-12 col-lg-6 col-sm-12">
-                                    <div class="form-group">
-                                        <div class="form_error">{{ form_errors(form.lpaPaidRateInterest)}}</div>
-                                        <label for="" class=" control-label">Paid interest rate: <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <div class="input-group-addon">
-                                                <i class="fa fa-percent"></i>
-                                            </div>
-                                            <div class="">{{ form_widget(form.lpaPaidRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off"} } ) }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12 col-lg-6 col-sm-12">
-                                    <div class="form-group">
-                                        <div class="form_error">{{ form_errors(form.lpaPaidCapital)}}</div>
-                                        <label for="" class=" control-label">Paid capital: <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <div class="input-group-addon">
-                                                <i class="fa fa-usd" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="">{{ form_widget(form.lpaPaidCapital,  { 'attr': {'class': 'form-control', "autocomplete":"off"} } ) }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            #}
                             
                             <div class="col-md-12 col-lg-12 col-sm-12">
                                 <hr>
@@ -217,7 +201,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         
-                                        <span>Already paid:<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
+                                        <span>{% trans %}payment_rata_already_paid{% endtrans %} :<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
                                     </div>
                                     <div class="col-lg-6">
                                         {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
@@ -236,7 +220,7 @@
                                             </span>
                                         </span>
                                         #}
-                                         Current Balance:<br>
+                                         {% trans %}payment_rata_current_balance{% endtrans %}:<br>
                                         <table>
                                             <tr>
                                                 <td>
@@ -268,7 +252,7 @@
                             <div class="col-md-12 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaCurrentRateInterest)}}</div>
-                                    <label for="" class=" control-label">Current interest rate: <span class="text-danger">*</span></label>
+                                    <label for="" class=" control-label">{% trans %}payment_rata_current_rate{% endtrans %}: <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-addon">
                                             <i class="fa fa-percent"></i>
@@ -284,7 +268,7 @@
                             <div class="col-md-12 col-lg-6 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaTotalAmountPaid)}}</div>
-                                    <label for="" class=" control-label">Total to pay: <span class="text-danger">*</span></label>
+                                    <label for="" class=" control-label">{% trans %}payment_rate_label_total_to_pay{% endtrans %}: <span class="text-danger">*</span></label>
                                     {#
                                     <div class="input-group">
                                         <div class="input-group-addon">
@@ -299,25 +283,25 @@
                                         </div>
                                         {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }}
                                         <span class="input-group-btn">
-                                            <button class="btn btn-info" id="btnCalculateAmounts" type="button" data-toggle="tooltip" data-placement="top" title="Calculate amounts ($)"><i class="fa fa-calculator" aria-hidden="true"></i></button>
+                                            <button class="btn btn-info" id="btnCalculateAmounts" type="button" data-toggle="tooltip" data-placement="top" title="{% trans %}payment_rate_btn_tooltip_calculator{% endtrans %}"><i class="fa fa-calculator" aria-hidden="true"></i></button>
                                         </span>
                                     </div><!-- /input-group -->
-                                    <span id="helpBlock2" class="help-block">Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts.</span>
+                                    <span id="helpBlock2" class="help-block">{% trans %}payment_rata_press_calculator{% endtrans %}</span>
 
                                 </div>
                             </div>
                             <div class="col-md-12 col-lg-12 col-sm-12" id="holderPaymentDetail">
                                 <hr>
-                                    <h4 class="text-center">Payment Details</h4>
+                                    <h4 class="text-center">{% trans %}payment_rate_subtitle{% endtrans %}</h4>
                                     <div class="row">
                                         <div class="col-lg-6 col-md-12">
                                             <div class="row">
                                                 <div class="col-lg-12 col-md-12">
                                                     <div class="row">
-                                                        <h5 class="text-center"><i class="fa fa-money"></i> Amounts</h5>
+                                                        <h5 class="text-center"><i class="fa fa-money"></i> {% trans %}payment_rate_amounts{% endtrans %}</h5>
                                                         <div class="col-lg-6 col-md-12">
                                                             <div class="form-group">
-                                                                <label class="control-label">Paid interests</label>
+                                                                <label class="control-label"> {% trans %}payment_rate_label_interest_rate{% endtrans %}</label>
                                                                 <div class="input-group">
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-usd" aria-hidden="true"></i>
@@ -328,7 +312,7 @@
                                                         </div>
                                                         <div class="col-lg-6 col-md-12">
                                                             <div class="form-group">
-                                                                <label class="control-label">Capital</label>
+                                                                <label class="control-label">{% trans %}payment_rate_label_capital_to_pay{% endtrans %}</label>
                                                                 <div class="input-group">
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-usd" aria-hidden="true"></i>
@@ -341,10 +325,10 @@
                                                 </div>
                                                 <div class="col-lg-12 col-md-12">
                                                     <div class="row">
-                                                        <h5 class="text-center"><i class="fa fa-percent"></i> Interest Rate</h5>
+                                                        <h5 class="text-center"><i class="fa fa-percent"></i> Interest Rate {% trans %}payment_rate_label_interest_rate{% endtrans %}</h5>
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
-                                                                <label class="control-label">Rate reached</label>
+                                                                <label class="control-label">{% trans %}payment_rate_label_rate_reached{% endtrans %}</label>
                                                                 <div class="input-group">
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-percent" aria-hidden="true"></i>
@@ -355,7 +339,7 @@
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <div class="form-group">
-                                                                <label class="control-label">Pending rate</label>
+                                                                <label class="control-label">{% trans %}payment_rate_label_pending_rate{% endtrans %}</label>
                                                                 <div class="input-group">
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-percent" aria-hidden="true"></i>
@@ -369,7 +353,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-12">
-                                            <h5 class="text-center">New Balance</h5>
+                                            <h5 class="text-center">{% trans %}payment_rate_new_balance{% endtrans %}</h5>
                                             <div class="text-center"><span class="amounts" id="newBalance">$0.00</span></div>
                                         </div>
                                         
@@ -380,25 +364,25 @@
                             <div id="holderCloseLoanAndNextPayment">
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <hr>
-                                    Does this payment end the loan?
+                                    {% trans %}payment_rate_date_end_loan{% endtrans %}
                                     <label class="radio-inline">
                                     <input type="radio" name="endLoan" id="otpNo" value="0" checked="checked" required> No
                                     </label>
                                     <label class="radio-inline">
-                                    <input type="radio" name="endLoan" id="otpYes" value="1"> Yes
+                                    <input type="radio" name="endLoan" id="otpYes" value="1">{% trans %}general_msg_yes{% endtrans %}
                                     </label>
                                     <hr>
                                 {# {{ form_widget(form.lpaOptionComplete,  { 'attr': {'class': 'radio-inline',"required":"required"} } ) }} #}
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-sm-12" id="holderNextPayment">
                                     <div class="panel panel-danger">
-                                        <div class="panel-heading">This is the information to the <b>next payment</b></div>
+                                        <div class="panel-heading"> {% trans %}payment_rate_next_payment_title{% endtrans %}</div>
                                         <div class="panel-body">
                                             <div class="row">
                                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                                     <div class="form-group has-danger">
                                                         <div class="form_error">{{ form_errors(form.loaNextInterestRate)}}</div>
-                                                        <label for="" class=" control-label">Next interest rate: <span class="text-danger">*</span></label>
+                                                        <label for="" class=" control-label">{% trans %}payment_rate_next_interest{% endtrans %}: <span class="text-danger">*</span></label>
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="fa fa-percent" aria-hidden="true"></i>
@@ -411,7 +395,7 @@
                                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                                     <div class="form-group has-danger">
                                                         <div class="form_error">{{ form_errors(form.loaNextPaymentDate)}}</div>
-                                                        <label for="" class=" control-label">Next payment date: <span class="text-danger">*</span></label>
+                                                        <label for="" class=" control-label">{% trans %}payment_rate_next_paymente_date{% endtrans %}: <span class="text-danger">*</span></label>
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="fa fa-calendar" aria-hidden="true"></i>
@@ -432,9 +416,9 @@
                             <div class="col-md-12 col-lg-12 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaNote)}}</div>
-                                    <label for="" class=" control-label">Note (optional):</label>
-                                    <div class="">{{ form_widget(form.lpaNote,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
-                                    <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                    <label for="" class=" control-label">{% trans %}loan_form_description{% endtrans %}:</label>
+                                    <div class="">{{ form_widget(form.lpaNote,  { 'attr': {'class': 'form-control', 'placeholder':'', "maxlength":"150"} } ) }}</div>
+                                    <span id="helpBlock2" class="help-block">{% trans %}loan_form_description_help{% endtrans %}</span>
                                 </div>
                             </div>
                         </div>
@@ -443,24 +427,25 @@
                                 <div class="form-group">
                                     <ul class="list-inline">
                                         <li>
-                                            <a href="{{ path('loan_index') }}" class="btn btn-info marginBT"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btn btn-primary marginBT"> Show</a>
-                                        </li>
-                                        <li>
                                             {{ form_start(form) }}
                                                 {{ form_widget(form) }}
-                                                <button type="submit" class="btn bg-olive marginBT" id="btnSend" ><i class="fa fa-money" aria-hidden="true"></i> Create Payment</button>
+                                                <button type="submit" class="btn bg-olive marginBT" id="btnSend" ><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</button>
                                             {{ form_end(form) }}
                                         </li>
+                                        <li>
+                                            <a href="{{ path('loan_index') }}" class="btn btn-info marginBT"><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %}</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btn btn-primary marginBT"><i class="fa fa-address-card-o" aria-hidden="true"></i> {% trans %}general_btn_show{% endtrans %}</a>
+                                        </li>
+                                        
                                         
                                     </ul>
                                 </div>    
                             </div>
                         </div>
                         <hr>
-                            <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                            <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> {% trans %}loan_btn_attach_file{% endtrans %}</a>
                         <hr> 
                     </div>
                 </div>
@@ -524,13 +509,87 @@
                 //alert("You are " + years + " years old!");
             });
             */
+            {% if app.request.getLocale() == "en" %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Apply",
+                    "cancelLabel": "Cancel",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom Range",
+                    "daysOfWeek": [
+                        "Su",
+                        "Mo",
+                        "Tu",
+                        "We",
+                        "Th",
+                        "Fr",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ],
+                    "firstDay": 1
+                };
+
+                var all = "All";
+            {% else %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "DE",
+                    "toLabel": "HASTA",
+                    "customRangeLabel": "Rango personalizado",
+                    "daysOfWeek": [
+                        "Dom",
+                        "Lun",
+                        "Mar",
+                        "Mie",
+                        "Jue",
+                        "Vie",
+                        "Sáb"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                };
+
+                var all = "Todo";
+            {% endif %}
 
             $("#appbundle_loanpayment_lpaPaidDate").daterangepicker({
                 singleDatePicker: true,
                 showDropdowns: true,
-                locale: {
-                    format: 'YYYY-MM-DD'
-                },
+                locale: 
+                    locale_daterangepicker
                 //minYear: 1901,
                 //maxYear: parseInt(moment().format('YYYY'),10)
             }, function(start, end, label) {
@@ -542,10 +601,10 @@
             $("#appbundle_loanpayment_loaNextPaymentDate").daterangepicker({
                 singleDatePicker: true,
                 showDropdowns: true,
-                locale: {
-                    format: 'YYYY-MM-DD'
-                },
                 drops:"up",
+                locale:
+                    locale_daterangepicker
+                
                 //"autoUpdateInput": false,
             }, function(start, end, label) {
                 //var years = moment().diff(start, 'years');
@@ -553,6 +612,8 @@
                 
                 
             });
+
+            
 
             $("#appbundle_loanpayment_loaNextPaymentDate").val("");
 
@@ -591,10 +652,16 @@
                 htmlTotalAmount = parseFloat(htmlTotalAmount.replace(",",""));
 
                 //Pending to pay
-                var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
-                pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate);
+                //var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
+                //pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate);
 
-                var justRate = parseFloat($("#justRate").val());
+                var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
+                pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate.replace(",",""));
+
+
+                var justRate = $("#justRate").val();
+                justRate = parseFloat(justRate.replace(",",""));
+                //var justRate = parseFloat($("#justRate").val());
 
                 var amountToPay = parseFloat($("#appbundle_loanpayment_lpaTotalAmountPaid").val());
                 //alert(amountToPay);
@@ -607,35 +674,20 @@
                     $.alert({
 							icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'The payment value must be a number',
+							content: "{% trans %}payment_rate_msg_amount_must_number{% endtrans %}",
 							type: 'red',
 							typeAnimated: true,
 					});
                     
-                    /*
-                    $.confirm({
-                        icon: 'glyphicon glyphicon-exclamation-sign',
-                        title: 'Error!',
-                        content: 'The payment value must be a number',
-						type: 'red',
-                        typeAnimated: true,
-                        buttons: {
-                            Ok: function () {
-                                //$.alert('Confirmed!');
-                                $("#appbundle_loanpayment_lpaTotalAmountPaid").blur().focus();
-                            },
-                        }
-                    });
-                    */
                     return false;
                 }
-
+                //alert(" pendingAmountWithoutRate + justRate "+ pendingAmountWithoutRate +" + - + " +justRate);
                 if( amountToPay > ( pendingAmountWithoutRate + justRate) )
                 {
                     $.alert({
 							icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'The payment to execute is higher than the current balance',
+                            content: "{% trans %}payment_rate_msg_amount_higher{% endtrans %}",
 							type: 'red',
 							typeAnimated: true,
 					});
@@ -653,61 +705,6 @@
                     var c = 0;
                     var pr = 0;
                     var numQuotanumQuotaPaid = 0;
-                    /*
-                        for(var i = overDueDateQuotas; i >= 0; i--)
-                        {
-                            //resRate = resRate + ;
-                            var currentRate = (resRate*(i+1));
-                            var resultRatePayment = pendingAmountWithoutRate*(currentRate/100);
-
-                            if( amountToPay >= resultRatePayment )
-                            {
-                                r = currentRate;
-                                numQuotanumQuotaPaid = (i+1);
-                                c = (amountToPay - resultRatePayment);
-                                pr = resultRatePayment;
-                                break;
-                            }
-                            else if ( amountToPay < justRate  )
-                            {
-                                console.log("aqui");
-                            }
-                        }
-                        if( numQuotanumQuotaPaid <= overDueDateQuotas  )
-                        {
-                            if( amountToPay <= justRate )
-                            {
-                                resultRatePayment = amountToPay;
-                                console.log("-----")
-                                c = 0;
-                            }else if( amountToPay >= justRate ){
-                                //c = 0;
-                                c = amountToPay - resultRatePayment ;
-                                
-                                console.log("/////"+pr);
-                            }    
-                            
-                            if( c > 0 ) //if capital > 0 then the interest rate is reseted to original value
-                            {
-                                
-                            }
-                            
-                            console.log("if");
-                        }
-                        else
-                        {
-
-                        }
-                        //console.log(resultRatePayment +"==" +justRate);
-                        if( c > 0 || ( parseFloat(resultRatePayment) == parseFloat(justRate))  )
-                        {
-                            $("#appbundle_loanpayment_loaNextInterestRate").val("{{ loan.loaRateInterest }}");
-                        }else{
-                            var overDueDateRate = parseFloat( $("#overDueDateRate").val() );
-                            $("#appbundle_loanpayment_loaNextInterestRate").val( overDueDateRate - r );
-                        }
-                    */
-
                     //var resultRatePayment = pendingAmountWithoutRate*(currentRate/100);
                     
                     //var paidRate = (amountToPay/overDueDateRate);
@@ -741,7 +738,7 @@
                     var paidDate = $("#appbundle_loanpayment_lpaPaidDate").val();
                     if( $.trim(paidDate) == "" )
                     {
-                        alert("Error fill the input 'when was it paid?'");
+                        alert("{% trans %} payment_rate_msg_fill_when_was_it_paid {% endtrans %}");
                         return false;
                     }
                     else
@@ -854,7 +851,7 @@
                     var paidDate = $("#appbundle_loanpayment_lpaPaidDate").val();
                     if( paidDate == "" )
                     {
-                        alert("Fill the field called 'when was it paid?'");
+                        alert("{% trans %} payment_rate_msg_fill_when_was_it_paid {% endtrans %}");
                         return false;
                     }
                     else
@@ -943,7 +940,8 @@
                     $.alert({
 							icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts and the next payment date.</span>',
+							//content: 'Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts and the next payment date.</span>',
+                            content: "{{ ('payment_rata_press_calculator'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 					});
@@ -976,7 +974,7 @@
 							$.confirm({
 								icon: 'fa fa-remove',
 								title: 'Error!',
-								content: 'An error occurred while trying to send the request',
+								content: "{{ ('general_msg_send_data'|trans())|raw }}",
 								type: 'red',
 								typeAnimated: true,
 								buttons: {
@@ -1026,7 +1024,7 @@
 								$.alert({
 									icon: 'glyphicon glyphicon-exclamation-sign',
 									title: 'Info!',
-									content: 'An error occurred while trying to save the information <br>' + infoError,
+									content: "{{ ('general_msg_send_data'|trans())|raw }}" + infoError,
 									type: 'blue',
 									typeAnimated: true,
 								});
