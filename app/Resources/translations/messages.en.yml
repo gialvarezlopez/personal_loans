@@ -1,3 +1,36 @@
+app_name: Personal Loans
+
+general_btn_show: Show
+general_btn_edit: Edit
+general_btn_delete: Delete
+general_btn_update: Update
+general_btn_save: Save
+general_btn_create: Create
+general_btn_close: Close
+general_btn_unfreeze: Unfreeze
+
+general_msg_yes: Yes
+gerenal_msg_access_denied: Access denied
+general_msg_record_no_found: Record not found
+
+general_loan_with_percentage: with percentage
+general_loan_per_quotas: Per Quotas
+general_msg_status_loan_finished: Loan finished
+general_msg_status_loan_no_finished: Loan no finished
+general_msg_status_loan_freezed: Loan freezed
+general_msg_send_data: An error occurred while trying to send the request
+general_msg_pending: Pending
+general_msg_success: Data created successfully
+general_msg_saved: Data saved successfully
+general_msg_error_delete: Record couldn't be delete
+general_msg_days: Days
+
+general_msg_browser_error_file_reader: This browser does not support FileReader
+
+general_msg_loan_finished: Finished
+general_msg_loan_freezed: Freezed
+general_msg_loan_incomplete: Incomplete
+
 menu_left_payment_gateways: PAYMENTS GATEWAYS
 menu_left_main_navigation: MAIN NAVIGATION
 menu_left_security: SECURITY
@@ -9,12 +42,13 @@ menu_left_clients: Clients
 menu_left_client_list: Client list 
 menu_left_new_client: New client
 menu_left_loans: Loans
+menu_left_history: History
 menu_left_image_profile: Image profile
 menu_left_upload_file: Upload file
 menu_left_setting: Setting
 menu_left_logout: Sing out
 
-dashboard_payments: Payments
+dashboard_payments: Payments control
 dashboard_btn_filter_date: Go
 dashboard_period: Period
 dashboard_btn_filter_info_from: From
@@ -44,3 +78,247 @@ dashboard_created_clients: CREATED CLIENTS
 dashboard_recently_loans_created: Recently Loans Created
 dashboard_view_all_loans: View all loans
 dashboard_view_all_clients: View all clients
+
+reports_title: Payments report 
+reports_subtitle: Filter date
+reports_opt_next_payment: Next payments(Make collection)  
+reports_opt_payments_done : Payments done  
+reports_opt_show_both: Show Both
+reports_btn_filter_date: Go!
+reports_period: Period
+reports_btn_filter_info_from: From
+reports_btn_filter_info_to: To
+reports_table_title_previous_payments: Previous Payments
+reports_table_title_next_payment: Next Payment
+reports_table_title_code: Code
+reports_table_title_name: Cient
+reports_table_title_loan_type: Loan Type
+reports_table_title_previous_interest: Previous interest %
+reports_table_title_paid_interest: Paid interest
+reports_table_title_paid_capital: Paid capital
+reports_table_title_pending_to_pay : Pending to pay 
+reports_table_title_note: Note
+reports_table_title_next_interest: Next interest
+reports_table_title_next_interest_amount : Next interest amount 
+reports_table_title_next_capital_amount: Next capital amount
+reports_table_title_total_payment : Total payment   
+reports_table_no_data_found: No data found 
+
+clients_title: Clients list 
+clients_total_records: Total records
+clients_status_filtered_by: Status filtered by
+clients_list_all_clients: All Clients
+clients_list_inactive_clients: Inactive Clients
+clients_list_active_clients: Active Clients
+clients_btn_loans: Loans
+clients_btn_create_loan: Create loan
+clients_btn_my_loans: My loans
+clients_btn_create_new_client: Create new client
+clients_msg_pending_loans: Pending Loans
+clients_table_title_profile_imagen: Profile Imagen
+clients_table_title_full_name: Full name
+clients_table_title_id_number: ID number
+clients_table_title_id_type: ID type
+clients_table_title_ative: Active
+clients_table_title_actions: Actions
+clients_info_title_client: Client
+clients_info_title_contact_info: Contact Info
+clients_info_address: Address
+clients_info_phone1: Phone1
+clients_info_phone2: Phone2
+clients_info_email: Email
+clients_info_note: Note
+clients_info_created_at: Created At
+clients_info_updated_at: Update At
+
+clients_edit_title: Client edit
+clients_edit_input_first_name: First Name
+clients_edit_input_middle_name: Middle Name
+clients_edit_input_first_surname: First Surname
+clients_edit_input_second_surname: Second Surname
+clients_btn_new_loan: New loan
+clients_btn_set_image_profile:  Set profile image
+clients_btn_new_client: New client
+clients_btn_clients_list: Clients list
+
+clients_new_title: New client
+clients_new_msg_success: Client created successfully
+clients_new_msg_updated: Client updated successfully
+clients_new_msg_no_updated: Client was not updated
+
+loan_index_title: Loans list
+loan_index_total_records: Total records
+loan_index_status_filtered_by: Status filtered by
+loan_index_filter_opt_all: All
+loan_index_filter_opt_no_finished: No finished
+loan_index_filter_opt_finished: Finished
+loan_index_filter_opt_freezed: Freezed
+loans_status_finished: Finished
+loans_status_no_finished: No finished
+loans_status_freezed: Freezed
+loan_index_table_title_code: Code
+loan_index_table_title_loan_type: Loan type
+loan_index_table_title_client_name: Client name
+loan_index_table_title_requested_amount: Requested amount
+loan_index_table_title_status: Status
+loan_index_table_title_created_at: Created At
+loan_index_table_title_actions: Actions
+loan_btn_payments: Payments
+loan_btn_do_payment: Do payment
+loan_btn_payment_history: Payments history  
+
+loan_edit_title: Loan edit
+loan_edit_client: Client
+loan_edit_code: Code
+loan_edit_msg_count_files: Payments done <span class="badge">%payments% </span>, Files attached
+loan_edit_subtitle_payments : Payments 
+loan_edit_comment_item:  If you remove or add items you must click in "Save button" to save all data
+
+loan_form_loan_created_at: Loan created at
+loan_form_loan_created_at_help: Date when was delivered the loan.
+loan_form_requested_amount: Requested amount
+loan_form_default_interest_rate : Default Interest Rate
+loan_form_default_interest_rate_disabled : Payments will be by established quotas
+loan_form_default_current_interest_rate: Current Interest Rate
+loan_form_recurring_day_payment: Recurring day payment
+loan_form_recurring_day_payment_help: Recurring day payment for example for every week enter number 7
+loan_form_first_payment_date: First Payment Date
+loan_form_first_payment_date_help: Max date available to client can make the payment.
+loan_form_quotas: Quotas
+loan_form_quotas_help: Press 'Set payments' button to get all payment date.
+loan_form_description: Description (optional)
+loan_form_description_help: Allowed characters 150.
+loan_form_general_help: The interest rate may change due to non-compliance of payments not made on time
+loan_form_status: Status
+loan_form_msg_first_payment_date: First Payment Date 
+loan_form_msg_last_payment_date: Last Payment done
+loan_form_msg_next_payment_date: Next Payment date
+loan_form_btn_set_payments: Set payments
+loan_btn_loans_list: Loans list
+loan_btn_payment: Create payment
+loan_btn_attach_file:  Attach file at this loan
+loan_btn_add_item:  Add item
+loan_label_pending_amount_rate: Pending amount of interest rate
+
+loan_form_default_no_rate_loan_per_percentage: ""
+loan_msg_loan_type_selected: "Loan type selected: <b>%loan_type%</b> (Change loan type <a href='%url_change%'>here</a>)"
+
+loan_msg_new_confirm_submit: Are you sure to continue?
+
+loan_msg_payments_click_here: Click <a href="%link%">here</a> to see the complete history
+loan_msg_total_to_pay: Total to pay
+loan_msg_paid_capital: Paid capital
+loan_msg_paid_interest: Paid interest
+loan_msg_total_paid: Total paid
+loan_msg_pending_to_pay: Pending to pay
+loan_table_payments_payment_date: Payment date
+loan_table_payments_quota_to_pay: Quota to pay
+loan_table_payments_paid_capital: Paid Capital
+loan_table_payments_paid_interest: Paid Interest
+loan_table_payments_action: Action
+loan_table_payments_paid_amount: Paid amount
+loan_table_payments_paid_date: Paid date
+loan_table_payments_paid_note: Note
+
+loan_table_rate_payments_rate: Rate
+loan_table_rate_payments_status: Status
+loan_table_rate_payments_paid_amount: Paid Amount
+loan_table_rate_payments_node: Done
+loan_table_rate_payments_node_total: Payments done
+loan_table_rate_payments_history: Payments history
+loan_table_rate_payments_full_history: Full History Here 
+loan_table_rate_payments_pending_quotas: Pending Quotas
+loan_table_rate_payments_current_period: Current period
+loan_table_rate_payments_next_payment: Next payment
+loan_table_rate_payments_dates: Payments date
+loan_table_rate_payments_msg_pay_cuotas: This loan has <span class='bc'>%pending_quotas% pending quotas</span><b>(Including the current quota)</b> with a total of <span class='bc'>%pending_days%  day(s) of delay</span>. The interest has been increased to <span class='bc'>%pending_rate% %</span>
+loan_table_rate_payments_note: <strong>Note:</strong> If you wish you can change the interest rate when you do the payment
+loan_table_rate_payments_loan_origiinal_rate: This loan was created with interest rate init at 
+
+loan_msg_recurring_day_payment_empty: Make sure the fields '<b>Recurring day payment, First Payment Date and Quotas</b>' are filled
+loan_msg_recurring_day_payment_zero: The fields '<b>Recurring day payment and Quotas</b>' must be numbers
+loan_msg_error_remove_dates: Some dates could not be removed due to already exist a period paid
+loan_msg_error_loan_completed: This loan <b>has already been completed</b>, if you want to add more items uncheck where it says <b>'Is this Loan finished?'</b>
+loan_msg_error_new_first_patment_date: the new first payment date was setup at
+loan_msg_error_no_first_pament_date: You don't have first payment date selected, please select one
+loan_msg_error_click_set_payment_day: Click in "Set Payments" button to get all payment date
+loan_msg_error_quotas_not_equal_with_total_record: The field Quotas has a different number than total records in the payment table
+loan_msg_error_delete_record: Are you sure that you want to delete this record?.<br> This Loan has <strong>%hasPayments%</strong> payment(s) done
+
+loan_new_title: New loan
+loan_new_msg_no_exist: Loan Type is not exist
+loan_new_msg_loan_type_incorrect: Loan Type is incorrect or is missing
+
+loan_show_title: Detalles del prestamo
+
+payment_history_title: Payment history
+
+payments_quotas_title: Payments Quotas
+payments_quotas_btn_pay_detail: Full payment detail
+
+payment_rate_table_payments_date: Payments date
+payment_rate_table_previous_payments: Previous Payments
+payment_rate_table_last_payments: Last Payments 
+payment_rate_table_next_quota: Next Quota
+payment_rate_table_col_date_paid_quota: Date paid quota
+payment_rate_table_col_max_date_to_payment: Max date to payment
+payment_rate_table_col_amount: Amount
+payment_rate_table_col_interest: Interest
+payment_rate_table_col_sub_total: Sub total
+payment_rate_table_col_total: Total
+payment_rate_table_col_paid_amount: Paid amount
+payment_rate_table_col_paid_interest: Paid interest
+payment_rate_table_col_paid_capital: Paid capital
+payment_rate_table_col_comment: comment
+
+image_profile_title: Profile image 
+image_profile_sub_title_client: Client profile image  
+image_profile_sub_title_my: My current profile image
+image_profile_current_image_title: Current image
+image_profile_current_image_client_empty: Client doesn't have profile image, please select one
+image_profile_current_image_my_empty: You don't have profile image, please select one
+image_profile_select_image: Select New Image
+image_profile_btn_upload_image: Upload image
+
+upload_file_title: Upload files 
+upload_file_title2: Loan - Upload files 
+upload_file_files_supported: files are supported
+
+create_loan_type_box_title: Select the loan type
+create_loan_type_box_th_type: Type
+create_loan_type_box_th_description: Description
+create_loan_type_box_btn: Select
+create_loan_type_box_info_with_rate: Payments will have rate per quota(undefined quotas)
+create_loan_type_box_info_no_rate: Payments will be by established quotas
+
+my_payments_title: Information about my payments
+my_payments_sub_title: My payments history
+my_payments_table_amount_paid: Amount Paid
+my_payments_table_plan: Plan
+my_payments_table_payment_gateway: Payment Gateway
+my_payments_table_starting_date: Starting date
+my_payments_table_expiration_date: Expiration Date
+my_payments_table_remaining_days: Remaining days
+my_payments_table_status: Status
+my_payments_btn: Check membership
+my_payments_msg_no_payments: You don't have any payment done
+my_payments_msg_remaining_days_expired: Expired
+my_payments_msg_remaining_days_expire_soon: license will expire soon
+my_payments_msg_remaining_days_active: Active
+
+merbership_title: Membership
+merbership_sub_title: Our plans
+merbership_table_select: Select an option 
+merbership_table_plan: plan
+merbership_table_price: Price
+merbership_btn_pay_now: Pay now
+merbership_btn_my_transactions: My transactions
+merbership_table_td_per: per
+merbership_table_td_month: month
+merbership_table_td_months: months
+merbership_table_td_active: active
+merbership_table_td_actives: Actives
+merbership_table_td_day: day
+merbership_table_td_days: days
+merbership_table_td_tran: transaction
+merbership_table_td_trans: transactions

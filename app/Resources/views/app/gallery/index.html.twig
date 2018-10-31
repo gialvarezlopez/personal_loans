@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Upload files - Personal Loans
+    {% trans %}upload_file_title{% endtrans %}  - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -23,16 +23,16 @@
 <section class="content-header">
       <h1>
         {% if app.request.get('loanId') > 0  %}
-            Loan - Upload files
+            {% trans %}upload_file_title2{% endtrans %}
         {% else %}
-            Upload files
+            {% trans %}upload_file_title{% endtrans %}
         {% endif %}
          
         <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Upload File</li>
+        <li class="active">{% trans %}upload_file_title{% endtrans %}</li>
       </ol>
 </section>
 <hr>
@@ -44,12 +44,12 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="well">
-                        <span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i>  Loan:</span>
+                        <span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i>  {% trans %}reports_table_title_code{% endtrans %}:</span>
                         <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btnShowClient">
                             {{ loan.loaCode }}
                         </a>
                         -
-                        <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  Client:</span>
+                        <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  {% trans %}loan_edit_client{% endtrans %}:</span>
                     <a href="{{ loan.cli.cliId }}" class="btnShowClient">
                         {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
                     </a>
@@ -58,7 +58,7 @@
             </div>   
             {% endif %}
             <div>
-                Note: files are supported: "jpg, jpeg, png, gif, pdf, txt"
+                {% trans %}upload_file_files_supported{% endtrans %} "jpg, jpeg, png, gif, pdf, txt"
                 <hr>
             </div>
         <div class="file-loading">
@@ -134,7 +134,14 @@
                 //var url = "{{ path('gallery_new') }}";
             }
             */
+            var language
+            {% if app.request.getLocale() == "en" %}
+                var language = "";
+            {% else %}
+                var language = "es";
+            {% endif %}
            $("#images").fileinput({
+                language: language,
                 theme: "explorer-fa",
                 uploadUrl: "{{ path('gallery_new') }}",
                 allowedFileExtensions: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt'/*, 'doc', 'docx', 'xls', 'xlsx'*/],

@@ -43,7 +43,8 @@ class SetProfileImageController extends Controller
             }
             else
             {
-                throw new AccessDeniedHttpException("Access Denied");
+                $msg = $this->get('translator')->trans('gerenal_msg_access_denied');
+                throw new AccessDeniedHttpException($msg);
             }
         }
         else
@@ -99,7 +100,8 @@ class SetProfileImageController extends Controller
                     }
                     else
                     {
-                        throw new AccessDeniedHttpException("Access Denied");
+                        $msg = $this->get('translator')->trans('gerenal_msg_access_denied');
+                        throw new AccessDeniedHttpException($msg);
                     }
 
                     
@@ -138,8 +140,9 @@ class SetProfileImageController extends Controller
                         if( isset($oldImage) && $oldImage != "" )
                         {
                             $this->fileExist( $this->getUploadRootDir().$oldImage);
-                            $status = "Image was uploaded successfully";
-                            $session->getFlashBag()->add("success", $status);
+                            //$status = "Image was uploaded successfully";
+                            $msg = $this->get('translator')->trans('general_msg_saved');
+                            $session->getFlashBag()->add("success", $msg);
                             
                         }
 

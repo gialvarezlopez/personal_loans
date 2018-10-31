@@ -1,3 +1,36 @@
+app_name: Prestamos Personales
+
+general_btn_show: Ver
+general_btn_edit: Editar
+general_btn_delete: Eliminar
+general_btn_update: Actualizar
+general_btn_save: Guardar
+general_btn_create: Crear
+general_btn_close: Cerrar
+general_btn_unfreeze: Descongelar
+
+general_msg_yes: Si
+gerenal_msg_access_denied: Acceso denegado
+general_msg_record_no_found: Registro no encontrado
+
+general_loan_with_percentage: Con porcentaje
+general_loan_per_quotas: Cuotas definidas
+general_msg_status_loan_finished: Prestamo finalizado
+general_msg_status_loan_no_finished: Prestamo no finalizado
+general_msg_status_loan_freezed: Prestamo congelado
+general_msg_send_data: Ocurrio un error al enviar los datos
+general_msg_pending: Pendiente
+general_msg_success: Registro creado con éxito
+general_msg_saved: Datos guardados con éxito
+general_msg_error_delete: El registro no se pudo eliminar
+general_msg_days: Días
+
+general_msg_browser_error_file_reader: Tu navegador no soporta FileReader
+
+general_msg_loan_finished: Finalizado
+general_msg_loan_freezed: Congelado
+general_msg_loan_incomplete: Incompleto
+
 menu_left_payment_gateways: VIA DE PAGO
 menu_left_main_navigation: NAVEGACIÓN PRINCIPAL
 menu_left_security: SEGURIDAD
@@ -9,12 +42,13 @@ menu_left_clients: Clientes
 menu_left_client_list: Listado de clientes 
 menu_left_new_client: Crear nuevo cliente
 menu_left_loans: Prestamos
+menu_left_history: Historial
 menu_left_image_profile: Imagen de perfil
 menu_left_upload_file: Carga de archivos
 menu_left_setting: Ajustes
 menu_left_logout: Salir
 
-dashboard_payments: Pagos
+dashboard_payments: Control de pagos
 dashboard_btn_filter_date: Filtrar
 dashboard_period: Periodo
 dashboard_btn_filter_info_from: Desde
@@ -44,3 +78,247 @@ dashboard_created_clients: Clientes creados
 dashboard_recently_loans_created: Prestamos creados recientemente
 dashboard_view_all_loans: Ver todos los prestamos
 dashboard_view_all_clients: Ver todos los clientes
+
+reports_title: Reporte de pagos y cobros
+reports_subtitle: Filtro de fechas
+reports_opt_next_payment: Siguientes pagos(Cobros por hacer)  
+reports_opt_payments_done : Pagos hechos  
+reports_opt_show_both: Mostrar ambos
+reports_btn_filter_date: Filtrar
+reports_period: Periodo
+reports_btn_filter_info_from: Desde
+reports_btn_filter_info_to: Hasta
+reports_table_title_previous_payments: Pagos anteriores
+reports_table_title_next_payment: Siguientes pagos
+reports_table_title_code: Código
+reports_table_title_loan_type: Tipo de prestamo
+reports_table_title_name: Cliente
+reports_table_title_previous_interest: Interes anterior %
+reports_table_title_paid_interest: Interes pagado
+reports_table_title_paid_capital: Capital pagado
+reports_table_title_pending_to_pay : Pendiente a pagar 
+reports_table_title_note: Comentario
+reports_table_title_next_interest: Próximo interes
+reports_table_title_next_interest_amount : Próximo monto de interes
+reports_table_title_next_capital_amount: Próximo monto de capital
+reports_table_title_total_payment : Total a pagar
+reports_table_no_data_found: No hay datos que mostrar 
+
+clients_title: Lista de clientes
+clients_total_records: Total de clientes
+clients_status_filtered_by: Estatus filtrado por
+clients_list_all_clients: Todos los clientes
+clients_list_inactive_clients: Clientes inactivos
+clients_list_active_clients: Clientes activos
+clients_btn_loans: Prestamos
+clients_btn_create_loan: Crear prestamo
+clients_btn_my_loans: Mis prestamos
+clients_btn_create_new_client: Crear nuevo cliente
+clients_msg_pending_loans: Prestamos pendientes
+clients_table_title_profile_imagen: Fotografía
+clients_table_title_full_name: Nombre
+clients_table_title_id_number: ID número
+clients_table_title_id_type: Tipo identificación
+clients_table_title_ative: Activo
+clients_table_title_actions: Acciones
+clients_info_title_client: Cliente
+clients_info_title_contact_info: Informacion de contacto
+clients_info_address: Dirección
+clients_info_phone1: Teléfono 1
+clients_info_phone2: Teléfono 2
+clients_info_email: Correo Electronico
+clients_info_note: Nota
+clients_info_created_at: Creado
+clients_info_updated_at: Actualizado
+
+clients_edit_title: Editar cliente
+clients_edit_input_first_name: Primer nombre
+clients_edit_input_middle_name: Segundo nombre
+clients_edit_input_first_surname: Primer apellido
+clients_edit_input_second_surname: Segundo apellido
+clients_btn_new_loan: Crear prestamo
+clients_btn_set_image_profile:  Imagen perfil
+clients_btn_new_client: Crear nuevo cliente   
+clients_btn_clients_list: Lista de clientes   
+
+clients_new_title: Nuevo cliente
+clients_new_msg_success: Cliente creado con éxito
+clients_new_msg_updated: Cliente actualizado con éxito
+clients_new_msg_no_updated: El cliente no puedo ser actualizado
+
+loan_index_title: Listado de prestamos
+loan_index_total_records: Total de registros
+loan_index_status_filtered_by: Estatus filtrado por
+loan_index_filter_opt_all: Todos
+loan_index_filter_opt_no_finished: No finilizados
+loan_index_filter_opt_finished: Finalizados
+loan_index_filter_opt_freezed: Congelados
+loans_status_finished: Finalizado
+loans_status_no_finished: No Finalizado
+loans_status_freezed: Congelado
+loan_index_table_title_code: Código
+loan_index_table_title_loan_type: Tipo de prestamo
+loan_index_table_title_client_name: Cliente
+loan_index_table_title_requested_amount: Monto solicitado
+loan_index_table_title_status: Estatus
+loan_index_table_title_created_at: Fecha creado
+loan_index_table_title_actions: Acciones 
+loan_btn_payments: Pagos
+loan_btn_do_payment: Crear pago
+loan_btn_payment_history: Histórico de pagos
+
+loan_edit_title: Editar prestamo
+loan_edit_client: Cliente
+loan_edit_code: Código
+loan_edit_msg_count_files: Pagos realizados <span class="badge">%payments% </span>, archivos adjuntos
+loan_edit_subtitle_payments : Pagos 
+loan_edit_comment_item: Si elimina o agrega registros haga click en el boton guardar
+
+loan_form_loan_created_at: Prestamo creado
+loan_form_loan_created_at_help: Fecha de cuando fue entregado el prestamo
+loan_form_requested_amount: Monto solicitado
+loan_form_default_interest_rate : Tasa de interes por defecto
+loan_form_default_interest_rate_disabled : Los pagos seran por cuotas establecidas
+loan_form_default_current_interest_rate : Tasa de interes actual
+loan_form_recurring_day_payment: Dias recurrentes a pagar
+loan_form_recurring_day_payment_help: Por ejemplo para cada semana ingrese 7
+loan_form_first_payment_date: Primera fecha de pago
+loan_form_first_payment_date_help: Fecha maxima disponible para que el cliente haga el pago
+loan_form_quotas: Cuotas
+loan_form_quotas_help: Click en el boton 'Establecer cuotas' para obtener las fechas de pago.
+loan_form_description: Descripcion (opcional)
+loan_form_description_help: Caracteres permitidos 150.
+loan_form_general_help: La tasa de interés puede cambiar debido al incumplimiento de pagos no realizados a tiempo
+loan_form_status: Estatus
+loan_form_msg_first_payment_date: Primera fecha de pago 
+loan_form_msg_last_payment_date: Última fecha de pago
+loan_form_msg_next_payment_date: Siguiente fecha de pago
+loan_form_btn_set_payments: Establecer cuotas
+loan_btn_loans_list: Lista de prestamos
+loan_btn_payment: Crear pago
+loan_btn_attach_file:  Adjuntar archivos a este prestamo
+loan_btn_add_item:  Agrear registro
+loan_label_pending_amount_rate: Monto pendiente del interes
+
+loan_form_default_no_rate_loan_per_percentage: ""
+loan_msg_loan_type_selected: "Tipo de prestamo seleccionado: <b>%loan_type%</b> (Puede cambiar el tipo <a href='%url_change%'>aqui</a>)"
+
+loan_msg_new_confirm_submit: Esta seguro de continuar?
+
+loan_msg_payments_click_here: Click <a href='%link%'>aqui</a> para ver el historial completo
+loan_msg_total_to_pay: Total a pagar
+loan_msg_paid_capital: Capital pagado
+loan_msg_paid_interest: Interes pagado
+loan_msg_total_paid: Total pagado
+loan_msg_pending_to_pay: Pendiente a pagar
+loan_table_payments_payment_date: Fecha de pago
+loan_table_payments_quota_to_pay: Cuota a pagar
+loan_table_payments_paid_capital: Capital pagado
+loan_table_payments_paid_interest: Interes pagado
+loan_table_payments_action: Acción
+loan_table_payments_paid_amount: Monto pagado
+loan_table_payments_paid_date: Fecha pagado
+loan_table_payments_paid_note: Nota
+
+loan_table_rate_payments_rate: Interes
+loan_table_rate_payments_status: Estatus
+loan_table_rate_payments_paid_amount: Paid Amount
+loan_table_rate_payments_node: Hecho
+loan_table_rate_payments_node_total: Pagos hechos
+loan_table_rate_payments_history: Historial de pagos
+loan_table_rate_payments_full_history: Ver historial completo
+loan_table_rate_payments_pending_quotas: Cuotas pendientes
+loan_table_rate_payments_current_period: Periodo actual
+loan_table_rate_payments_next_payment: Siguiente pago
+loan_table_rate_payments_dates: Fechas de pago
+loan_table_rate_payments_msg_pay_cuotas: Este prestamo tiene <span class='bc'>%pending_quotas% cuotas pendientes</span><b>(Incluyendo la cuota actual)</b> con un total de <span class='bc'>%pending_days%  dia(s) de retrazo</span>. La tasa de interes ha sido incrementada a <span class='bc'>%pending_rate% %</span>
+loan_table_rate_payments_note: <strong>Nota:</strong>Puedes cambiar la tasa de interes cuando hagas el pago
+loan_table_rate_payments_loan_origiinal_rate: Este prestamo fue creado con una tasa de interes inicial al 
+
+loan_msg_recurring_day_payment_empty: Asegures de que los campos '<b>Dias recurrentes a pagar, Primera fecha de pago y Cuotas </b>' no esten vacios
+loan_msg_recurring_day_payment_zero: Los campos '<bDias recurrentes del pago y Cuotas</b>' deben ser numeros
+loan_msg_error_remove_dates: Alguna fechas no pudieron ser removidas debido a que ya existe un periodo pagado
+loan_msg_error_loan_completed: Este prestamo <b>ya ha sido completado</b>, si desea agregar mas elementos desmarque la casilla donde dice <b>'Este prestamo esta finalizado?'</b>
+loan_msg_error_new_first_patment_date: La nueva primer fecha de pago fue modificada a
+loan_msg_error_no_first_pament_date: No tienes la primera fecha de pago seleccionada, selecciona una
+loan_msg_error_click_set_payment_day: Click en 'Establecer cuotas' para obtener las fechas de pago
+loan_msg_error_quotas_not_equal_with_total_record: El campo 'Cuotas' tiene un número diferente al total de registros en la tabla de pagos
+loan_msg_error_delete_record: Esta seguro de borrar el registro?.<br> este prestamo quiene <strong>%hasPayments%</strong> pagos(s) hechos
+
+loan_new_title: Nuevo prestamo
+loan_new_msg_no_exist: El tipo de prestamo no existe
+loan_new_msg_loan_type_incorrect: El tipo del prestamo es incorrecto o no existe
+
+loan_show_title: Detalles del prestamo
+
+payment_history_title: Historial de pagos
+
+payments_quotas_title: Cuotas de pago
+payments_quotas_btn_pay_detail: Detalle complet de pagos
+
+payment_rate_table_payments_date: Fechas de pagos
+payment_rate_table_previous_payments: Pagos anteriores
+payment_rate_table_last_payments: Últimos pagos
+payment_rate_table_next_quota: Siguiete cuota
+payment_rate_table_col_date_paid_quota: Fecha pagada
+payment_rate_table_col_max_date_to_payment: Fecha maximo de pago
+payment_rate_table_col_amount: Monto a pagar
+payment_rate_table_col_interest: Interes
+payment_rate_table_col_sub_total: Sub total
+payment_rate_table_col_total: Total
+payment_rate_table_col_paid_amount: Monto pagado
+payment_rate_table_col_paid_interest: Interes pagado
+payment_rate_table_col_paid_capital: Capital pagado
+payment_rate_table_col_comment: Comentario
+
+image_profile_title: Imagen de perfil  
+image_profile_sub_title_my: My imagen de perfil
+image_profile_sub_title_client: Imagen de perfil del cliente
+image_profile_current_image_title: Imagen actual
+image_profile_current_image_client_empty: El cliente no tiene imagen de perfil, seleccione una
+image_profile_current_image_my_empty: Tu no tienes imagen de perfil, selecciona una
+image_profile_select_image: Seleccionar una imagen
+image_profile_btn_upload_image: Cargar imagen
+
+upload_file_title: Carga de archivos
+upload_file_title2: Prestamo - Carga de archivos 
+upload_file_files_supported: Archivos soportados
+
+create_loan_type_box_title: Seleccione el tipo de prestamo
+create_loan_type_box_th_type: Tipo
+create_loan_type_box_th_description: Descripción
+create_loan_type_box_btn: Seleccionar
+create_loan_type_box_info_with_rate: Los pagos tendran una asa de interes por cada pago(Cuotas indefinidas)
+create_loan_type_box_info_no_rate:  Los pagos seran definidos por cuotas fijas
+
+my_payments_title: Información de mis pagos
+my_payments_sub_title: Historial de pagos
+my_payments_table_amount_paid: Monto pagado
+my_payments_table_plan: Plan
+my_payments_table_payment_gateway: Pasarela de pago
+my_payments_table_starting_date: Fecha de inicio
+my_payments_table_expiration_date: Fecha expiración
+my_payments_table_remaining_days: Días restantes
+my_payments_table_status: Estatus
+my_payments_btn: Revisar membrecías
+my_payments_msg_no_payments: No tienes ningún pago
+my_payments_msg_remaining_days_expired: Expirada
+my_payments_msg_remaining_days_expire_soon: licencia expirará pronto
+my_payments_msg_remaining_days_active: Activa
+
+merbership_title: Membrecías
+merbership_sub_title: Nuestros planes
+merbership_table_select: Seleccione una opción
+merbership_table_plan: plan
+merbership_table_price: Precio
+merbership_btn_pay_now: Pagar ahora
+merbership_btn_my_transactions: Mis transacciones
+merbership_table_td_per: por
+merbership_table_td_month: mes
+merbership_table_td_months: meses
+merbership_table_td_active: activa
+merbership_table_td_actives: Activas
+merbership_table_td_day: dia
+merbership_table_td_days: dias
+merbership_table_td_tran: transaccion
+merbership_table_td_trans: transacciones

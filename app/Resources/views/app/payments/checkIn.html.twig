@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Membership - Personal Loans
+    {% trans %}merbership_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -28,12 +28,12 @@
 
     <section class="content-header">
       <h1>
-        Membership
+        {% trans %}merbership_title{% endtrans %}
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ path('payments_info') }}"><i class="fa fa-book"></i> My transactions</a></li>
-        <li class="active">Membership</li>
+        <li><a href="{{ path('payments_info') }}"><i class="fa fa-book"></i> {% trans %}menu_left_my_transactions{% endtrans %}</a></li>
+        
       </ol>
     </section>
     <hr>
@@ -41,24 +41,24 @@
     {% if pendingDays.days > 0 %}
         <div class="alert alert-info">
             <i class="fa fa-check-circle" aria-hidden="true"></i> 
-            You have <span class="label label-success">{{ pendingDays.licences }}</span> 
+            <span class="label label-success">{{ pendingDays.licences }}</span> 
             {% if pendingDays.licences > 1 %}
-                <a href="{{ path('payments_info') }}" class="alert-link">transactions</a>
-                actives
+                <a href="{{ path('payments_info') }}" class="alert-link"> {% trans %}merbership_table_td_trans{% endtrans %}</a>
+                {% trans %}merbership_table_td_actives{% endtrans %}
             {% else %}
-                <a href="{{ path('payments_info') }}" class="alert-link">transaction</a>
-                active
+                <a href="{{ path('payments_info') }}" class="alert-link"> {% trans %}merbership_table_td_tran{% endtrans %}</a>
+                {% trans %}merbership_table_td_active{% endtrans %}
             {% endif %}
             
-             with a total of <span class="label label-success">{{ pendingDays.days }}
+             , {% trans %}my_payments_table_remaining_days{% endtrans %} <span class="label label-success">{{ pendingDays.days }}
                 {% if pendingDays.days >= 2 %}
-                    days
+                    {% trans %}merbership_table_td_days{% endtrans %}
                 {% else %}
-                    day 
+                    {% trans %}merbership_table_td_day{% endtrans %}
                 {% endif %}
                 
                 </span>
-                &nbsp;to be published on the website
+                
             
         </div>
     {% endif %}
@@ -99,16 +99,16 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body pad">
-            <h4>Our plans</h4><hr>
+            <h4> {% trans %}merbership_sub_title{% endtrans %}</h4><hr>
             <div class="row">
                 <div class="col-lg-8">
                     <table class="table table-striped">
                         <thead class="">
                             <tr>
-                                <th>Select an<br> Option</th>
-                                <th>Plan</th>
+                                <th>{% trans %}merbership_table_select{% endtrans %}</th>
+                                <th> {% trans %}merbership_table_plan{% endtrans %}</th>
                                 {# <th>Months</th> #}
-                                <th>Price</th>
+                                <th> {% trans %}merbership_table_price{% endtrans %}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -140,7 +140,7 @@
                                             <input type = "hidden" id="f" value="{{ existFree }}">
                                             <h4 ><span class="label label-success">$ {{ value.prPrice|number_format(2, '.', ',') }}</span></h4>
                                         {% else %}
-                                        $ {{ value.prPrice|number_format(2, '.', ',') }} /  Per <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}Month{% else %}Monts{% endif %}
+                                        $ {{ value.prPrice|number_format(2, '.', ',') }} /  {% trans %}merbership_table_td_per{% endtrans %} <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}{% trans %}merbership_table_td_month{% endtrans %}{% else %}{% trans %}merbership_table_td_months{% endtrans %}{% endif %}
                                         {% endif %}
                                         
                                     </td>
@@ -153,8 +153,8 @@
                 </div>
             </div>
             <hr>
-            <span id="holderBtnSend"><button class='btn btn-primary' id='btnPay'><i class='fa fa-credit-card' aria-hidden='true'></i> Pay Now</button></span>
-            <a href="{{ path('payments_info') }}" class='btn btn-primary'><i class="fa fa-handshake-o" aria-hidden="true"></i> My transaction</a>                
+            <span id="holderBtnSend"><button class='btn btn-primary' id='btnPay'><i class='fa fa-credit-card' aria-hidden='true'></i> {% trans %}merbership_btn_pay_now{% endtrans %}</button></span>
+            <a href="{{ path('payments_info') }}" class='btn btn-primary'><i class="fa fa-handshake-o" aria-hidden="true"></i> {% trans %}merbership_btn_my_transactions{% endtrans %}</a>                
         </div>
     </div>
 

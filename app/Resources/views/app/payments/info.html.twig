@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Payment Information - Personal Loans
+    {% trans %}my_payments_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -31,12 +31,12 @@
     {# End notifications #}
     <section class="content-header">
       <h1>
-        Information about my payments
+        {% trans %}my_payments_title{% endtrans %}
         <small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ path('payments_review') }}"><i class="fa fa-money"></i> Check membership</a></li>
-        <li class="active">My payments</li>
+        <li><a href="{{ path('payments_review') }}"><i class="fa fa-money"></i> {% trans %}menu_left_check_membership{% endtrans %}</a></li>
+        
       </ol>
       
     </section>
@@ -52,20 +52,20 @@
         <!-- /.box-header -->
         <div class="box-body pad">
             {% if pays|length == 0 %}
-                <div class="alert alert-warning">You don't have any payment done</div>
+                <div class="alert alert-warning">{% trans %}my_payments_msg_no_payments{% endtrans %}</div>
 
             {% else %}
-                <h4><i class="fa fa-id-card-o" aria-hidden="true"></i> My payments history</h4><hr>
+                <h4><i class="fa fa-id-card-o" aria-hidden="true"></i> {% trans %}my_payments_sub_title{% endtrans %}</h4><hr>
                 <table class="table table-striped">
                     <thead class="">
                         <tr>
-                            <th><i class="fa fa-money" aria-hidden="true"></i> Amount Paid</th>
-                            <th><i class="fa fa-handshake-o" aria-hidden="true"></i> Plan</th>
-                            <th><i class="fa fa-credit-card-alt" aria-hidden="true"></i> Payment Gateway</th>
-                            <th><i class="fa fa-calendar" aria-hidden="true"></i> starting date</th>
-                            <th><i class="fa fa-calendar" aria-hidden="true"></i> Expiration Date</th>
-                            <th><i class="fa fa-calendar-minus-o" aria-hidden="true"></i> Remaining days</th>
-                            <th><i class="fa fa-exchange" aria-hidden="true"></i> Status</th>
+                            <th><i class="fa fa-money" aria-hidden="true"></i> {% trans %}my_payments_table_amount_paid{% endtrans %}</th>
+                            <th><i class="fa fa-handshake-o" aria-hidden="true"></i> {% trans %}my_payments_table_plan{% endtrans %}</th>
+                            <th><i class="fa fa-credit-card-alt" aria-hidden="true"></i> {% trans %}my_payments_table_payment_gateway{% endtrans %}</th>
+                            <th><i class="fa fa-calendar" aria-hidden="true"></i> {% trans %}my_payments_table_starting_date{% endtrans %}</th>
+                            <th><i class="fa fa-calendar" aria-hidden="true"></i> {% trans %}my_payments_table_expiration_date{% endtrans %}</th>
+                            <th><i class="fa fa-calendar-minus-o" aria-hidden="true"></i> {% trans %}my_payments_table_remaining_days{% endtrans %}</th>
+                            <th><i class="fa fa-exchange" aria-hidden="true"></i> {% trans %}my_payments_table_status{% endtrans %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,11 +135,11 @@
                                 </td>
                                 <td>
                                     {% if diasRestantes == 0 %}
-                                        <span class="label label-danger">Expired</span>
+                                        <span class="label label-danger">{% trans %}my_payments_msg_remaining_days_expired{% endtrans %}</span>
                                     {% elseif diasRestantes < 1 %}
-                                        <span class="label label-warning">license will expire soon</span>
+                                        <span class="label label-warning">{% trans %}my_payments_msg_remaining_days_expire_soon{% endtrans %}</span>
                                     {% else %}
-                                        <span class="label label-success">Active</span>
+                                        <span class="label label-success">{% trans %}my_payments_msg_remaining_days_active{% endtrans %}</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -148,7 +148,7 @@
                 </table>
             {% endif %}
             <hr>
-            <a class="btn btn-primary" href="{{path('payments_checkIn')}}"><i class="fa fa-money" aria-hidden="true"></i> Check membership</a>
+            <a class="btn btn-primary" href="{{path('payments_checkIn')}}"><i class="fa fa-money" aria-hidden="true"></i>  {% trans %}my_payments_btn{% endtrans %}</a>
             <hr>
         </div>
     </div>

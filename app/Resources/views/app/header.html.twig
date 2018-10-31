@@ -4,7 +4,7 @@
           <!-- mini logo for sidebar mini 50x50 pixels -->
           <span class="logo-mini"><b>P</b>L</span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>Personal</b> Loans</span>
+          <span class="logo-lg" style="font-size:16px"><b>{% trans %}app_name{% endtrans %}</b></span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
@@ -242,12 +242,12 @@
                   <li class="user-footer">
                   
                     <div class="pull-left">
-                      <a href="{{ path('setProfileImage_show') }}" class="btn btn-default btn-flat"><i class="fa fa-file-image-o" aria-hidden="true"></i> Profile Image</a>
+                      <a href="{{ path('setProfileImage_show') }}" class="btn btn-default btn-flat"><i class="fa fa-file-image-o" aria-hidden="true"></i> {% trans %}menu_left_image_profile{% endtrans %}</a>
                     </div>
                     
                     {% if app.user != null %}
                       <div class="pull-right">
-                        <a href="{{ path("logout") }}" class="btn btn-default btn-flat"><i class="fa fa-external-link" aria-hidden="true"></i> Sign out</a>
+                        <a href="{{ path("logout") }}" class="btn btn-default btn-flat"><i class="fa fa-external-link" aria-hidden="true"></i> {% trans %}menu_left_logout{% endtrans %}</a>
                       </div>
                     {% endif %}
                     

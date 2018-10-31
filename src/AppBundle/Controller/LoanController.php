@@ -94,7 +94,8 @@ class LoanController extends Controller
         $clientId = $request->get("clientId");
         if( !is_numeric($clientId) || $clientId <= 0 )
         {
-            throw new NotFoundHttpException("Record not found");
+            $msg = $this->get('translator')->trans('general_msg_record_no_found');
+            throw new NotFoundHttpException($msg);
         }
         else
         {
@@ -116,7 +117,8 @@ class LoanController extends Controller
                 $oLoanCategory= $em->getRepository('AppBundle:loanCategory')->findOneBy( array("locId"=>$loanCatId, "locActive"=>1) );
                 if( !$oLoanCategory )
                 {
-                    throw new NotFoundHttpException("Loan Type is not exist");
+                    $msg = $this->get('translator')->trans('loan_new_msg_no_exist');
+                    throw new NotFoundHttpException($msg);
                 }
                 else
                 {
@@ -125,7 +127,8 @@ class LoanController extends Controller
             }
             else
             {
-                throw new NotFoundHttpException("Loan Type is incorrect or is missing");
+                $msg = $this->get('translator')->trans('loan_new_msg_loan_type_incorrect');
+                throw new NotFoundHttpException($msg);
             }
            
             $rate = $form->get("loaRateInterestByDefault")->getData();
@@ -176,7 +179,7 @@ class LoanController extends Controller
                 $em->flush();
             }
 
-            $msg = "Data created successfully";
+            $msg = $this->get('translator')->trans('general_msg_success');
             $this->session->getFlashBag()->add("success", $msg);
             return $this->redirectToRoute('loan_show', array('loaId' => $loan->getLoaid()));
         }
@@ -225,7 +228,8 @@ class LoanController extends Controller
             $userId = $this->getUser()->getUsrId();
             if( $userId != $loan->getCli()->getUsr()->getUsrId() )
             {
-                throw new AccessDeniedHttpException("Access Denied");
+                $msg = $this->get('translator')->trans('general_msg_access_denied');
+                throw new AccessDeniedHttpException($msg);
             }
         } 
         //echo "xxx";
@@ -260,17 +264,20 @@ class LoanController extends Controller
             {
                 if( $userId != $loan->getCli()->getUsr()->getUsrId() )
                 {
-                    throw new AccessDeniedHttpException("Access Denied");
+                    $msg = $this->get('translator')->trans('general_msg_access_denied');
+                    throw new AccessDeniedHttpException($msg );
                 }
             }
             else
             {
-                throw new NotFoundHttpException("Record not found");
+                $msg = $this->get('translator')->trans('general_msg_record_no_found');
+                throw new NotFoundHttpException($msg);
             }
         }
         else
         {
-            throw new NotFoundHttpException("Record not found");
+            $msg = $this->get('translator')->trans('general_msg_record_no_found');
+            throw new NotFoundHttpException($msg);
         }
         //loaId
 
@@ -421,7 +428,7 @@ class LoanController extends Controller
                     $em->flush();
             }
             //exit("<hr>fin");
-            $msg = "Data saved successfully";
+            $msg = $this->get('translator')->trans('general_msg_saved');
             $this->session->getFlashBag()->add("success", $msg);
 
             return $this->redirectToRoute('loan_edit', array('loaId' => $loan->getLoaid()));
@@ -495,12 +502,14 @@ class LoanController extends Controller
                 {
                     if( $userId != $loan->getCli()->getUsr()->getUsrId() )
                     {
-                        throw new AccessDeniedHttpException("Access Denied");
+                        $msg = $this->get('translator')->trans('gerenal_msg_access_denied');
+                        throw new AccessDeniedHttpException($msg );
                     }
                 }
                 else
                 {
-                    throw new NotFoundHttpException("Record not found");
+                    $msg = $this->get('translator')->trans('gerenal_msg_access_denied');
+                    throw new NotFoundHttpException("general_msg_record_no_found");
                 }
             }
 
@@ -514,7 +523,8 @@ class LoanController extends Controller
             }
             else
             {
-                throw new AccessDeniedHttpException("The loan couldn't be delete");
+                $msg = $this->get('translator')->trans('general_msg_error_delete');
+                throw new AccessDeniedHttpException($msg);
             }
             
         }

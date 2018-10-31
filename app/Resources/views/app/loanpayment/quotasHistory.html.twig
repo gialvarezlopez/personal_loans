@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Payments History - Money Loan
+    {% trans %}payment_history_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -62,13 +62,13 @@
 
 <section class="content-header">
       <h1>
-        Payment history
-        <small>full detail</small>
+        {% trans %}payment_history_title{% endtrans %}
+        <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ path('loan_index') }}">Loans</a></li>
-        <li class="active">Payment history</li>
+        <li><a href="{{ path('loan_index') }}">{% trans %}menu_left_loans{% endtrans %}</a></li>
+        {# <li class="active">Payment history</li> #}
       </ol>
 </section>
 <hr>
@@ -79,13 +79,13 @@
                 {% if loan.loaCompleted == 1 %}
                     <span class="loanCompleted">
                         <i class="fa fa-check-circle" aria-hidden="true"></i> 
-                        Loan Finished
+                        {% trans %}general_msg_status_loan_finished{% endtrans %}
                     </span>
-                {% elseif loan.loaCompleted == 2 %}
-                    <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan Freezed</span>
-                {% else %}
-                    <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> This loan is not finished yet</span>    
-                {% endif %}
+                    {% elseif loan.loaCompleted == 2 %}
+                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_status_loan_freezed{% endtrans %}</span>
+                    {% else %}
+                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_status_loan_no_finished{% endtrans %}</span>    
+                    {% endif %}
             </div>
         </div>
          
@@ -122,15 +122,15 @@
                     </span>
                 </div>
                 <div class="col-lg-4">
-                    <i class="fa fa-barcode" aria-hidden="true"></i> Code: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
+                    <i class="fa fa-barcode" aria-hidden="true"></i> {% trans %}loan_edit_code{% endtrans %}: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
                 </div>
                 <div class="col-lg-4">    
-                    <i class="fa fa-money" aria-hidden="true"></i> Init Amount: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> Note: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
+            <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> {% trans %}reports_table_title_note{% endtrans %}: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
         </div>
         <hr>
         {% if loan.loc.locKey == "inactive_rate" %}
@@ -143,12 +143,12 @@
         <hr>
         <ul class="list-inline">
             <li>
-                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> Loans list</a>
+                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %}</a>
                 <li>
-                    <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+                    <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %}general_btn_edit{% endtrans %}</a>
                 </li>
                 {% if loan.loaCompleted == 0 %}
-                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</a></li>
                 {% endif %}
             </li>
             {#
@@ -190,6 +190,10 @@
                     //{'max-width': '5%', 'targets': 13}
                     { targets: 'no-sort', orderable: false }
                  ],
+                 "language": {
+                    //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                    {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
+                }
                  
                 
             });

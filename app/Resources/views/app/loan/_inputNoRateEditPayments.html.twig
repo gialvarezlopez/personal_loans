@@ -69,18 +69,18 @@
                                 <thead>
                                     <tr>
                                         {# <th>#</th> #}
-                                        <th>Payment date</th>
-                                        <th>Quota to pay</th>
-                                        <th>Action</th>
-                                        <th>Paid amount</th>
+                                        <th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th>
+                                        <th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th>
+                                        <th>{% trans %}loan_table_payments_action{% endtrans %}</th>
+                                        <th>{% trans %}loan_table_payments_paid_amount{% endtrans %}</th>
 
                                         {% if  action is defined and (action == "history" ) %}
-                                            <th>Paid Capital</th>
-                                            <th>Paid Interest</th>
+                                            <th>{% trans %}loan_table_payments_paid_capital{% endtrans %}</th>
+                                            <th>{% trans %}loan_table_payments_paid_interest{% endtrans %}</th>
                                         {% endif %}
 
-                                        <th>Paid date</th>
-                                        <th>Note</th>
+                                        <th>{% trans %}loan_table_payments_paid_date{% endtrans %}</th>
+                                        <th>{% trans %}loan_table_payments_paid_note{% endtrans %}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -148,7 +148,7 @@
                                                             </select>
                                                         {% endif %}
                                                     {% else %}
-                                                        Pending    
+                                                        {% trans %}general_msg_pending{% endtrans %}     
                                                     {% endif %}
                                                 {% else %}
                                                      {% if item.lpt_key == "freezed" %}
@@ -177,7 +177,7 @@
                                                     </div>   
                                                     
                                                     {% else %} 
-                                                        Pending
+                                                        {% trans %}general_msg_pending{% endtrans %} 
                                                     {% endif %} 
                                                 {% endif %} 
                                             </td>
@@ -189,8 +189,8 @@
                                                     {% set totalPaidCapital = totalPaidCapital + item.lpa_paid_capital %}
                                                     {% set totalPaidInterest = totalPaidInterest + item.lpa_paid_rate_interest %}
                                                 {% else %}
-                                                    <td>Pending</td>
-                                                    <td>Pending</td>
+                                                    <td>{% trans %}general_msg_pending{% endtrans %} </td>
+                                                    <td>{% trans %}general_msg_pending{% endtrans %} </td>
                                                 {% endif %}
                                             {% endif %}
 
@@ -206,7 +206,7 @@
                                                         <input type="text" class="form-control datepicker" disabled="disabled">
                                                     </div>    
                                                     {% else %}
-                                                        Pending 
+                                                        {% trans %}general_msg_pending{% endtrans %} 
                                                     {% endif %}
                                                 {% endif %}
                                             </td>
@@ -236,9 +236,9 @@
                                                             <span class="btn btn-danger deleteItem"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
                                                         {% elseif  action is defined and action == "payment" %}
                                                             {% if item.lpt_key == "freezed" %}
-                                                                <button class="btn btn-default btnUnfreeze"  value="{{ item.lpa_id }}"><i class="fa fa-clock-o" aria-hidden="true"></i> Unfreeze </button>
+                                                                <button class="btn btn-default btnUnfreeze"  value="{{ item.lpa_id }}"><i class="fa fa-clock-o" aria-hidden="true"></i> {% trans %}general_btn_unfreeze{% endtrans %} </button>
                                                             {% else %}
-                                                                <button class="btn btn-success btnPaymentItem" disabled="disabled" value="{{ item.lpa_id }}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Create </button>
+                                                                <button class="btn btn-success btnPaymentItem" disabled="disabled" value="{{ item.lpa_id }}"><i class="fa fa-check-square-o" aria-hidden="true"></i> {% trans %}general_btn_create{% endtrans %} </button>
                                                             {% endif %}
                                                         {% endif %}
                                                     {% endif %}
@@ -252,20 +252,23 @@
                         <input type="hidden" value="{{ firstPaymentDate }}" id="inputfistPaymentDate">
                         {% if  action is defined and ( action == "edit" ) and (loan.loaCompleted == 0 ) %}
                             <hr>
-                            <div class="text-right"><button id="addInput" class="btn btn-default"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add item</button></div>
+                            <div class="text-right">
+                                <button id="addInput" class="btn btn-default"><i class="fa fa-plus-circle" aria-hidden="true"></i> {% trans %}loan_btn_add_item{% endtrans %}</button>
+                            </div>
                         {% endif %}
                         <div>
-                            <h3 class=""><span class="labelCurrency">Total to pay:</span> <span id="total" class="label label-default">${{ totalToPay|number_format(2, '.', ',') }}</span></h3>
+                            <h3 class=""><span class="labelCurrency">
+                            {% trans %}loan_msg_total_to_pay{% endtrans %}:</span> <span id="total" class="label label-default">${{ totalToPay|number_format(2, '.', ',') }}</span></h3>
                             
                             {% if  action is defined and (action == "history" ) %}
                                 <hr>
-                                <h3 class=""><span class="labelCurrency">Paid capital:</span> <span id="total" class="label label-default">${{ totalPaidCapital|number_format(2, '.', ',') }}</span></h3>
-                                <h3 class=""><span class="labelCurrency">Paid interest:</span> <span id="total" class="label label-default">${{ totalPaidInterest|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency"> {% trans %}loan_msg_paid_capital{% endtrans %}:</span> <span id="total" class="label label-default">${{ totalPaidCapital|number_format(2, '.', ',') }}</span></h3>
+                                <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_paid_interest{% endtrans %}:</span> <span id="total" class="label label-default">${{ totalPaidInterest|number_format(2, '.', ',') }}</span></h3>
                                 <hr>
                             {% endif %}
-                            <h3 class=""><span class="labelCurrency">Total paid:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
+                            <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_total_paid{% endtrans %}:</span> <span id="totalPaid" class="label label-default">${{ totalPaid|number_format(2, '.', ',') }}</span></h3>
                             <h3 class="">
-                                <span class="labelCurrency">Pending to pay:</span> 
+                                <span class="labelCurrency"> {% trans %}loan_msg_pending_to_pay{% endtrans %}:</span> 
                                 {% if (totalToPay - totalPaid) > 0 %}
                                     {% set stalabel = "pending" %}
                                 {% else %}

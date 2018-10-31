@@ -1,22 +1,38 @@
 
 {{app.request.get('name')}}
 <div class="panel panel-info">
-  <div class="panel-heading"><h4>Select the loan type<h4></div>
+  <div class="panel-heading"><h4> {% trans %}create_loan_type_box_title{% endtrans %}<h4></div>
   <div class="panel-body">
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Type</th>
+                <th> {% trans %}create_loan_type_box_th_type{% endtrans %}</th>
                 <th></th>
-                <th>Description</th>
+                <th> {% trans %}create_loan_type_box_th_description{% endtrans %}</th>
             </tr>
         </thead>
         <tbody>
             {% for type in oLoanCategory %}
                 <tr>
-                    <td>{{ type.locType }}</td>
-                    <td><a href=" {{ path('loan_new',{ 'clientId': client.cliId }) }}?type={{ type.locId }}" class="btn btn-success">Select</a></td>
-                    <td>{{ type.locDescription }}</td>
+                    <td>
+                        {% if type.locId == 1 %}
+                            {% trans %}general_loan_with_percentage{% endtrans %}
+                        {% elseif type.locId == 2 %}
+                            {% trans %}general_loan_per_quotas{% endtrans %}
+                        {% else %}
+                            {{ type.locType }}
+                        {% endif %}
+                    </td>
+                    <td><a href=" {{ path('loan_new',{ 'clientId': client.cliId }) }}?type={{ type.locId }}" class="btn btn-success"> {% trans %}create_loan_type_box_btn{% endtrans %}</a></td>
+                    <td>{# {{ type.locDescription }} #}
+                        {% if type.locId == 1 %}
+                            {% trans %}create_loan_type_box_info_with_rate{% endtrans %}
+                        {% elseif type.locId == 2 %}
+                            {% trans %}create_loan_type_box_info_no_rate{% endtrans %}
+                        {% else %}
+                            {{ type.locType }}
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

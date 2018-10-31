@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Loans list - Personal Loans
+    {% trans %}loan_index_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -53,28 +53,28 @@
 
 <section class="content-header">
       <h1>
-        Loans list
+       {% trans %}loan_index_title{% endtrans %}
         <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Loans</li>
+        {# <li class="active">Loans</li> #}
       </ol>
 </section>
 <hr>
 <div class="box">
     <div class="box-header">
         <div class="row">
-            <div class="col-md-4"><i class="fa fa-handshake-o" aria-hidden="true"></i> Total records: <span class="badge">{{ loans|length }}</span></div>
+            <div class="col-md-4"><i class="fa fa-handshake-o" aria-hidden="true"></i> {% trans %}loan_index_total_records{% endtrans %}: <span class="badge">{{ loans|length }}</span></div>
             <div class="col-md-4 col-md-offset-4 text-right">
                <form class="form-inline"> 
                     <div class="form-group">
-                        <label>Status filtered by: </label> 
+                        <label>{% trans %}loan_index_status_filtered_by{% endtrans %}: </label> 
                         <select class="form-control" id="statusList">
-                            <option value="all">All</option>
-                            <option value="0">No Finished</option>
-                            <option value="1">Finished</option>
-                            <option value="2">Freezed</option>
+                            <option value="all">{% trans %}loan_index_filter_opt_all{% endtrans %}</option>
+                            <option value="0">{% trans %}loan_index_filter_opt_no_finished{% endtrans %}</option>
+                            <option value="1">{% trans %}loan_index_filter_opt_finished{% endtrans %}</option>
+                            <option value="2">{% trans %}loan_index_filter_opt_freezed{% endtrans %}</option>
                         </select>
                     </div>
                 </form>
@@ -100,10 +100,10 @@
                 <tr>
                     {# <th>Loaid</th> #}
                     <th>#</th>
-                    <th>Code</th>
-                    <th>Loan Type</th>
-                    <th>Client Name</th>
-                    <th>Requested Amount</th>
+                    <th>{% trans %}loan_index_table_title_code{% endtrans %}</th>
+                    <th>{% trans %}loan_index_table_title_loan_type{% endtrans %}</th>
+                    <th>{% trans %}loan_index_table_title_client_name{% endtrans %}</th>
+                    <th>{% trans %}loan_index_table_title_requested_amount{% endtrans %}</th>
                     {#
                     <th>Rate Interest</th>
                     <th>Description</th>
@@ -113,10 +113,10 @@
                     <th>Quotas</th>
                     #}
                     {# <th>Pending Money</th>#}
-                    <th>Status</th>
+                    <th>{% trans %}loan_index_table_title_status{% endtrans %}</th>
                     {# <th>Active</th> #}
-                    <th>Created At</th>
-                    <th>Actions</th>
+                    <th>{% trans %}loan_index_table_title_created_at{% endtrans %}</th>
+                    <th>{% trans %}loan_index_table_title_actions{% endtrans %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -126,7 +126,15 @@
                     {# <td><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">{{ loan.loaId }}</a></td> #}
                     <td>{{ num }}</td>
                     <td>{{ loan.loa_code }} </td>
-                    <td>{{ loan.loc_type }}</td>
+                    <td>
+                        {% if loan.loc_id == 1 %}
+                            {% trans %}general_loan_with_percentage{% endtrans %}
+                        {% elseif loan.loc_id == 2 %}
+                            {% trans %}general_loan_per_quotas{% endtrans %}
+                        {% else %}
+                            {{ loan.loc_type }}
+                        {% endif %}
+                    </td>
                     <td><a href="{{ loan.cli_id }}" class="btnShowClient"> {{ loan.cli_first_name ~" "~ loan.cli_middle_name ~" "~ loan.cli_first_surname ~" "~ loan.cli_second_surname }} </a></td>
                     <td><span class="amounts">${{ loan.loa_amount|number_format(2, '.', ',') }}</span></td>
                     {#
@@ -141,24 +149,34 @@
                     #}
                     <td>
                         {% if loan.loa_completed == 1 %}
-                            <span class="label label-success">Finished</span>
+                            <span class="label label-success">{% trans %}loans_status_finished{% endtrans %}</span>
                         {% elseif loan.loa_completed == 2 %}
-                            <span class="label label-danger">Freezed</span>
+                            <span class="label label-danger"> {% trans %}loans_status_freezed{% endtrans %}</span>
                         {% else %}
-                            <span class="label label-default">No finished</span>
+                            <span class="label label-default"> {% trans %}loans_status_no_finished{% endtrans %} </span>
                         {% endif %}
                     </td>
                     {# <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td> #}
                     <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
                     <td>
                         <ul class="list-inline">
-                            <li><a href="{{ path('loanpayment_new',{'loaId':loan.loa_id} ) }}" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Do Payment</a></li>
-                            <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loa_id}}" class="btn btn-default marginBT ">Payment History</a></li>
+                            
                             <li>
-                                <a class="btnShow btn btn-block btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loa_id }) }}">show</a>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payments{% endtrans %} <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ path('loanpayment_new',{'loaId':loan.loa_id} ) }}" class=""><i class="fa fa-money" aria-hidden="true"></i>{% trans %}loan_btn_do_payment{% endtrans %}</a></li>
+                                        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loa_id}}" class=""><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_payment_history{% endtrans %}</a></li>
+                                    </ul>
+                                </div>
                             </li>
                             <li>
-                                <a class="btn btn-block btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loa_id }) }}">edit</a>
+                                <a class="btnShow btn btn-block btn-info marginBT" href="{{ path('loan_show', { 'loaId': loan.loa_id }) }}"><i class="fa fa-address-card-o" aria-hidden="true"></i> {% trans %} general_btn_show {% endtrans %}</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-block btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loa_id }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %} general_btn_edit {% endtrans %}</a>
                             </li>
                         </ul>
                     </td>
@@ -186,6 +204,11 @@
         //$(document).on("ready", function(){
         $(function () {
             // initialize with defaults
+            {% if app.request.getLocale() == "en" %}
+                var all = "All";
+            {% else %}
+                var all = "Todo";
+            {% endif %}
             $('#loanList').DataTable({
                 //"scrollX": true,
                 //'paging'      : true,
@@ -194,7 +217,7 @@
                 //'ordering'    : true,
                 //'info'        : true,
                 "iDisplayLength" : 10,
-                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, all]],
                 'autoWidth'   : false,
                 //'dom': 'Bfrtip',
                 dom: 'Blfrtip',

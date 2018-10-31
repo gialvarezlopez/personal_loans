@@ -12,16 +12,21 @@
     }
     </style>
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Pending Quotas</div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %}</div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-lg-6 text-justify">
-                    This loan has <span class="badgex bc">{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
-                    <span class="badgex bc">{{ pending.days }}  day(s) of delay</span>. 
-                    The interest has been increased to <span class="badgex bc">{{ pending.rate }}%</span>.
-                    <br>
-                    <P><strong>Note:</strong> If you wish you can change the interest rate when you do the payment<p>
-                    <p>This loan was created with interest rate init at <b>{{ loan.loaRateInterestByDefault }}%</b></p> 
+                    {#
+                    This loan has <span class='bc'>{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
+                    <span class='bc'>{{ pending.days }}  day(s) of delay</span>. 
+                    The interest has been increased to <span class='bc'>{{ pending.rate }}%</span>.
+                    #}
+                    
+                    {{ ('loan_table_rate_payments_msg_pay_cuotas'|trans({'%pending_quotas%': pending.quotas, '%pending_days%':pending.days, '%pending_rate%': pending.rate }))|raw }}
+                    <br><br>
+                    <P>{{ ('loan_table_rate_payments_note'|trans())|raw }}<p>
+
+                    <p>{% trans %}loan_table_rate_payments_loan_origiinal_rate{% endtrans %}<b> {{ loan.loaRateInterestByDefault }}%</b></p> 
                 </div>
                 <div class="col-lg-6">
                     {% set period = loan.loaRecurringDayPayment %}
@@ -32,7 +37,7 @@
 
                     <table class="table table-striped widthAuto">
                         <thead>
-                            <th><i class="fa fa-calendar"></i> Payments Date</th>
+                            <th><i class="fa fa-calendar"></i> {% trans %}loan_table_rate_payments_dates{% endtrans %}</th>
                             <th></th>
                         </thead>
                         <tbody>
@@ -58,9 +63,9 @@
                                     </td>
                                     <td>
                                         {% if (pending.quotas - 1) == i %}
-                                            <span class="badgex bc">Current period</span>
+                                            <span class="badgex bc">{% trans %}loan_table_rate_payments_current_period{% endtrans %}</span>
                                         {% elseif (pending.quotas) == i %}  
-                                            <span class="badgex bc">Next Payment</span>  
+                                            <span class="badgex bc">{% trans %}loan_table_rate_payments_next_payment{% endtrans %}</span>  
                                         {%  endif %}
                                     </td>
                                 </tr>

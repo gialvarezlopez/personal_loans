@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Clients List - Personal Loans
+    {% trans %}clients_title{% endtrans %} - {% trans %}name_app{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -44,12 +44,12 @@
 
 <section class="content-header">
       <h1>
-        Clients list
+        {% trans %}clients_title{% endtrans %}
         <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li class="active">Client List</li>
+        <li class="active">{% trans %}clients_title{% endtrans %}</li>
       </ol>
 </section>
 <hr>
@@ -57,15 +57,15 @@
     <div class="box-header">
         {#<h3 class="box-title">#}
         <div class="row">
-            <div class="col-md-4"><i class="fa fa-users" aria-hidden="true"></i> Total records: <span class="badge">{{ clients|length }}</span></div>
+            <div class="col-md-4"><i class="fa fa-users" aria-hidden="true"></i> {% trans %} clients_total_records {% endtrans %}: <span class="badge">{{ clients|length }}</span></div>
             <div class="col-md-4 col-md-offset-4 text-right">
                <form class="form-inline"> 
                     <div class="form-group">
-                        <label>Status filtered by: </label> 
+                        <label>{% trans %} clients_status_filtered_by {% endtrans %}: </label> 
                         <select class="form-control" id="statusList">
-                            <option value="all">All Clients</option>
-                            <option value="0">Inactive Clients</option>
-                            <option value="1">Active Clients</option>
+                            <option value="all">{% trans %}clients_list_all_clients{% endtrans %}</option>
+                            <option value="0">{% trans %}clients_list_inactive_clients{% endtrans %}</option>
+                            <option value="1">{% trans %}clients_list_active_clients{% endtrans %}</option>
                         </select>
                     </div>
                 </form>
@@ -87,10 +87,10 @@
                     <th>Second Surname</th>
                     
                     #}
-                    <th>Profile Imagen</th>
-                    <th>Full mane</th>
-                    <th>ID Number</th>
-                    <th>ID Type</th>
+                    <th>{% trans %}clients_table_title_profile_imagen{% endtrans %}</th>
+                    <th>{% trans %}clients_table_title_full_name{% endtrans %}</th>
+                    <th>{% trans %}clients_table_title_id_number{% endtrans %}</th>
+                    <th>{% trans %}clients_table_title_id_type{% endtrans %}</th>
                     {#
                     <th>Address</th>
                     <th>Phone1</th>
@@ -98,8 +98,8 @@
                     <th>Email</th>
                     <th>Note</th>
                     #}
-                    <th>Active</th>
-                    <th>Actions</th>
+                    <th>{% trans %}clients_table_title_ative{% endtrans %}</th>
+                    <th>{% trans %}clients_table_title_actions{% endtrans %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -111,9 +111,9 @@
                     <td>
                         {% set image = client.cliProfileImage %}
                         {% if file_exists( 'uploads/'~image ) and image != "" %}
-                        <img src="{{ image('uploads/'~image).cropResize(50,50) }}" class="img-thumbnail">
+                        <img src="{{ image('uploads/'~image).cropResize(35,35) }}" class="img-thumbnail">
                         {% else %}
-                            <img src="{{ image('bundles/app/images/user.png').cropResize(50,50)  }} " class="img-thumbnail" style="" alt="image">
+                            <img src="{{ image('bundles/app/images/user.png').cropResize(35,35)  }} " class="img-thumbnail" style="" alt="image">
                         {% endif %}
                     </td>
                     <td>{{ client.cliFirstName }} {{ client.cliMiddleName }} {{ client.cliFirstSurname }} {{ client.cliSecondSurname }}</td>
@@ -130,26 +130,26 @@
                     <td>
                         <ul class="list-inline">
                             <li>
-                                <button class="btnShow btn btn-block btn-info" value="{{client.cliId}}"><i class="fa fa-address-card-o" aria-hidden="true"></i> Show</button>
+                                <button class="btnShow btn btn-block btn-info" value="{{client.cliId}}"><i class="fa fa-address-card-o" aria-hidden="true"></i> {% trans %} general_btn_show {% endtrans %} </button>
                             </li>
                             <li>
-                                <a class="btn btn-block btn-primary" href="{{ path('client_edit', { 'cliId': client.cliId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+                                <a class="btn btn-block btn-primary" href="{{ path('client_edit', { 'cliId': client.cliId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %} general_btn_edit {% endtrans %}</a>
                             </li>
                             <li>
                                 {# <button class="btn bg-olive btn-flat btnModalLoanClient" value="{{ client.cliId }}"><i class="fa fa-usd" aria-hidden="true"></i> Loans</button> #}
                                 <!-- Single button -->
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-handshake-o" aria-hidden="true"></i> Loans <span class="caret"></span>
+                                        <i class="fa fa-handshake-o" aria-hidden="true"></i> {% trans %} clients_btn_loans {% endtrans %} <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-thumbs-up" aria-hidden="true"></i> Create Loan</a></li>
-                                        <li><a href="{{ path('loan_index') }}?client={{client.cliId}}"><i class="fa fa-archive" aria-hidden="true"></i> My Loans</a></li>
+                                        <li><a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}"><i class="fa fa-thumbs-up" aria-hidden="true"></i> {% trans %}clients_btn_create_loan{% endtrans %}</a></li>
+                                        <li><a href="{{ path('loan_index') }}?client={{client.cliId}}"><i class="fa fa-archive" aria-hidden="true"></i> {% trans %}clients_btn_my_loans{% endtrans %}</a></li>
                                         
                                         {% set hasLoans = srv_Loans.getClientLoans(client.cliId) %}
                                         {% if hasLoans|length %}
                                             <li role="separator" class="divider"></li>
-                                            <li><span class="splitPayment">Pending Loans <i class="fa fa-arrow-down" aria-hidden="true"></i></span></li>
+                                            <li><span class="splitPayment">{% trans %}clients_msg_pending_loans{% endtrans %} {#<i class="fa fa-arrow-down" aria-hidden="true"></i>#}</span></li>
                                             <li role="separator" class="divider"></li>
                                             {% for loan in hasLoans %}
                                                 <li><a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"><i class="fa fa-usd" aria-hidden="true"></i>{{ loan.loaCode }}</a></li>
@@ -168,7 +168,7 @@
 
         <ul class="list-inline">
             <li>
-                <a class="btn btn-warning" href="{{ path('client_new') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Create a new client</a>
+                <a class="btn btn-warning" href="{{ path('client_new') }}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> {% trans %}clients_btn_create_new_client{% endtrans %}</a>
             </li>
         </ul>
     </div>
@@ -181,6 +181,11 @@
     <script>
         //$(document).on("ready", function(){
         $(function () {
+            {% if app.request.getLocale() == "en" %}
+                var all = "All";
+            {% else %}
+                var all = "Todo";
+            {% endif %}
             // initialize with defaults
             $('#clientslist').DataTable({
                 //"scrollX": true,
@@ -190,7 +195,7 @@
                 //'ordering'    : true,
                 //'info'        : true,
                 "iDisplayLength" : 10,
-                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, all]],
                 'autoWidth'   : false,
                 //'dom': 'Bfrtip',
                 dom: 'Blfrtip',
@@ -200,6 +205,10 @@
                     'csvHtml5',
                     'pdfHtml5'
                 ],
+                "language": {
+                    //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                    {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
+                }
             });
 
             //$(".holderModal").modal();

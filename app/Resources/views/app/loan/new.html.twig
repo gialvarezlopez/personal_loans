@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Loan Creation - Personal Loans
+    {% trans %}loan_new_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -70,13 +70,13 @@
     #}
 <section class="content-header">
       <h1>
-        New Loan 
-        <small>Complete the form</small>
+        {% trans %}loan_new_title{% endtrans %}
+        <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ path('loan_index') }}?sta=0">Loans</a></li>
-        <li class="active">New Loan</li>
+        <li><a href="{{ path('loan_index') }}?sta=0">{% trans %}menu_left_loans{% endtrans %}</a></li>
+        {# <li class="active">New Loan</li>#}
       </ol>
 </section>
 
@@ -86,7 +86,7 @@
         {# <h3 class="box-title"> #}
         
         
-            <i class="fa fa-user-circle-o" aria-hidden="true"></i> Client:
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i> {% trans %}loan_edit_client{% endtrans %}:
             <span>
                 <a href="{{ client.cliId }}" class="btnShowClient">
                     {{ client.cliFirstName ~" "~ client.cliMiddleName ~" "~ client.cliFirstSurname ~" "~ client.cliSecondSurname }}
@@ -98,12 +98,29 @@
     <div class="box-body">
     
         <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            {% if loanType %}
+                {% set col = "col-lg-4 col-md-6 col-sm-12 col-xs-12" %}
+            {% else %}
+                {% set col = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+            {% endif %}
+            <div class="{{ col }}">
                 {% if loanType %}
                    
                    <div class="well well-smX">
-                        Loan type selected: <b>{{ loanType['name'] }}</b> (Change loan type <a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}">here</a>) 
+                        {# Loan type selected: <b>{{ loanType['name'] }}</b> (Change loan type <a href="{{ path('loan_new',{ 'clientId': client.cliId }) }}">here</a>) #}
+                       
+                        {% set url_change = path('loan_new',{ 'clientId': client.cliId }) %}
+
+                        {% if loanType['id'] == 1 %}
+                            {% set typeL = 'general_loan_with_percentage'|trans() %}
+                        {% elseif loanType['id'] == 2 %}
+                            {% set typeL = 'general_loan_per_quotas'|trans() %}
+                        {% else %} 
+                            {% set typeL = loanType['name'] %}   
+                        {% endif %}
+                        {{ ('loan_msg_loan_type_selected'|trans({'%loan_type%': typeL, '%url_change%': url_change}))|raw }}
                     </div>
+                    
                     <div class="well">
                         {# {{ dump(client) }} #}
                         
@@ -117,7 +134,7 @@
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaLoanMade)}}</div>
-                                        <label for="" class=" control-label">Loan created at: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_loan_created_at{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
@@ -125,13 +142,13 @@
                                             </div>
                                             <div class="">{{ form_widget(form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
                                         </div>
-                                        <span id="helpBlock2" class="help-block">Date when was made the loan.</span>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_loan_created_at_help{% endtrans %}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaAmount)}}</div>
-                                        <label for="" class=" control-label">Requested Amount: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_requested_amount{% endtrans %}: <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-usd" aria-hidden="true"></i>
@@ -162,7 +179,7 @@
                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                     <div class="form-group holderRate">
                                         <div class="form_error">{{ form_errors(form.loaRateInterestByDefault)}}</div>
-                                        <label for="" class=" control-label">Default Interest Rate: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_default_interest_rate{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
@@ -178,7 +195,7 @@
                                 </div>
                                 {% if  loanType and loanType['key'] != "inactive_rate" %}
                                 <div class="col-md-12 col-lg-12 col-sm-12">
-                                    <span id="helpBlock2" class="help-block">The interest rate may change due to non-compliance of payments not made on time</span>
+                                    <span id="helpBlock2" class="help-block">{% trans %}loan_form_general_help{% endtrans %}</span>
                                 </div>
                                 {% endif %}    
                             </div>
@@ -187,7 +204,7 @@
 
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaRecurringDayPayment)}}</div>
-                                        <label for="" class=" control-label">Recurring day payment: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_recurring_day_payment{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
@@ -195,7 +212,7 @@
                                             </div>
                                             <div class="">{{ form_widget(form.loaRecurringDayPayment,  { 'attr': {'class': 'form-control', 'placeholder':'Number days', "autocomplete":"off"},required: true } ) }}</div>
                                         </div>
-                                        <span id="helpBlock2" class="help-block">Recurring day payment for example for every week enter number 7 </span>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_recurring_day_payment_help{% endtrans %}</span>
                                     </div>
 
                                     
@@ -203,7 +220,7 @@
                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
-                                        <label for="" class=" control-label">First Payment Date: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_msg_first_payment_date{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
@@ -211,7 +228,7 @@
                                             </div>
                                             <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
                                         </div>
-                                        <span id="helpBlock2" class="help-block">Max date available to client can make the payment.</span>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_first_payment_date_help{% endtrans %}</span>
                                     </div>
                                 </div>
                             </div>
@@ -222,14 +239,14 @@
                                 <div class="col-md-12 col-lg-12 col-sm-12" id="holderQuotas">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaQuotas)}}</div>
-                                        <label for="" class=" control-label"># Quotas: <span class="text-danger">*</span></label>
+                                        <label for="" class=" control-label"># {% trans %}loan_form_quotas{% endtrans %}: <span class="text-danger">*</span></label>
                                         <div class="input-group">                                            
                                             {{ form_widget(form.loaQuotas,  { 'attr': {'class': 'form-control', 'placeholder':''},required: true } ) }}
                                             <span class="input-group-btn">
-                                                <button class="btn btn-info" type="button" id="setPatments">Set payments</button>
+                                                <button class="btn btn-info" type="button" id="setPatments">{% trans %}loan_form_btn_set_payments{% endtrans %}</button>
                                             </span>                    
                                         </div>
-                                        <span id="helpBlock2" class="help-block">Press <b>"Set payments"</b> button to get all payment date.</span>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_quotas_help{% endtrans %}</span>
                                     </div>
                                 </div>
                                 
@@ -255,18 +272,26 @@
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(form.loaDescription)}}</div>
-                                        <label for="" class=" control-label">Description (optional):</label>
+                                        <label for="" class=" control-label">{% trans %}loan_form_description{% endtrans %}:</label>
                                         <div class="">{{ form_widget(form.loaDescription,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
-                                        <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_description_help{% endtrans %}</span>
                                     </div>
                                 </div>
                                 <div class="">
                                 <div class="col-lg-12">
                                     <div class="form-group">
-                                        {{ form_start(form) }}
+                                        
+                                        <ul class="list-inline">
+                                            {{ form_start(form) }}
                                             {{ form_widget(form) }}
-                                            <button type="submit" class="btn bg-navy" id="btnCreate"><i class="fa fa-check-circle" aria-hidden="true"></i> Create</button>
-                                        {{ form_end(form) }}
+                                                <button type="submit" class="btn bg-navy" id="btnCreate"><i class="fa fa-check-circle" aria-hidden="true"></i> {% trans %}general_btn_create{% endtrans %}</button>
+                                             {{ form_end(form) }}
+                                            
+                                            <li>
+                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %} </a>
+                                            </li>
+
+                                        </ul>
                                     </div>    
                                 </div>
                             </div>    
@@ -313,11 +338,6 @@
             </div>
         </div>
 
-        <ul class="list-inline">
-            <li>
-                <a href="{{ path('loan_index') }}">Back to the list</a>
-            </li>
-        </ul>
 
     </div>
 </div>            
@@ -372,13 +392,8 @@
                     'pdfHtml5'
                 ],
             });
-           //Date picker
+
             /*
-            $('.datepicker').datepicker({
-                autoclose: true,
-                format: 'yyyy-mm-dd'
-            });
-            */
             $('.datepicker').daterangepicker({
                 singleDatePicker: true,
                 showDropdowns: true,
@@ -391,6 +406,98 @@
                 //var years = moment().diff(start, 'years');
                 //alert("You are " + years + " years old!");
             }); 
+            */
+            {% if app.request.getLocale() == "en" %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Apply",
+                    "cancelLabel": "Cancel",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom Range",
+                    "daysOfWeek": [
+                        "Su",
+                        "Mo",
+                        "Tu",
+                        "We",
+                        "Th",
+                        "Fr",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ],
+                    "firstDay": 1
+                };
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,,
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                });
+
+                var all = "All";
+            {% else %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "DE",
+                    "toLabel": "HASTA",
+                    "customRangeLabel": "Rango personalizado",
+                    "daysOfWeek": [
+                        "Dom",
+                        "Lun",
+                        "Mar",
+                        "Mie",
+                        "Jue",
+                        "Vie",
+                        "Sáb"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                };
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                });
+
+                var all = "Todo";
+            {% endif %}
 
             $("#appbundle_loan_loaCompleted").closest("div").remove();
 
@@ -400,7 +507,8 @@
                 $("#holderQuotas").remove();
             {% else %}
                 ///var quotas =
-                $(".holderRate").html("<h5><i class='fa fa-percent' aria-hidden='true'></i> Interest rate not apply for this loan</h5>");
+                //$(".holderRate").html("<h5><i class='fa fa-percent' aria-hidden='true'></i> {% trans %}loan_form_default_no_rate_loan_per_percentage{% endtrans %}</h5>");
+                $(".holderRate").html("");
                 $("#setPatments").on("click",function(){
                     var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
                     var nextDate = $("#appbundle_loan_loaDeadline").val();
@@ -410,7 +518,7 @@
                         $.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'Make sure the fields "<b>Recurring day payment, First Payment Date and Quotas</b>" are filled',
+							content: "{{ ('loan_msg_recurring_day_payment_empty'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -453,7 +561,7 @@
                 {
                     var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
                     table += "<table class='table table-striped' id='tablePayments'>";
-                    table += "<thead><tr><th>Payment Date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>";
+                    table += "<thead><tr><th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th><th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th><th>{% trans%}dashboard_loans_history_status{% endtrans%}</th><th>{% trans %}loan_table_payments_action{% endtrans %}</th></tr></thead><tbody>";
                     var firstPaymentDate = "";
                     for(var i = 0; i < arrDates.length; i++)
                     {
@@ -469,13 +577,13 @@
 
                         var input = "<div class='input-group'><span class='input-group-addon'><i class='fa fa-usd' aria-hidden='true'></i></span><input type='number' class='form-control inputDatePayment' id='input"+i+"'></div>";
                         table += "<tr id='tr_"+i+"'>";
-                        table += "<td> <i class='fa fa-calendarxxxxxx' aria-hidden='true'></i> <span class='initDate'>"+ per +"</span> - <span class='maxDate'>"+ arrDates[i] + "</span></td><td> "+input+"</td><td>Pendig</td><td>"+button+"</td>";
+                        table += "<td> <i class='fa fa-calendarxxxxxx' aria-hidden='true'></i> <span class='initDate'>"+ per +"</span> - <span class='maxDate'>"+ arrDates[i] + "</span></td><td> "+input+"</td><td>{% trans %}general_msg_pending{% endtrans %}</td><td>"+button+"</td>";
                         table += "</tr>";
                     }
                     table += "</tbody>";
                     table += "</table>";
                     table += "<input type='hidden' value='"+firstPaymentDate+"' id='inputfistPaymentDate'>";
-                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> Add item</button></div>";
+                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> {% trans %}loan_btn_add_item{% endtrans %}</button></div>";
                     var labelTotal = "<div><h2>Total: <span id='total' class='label label-default'>$0.00</span></h2></div>";
                     
 
@@ -555,7 +663,7 @@
                                 $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
                                     title: 'Info!',
-                                    content: "the new first payment date was setup at <b>"+newMaxDate+"</b>",
+                                   content: "{{ ('loan_msg_error_new_first_patment_date'|trans())|raw }}<b>"+newMaxDate+"</b>",
                                     type: 'blue',
                                     typeAnimated: true,
                                 });
@@ -584,7 +692,7 @@
                             $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
                                     title: 'Info!',
-                                    content: "You don't have first payment date selected, please select one",
+                                    content: "{{ ('loan_msg_error_no_first_pament_date'|trans())|raw }}",
                                     type: 'red',
                                     typeAnimated: true,
                             });
@@ -607,7 +715,7 @@
 						$.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Info!',
-							content: 'Before to save the data click in "<b>Set Payments</b>" button to get all payment dates',
+							content: "{{ ('loan_msg_error_click_set_payment_day'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -631,7 +739,7 @@
                             $.confirm({
                                 icon: 'fa fa-warning',
                                 title: 'Confirm!',
-                                content: "The total is <b>"+initTotal+"</b>, Are you sure to continue?",
+                                content: "Total "+initTotal+" {{ ('loan_msg_new_confirm_submit'|trans())|raw }}",
                                 type: 'red',
                                 typeAnimated: true,
                                 buttons: {
@@ -679,7 +787,7 @@
 							$.confirm({
 								icon: 'fa fa-remove',
 								title: 'Error!',
-								content: 'An error occurred while trying to send the request',
+								content: "{{ ('general_msg_send_data'|trans())|raw }}",
 								type: 'red',
 								typeAnimated: true,
 								buttons: {
@@ -729,7 +837,7 @@
 								$.alert({
 									icon: 'glyphicon glyphicon-exclamation-sign',
 									title: 'Info!',
-									content: 'An error occurred while trying to save the information <br>' + infoError,
+									content: "{{ ('general_msg_send_data'|trans())|raw }}" + infoError,
 									type: 'blue',
 									typeAnimated: true,
 								});

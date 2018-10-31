@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Payments Report - Personal Loans
+    {% trans %}reports_title{% endtrans %} - {% trans %} app_name {% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -55,7 +55,7 @@
 
 <section class="content-header">
       <h1>
-        Payments report
+        {% trans %}reports_title{% endtrans %}
         <small></small>
       </h1>
       {#
@@ -71,19 +71,19 @@
     <div class="col-lg-12">
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Filter date</h3>
+                <h3 class="box-title">{% trans %}reports_subtitle{% endtrans %}</h3>
             </div>
             <div class="box-body">
                 <div class="row">
                     <div class="col-lg-12">
                         <label class="radio-inline">
-                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked> Next Payments(Make Collection)
+                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked>{% trans %}reports_opt_next_payment{% endtrans %}
                         </label>
                         <label class="radio-inline">
-                        <input type="radio" name="optFilter" id="inlineRadio2" value="2"> Payments done
+                        <input type="radio" name="optFilter" id="inlineRadio2" value="2">{% trans %}reports_opt_payments_done{% endtrans %}
                         </label>
                         <label class="radio-inline">
-                        <input type="radio" name="optFilter" id="inlineRadio3" value="3"> Show Both
+                        <input type="radio" name="optFilter" id="inlineRadio3" value="3">{% trans %}reports_opt_show_both{% endtrans %}
                         </label>
                     </div>
                     <br><br>
@@ -96,17 +96,17 @@
                             </span>
                             <input type="text" class="form-control" id="rangeDate" placeholder="">
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" id="applyDate">Go!</button>
+                                <button class="btn btn-default" type="button" id="applyDate">{% trans %}reports_btn_filter_date{% endtrans %}</button>
                             </span>
                         </div><!-- /input-group -->
                     </div>
                     <div class="col-lg-6">
                         <div class="text-muted wellx well-smx no-shadowx">
-                            Period
-                            <b>From</b> 
+                            {% trans %}reports_period{% endtrans %}
+                            <b>{% trans %}reports_btn_filter_info_from{% endtrans %}</b> 
                                 {# {{ periodDate['startDate']|date('l d, F Y') }} #}
                                 {{ periodDate['startDate']|localizeddate('full', 'none', app.request.getLocale()) }}
-                            <b>to</b> 
+                            <b>{% trans %}reports_btn_filter_info_to{% endtrans %}</b> 
                                 {# {{ periodDate['endDate']|date('l d, F Y') }} #}
                                 {{ periodDate['endDate']|localizeddate('full', 'none', app.request.getLocale()) }}
                             <hr>
@@ -150,23 +150,23 @@
                    
                                         <th colspan="3" class="text-center"></th>
 
-                                        <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">Previous Payments</th>
-                                        <th colspan="4" style="background-color: #00C0EF; color: #fff" class="text-center">Next Payment</th>
+                                        <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}reports_table_title_previous_payments{% endtrans %}</th>
+                                        <th colspan="4" style="background-color: #00C0EF; color: #fff" class="text-center">{% trans %}reports_table_title_next_payment{% endtrans %}</th>
 
                                     </tr>
                                     <tr>
-                                        <td>Code</td>
-                                        <td>Loan Type</td>
-                                        <td>Name</td>
-                                        <td>Previous interest %</td>
-                                        <td>Paid interest</td>
-                                        <td>Paid capital</td>
-                                        <td>Pending to pay </td>
-                                        <td>Note</td>
-                                        <td>Next interest</td>
-                                        <td>Next interest amount </td>
-                                        <td>Next capital amount</td>
-                                        <td>Total payment </td>
+                                        <td>{% trans %} reports_table_title_code {% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_loan_type {% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_name{% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_previous_interest{% endtrans %}</td>
+                                        <td>{% trans %} reports_table_title_paid_interest {% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
+                                        <td>{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_note{% endtrans %}</td>
+                                        <td>{% trans %} reports_table_title_next_interest {% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_next_interest_amount{% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_next_capital_amount{% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_total_payment{% endtrans %}</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -333,7 +333,7 @@
                                 </tbody>    
                             </table>
                         {% else %}
-                            <div class="alert alert-warning text-center">No data found</div>    
+                            <div class="alert alert-warning text-center">{% trans %}reports_table_no_data_found{% endtrans %}</div>    
                         {% endif %}
                     </div>
                 </div>
@@ -391,21 +391,113 @@
                // $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             }
 
-            $('#rangeDate').daterangepicker({
-                startDate: start,
-                endDate: end,
-                ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                },
-                locale: {
-                    format: 'YYYY/MM/DD'
-                }
-            }, cb);
+            {% if app.request.getLocale() == "en" %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY/MM/DD",
+                    "separator": " - ",
+                    "applyLabel": "Apply",
+                    "cancelLabel": "Cancel",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom Range",
+                    "daysOfWeek": [
+                        "Su",
+                        "Mo",
+                        "Tu",
+                        "We",
+                        "Th",
+                        "Fr",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ],
+                    "firstDay": 1
+                };
+                $('#rangeDate').daterangepicker({
+                    startDate: start,
+                    endDate: end,
+                    ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                }, cb);
+
+                var all = "All";
+            {% else %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY/MM/DD",
+                    "separator": " - ",
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "DE",
+                    "toLabel": "HASTA",
+                    "customRangeLabel": "Rango personalizado",
+                    "daysOfWeek": [
+                        "Dom",
+                        "Lun",
+                        "Mar",
+                        "Mie",
+                        "Jue",
+                        "Vie",
+                        "Sáb"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                };
+                $('#rangeDate').daterangepicker({
+                    startDate: start,
+                    endDate: end,
+                    ranges: {
+                    'Hoy': [moment(), moment()],
+                    'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Últimos 7 Días': [moment().subtract(6, 'days'), moment()],
+                    'Últimos 30 Días': [moment().subtract(29, 'days'), moment()],
+                    'Mes Actual': [moment().startOf('month'), moment().endOf('month')],
+                    'Mes Anteriror': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                }, cb);
+
+                var all = "Todo";
+            {% endif %}
 
             cb(start, end);
             // initialize with defaults
@@ -417,7 +509,7 @@
                 //'ordering'    : true,
                 //'info'        : true,
                 "iDisplayLength" : 10,
-                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+                "lengthMenu": [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, all]],
                 'autoWidth'   : false,
                 //'dom': 'Bfrtip',
                 dom: 'Blfrtip',
@@ -428,6 +520,10 @@
                     'pdfHtml5',
                     //'colvis'
                 ],
+                "language": {
+                    //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                    {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
+                }
                 
                 
             });

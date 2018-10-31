@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Loan edit - Personal Loans
+    {% trans %}loan_edit_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -36,7 +36,7 @@
 }
 .labelInfo{
     display: inline-block;
-    width:60px;
+    width:75px;
 }
 
 </style>
@@ -53,16 +53,16 @@
 
 <section class="content-header">
       <h1>
-        Loan edit
+        {% trans %}loan_edit_title{% endtrans %}
         <small>
-            Update the necessary data
+            
         </small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ path('loan_index') }}">Loans</a></li>
-        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
-        <li class="active">Edit</li>
+        <li><a href="{{ path('loan_index') }}">{% trans %}menu_left_loans{% endtrans %}</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}menu_left_history{% endtrans %}</a></li>
+        {# <li class="active">Edit</li> #}
       </ol>
 </section>
 <hr>
@@ -75,12 +75,12 @@
                     {% if loan.loaCompleted == 1 %}
                     <span class="loanCompleted">
                         <i class="fa fa-check-circle" aria-hidden="true"></i> 
-                        Loan Finished
+                        {% trans %}general_msg_status_loan_finished{% endtrans %}
                     </span>
                     {% elseif loan.loaCompleted == 2 %}
-                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan Freezed</span>
+                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_status_loan_freezed{% endtrans %}</span>
                     {% else %}
-                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Loan No Finished</span>    
+                        <span class="loanIncompleted"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_status_loan_no_finished{% endtrans %}</span>    
                     {% endif %}
                 </div>
             </div>
@@ -92,21 +92,27 @@
         <div class="well ">
             <div class="row">
                 <div class="col-lg-4">
-                    <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i>  Client:</span>
+                    <span class="labelInfo"><i class="fa fa-user-circle-o" aria-hidden="true"></i> {% trans %}loan_edit_client{% endtrans %}:</span>
                     <a href="{{ loan.cli.cliId }}" class="btnShowClient">
                         {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i> Code:</span> <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">{{ loan.loaCode }}</a>
+                    <span class="labelInfo"><i class="fa fa-barcode" aria-hidden="true"></i> {% trans %}loan_edit_code{% endtrans %}:</span> <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}">{{ loan.loaCode }}</a>
                 </div>
                 <div class="col-lg-4">
                     {% set loanId = app.request.get('loaId') %}
                     {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loanId) %}
+                    {#
                     This loan has <span class="badge">{{ hasPayments }}</span> payment(s) done,
+                    
+                    Files attached 
+                    #}
                     {% set hasFiles = srv_Loans.getFilesPerLoan(loanId) %}
-                    Files attached <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><span class="badge">{{ hasFiles|length }}</span></a>
+                    {{ ('loan_edit_msg_count_files'|trans({ '%payments%': hasPayments}))|raw }}
+                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><span class="badge">{{ hasFiles|length }}</span></a>
                 </div>
+                
             </div>
         </div>
         <div class="row">
@@ -116,15 +122,13 @@
                     
                     {# {{ dump(client) }} #}
                     
-                    
-                    
                                 {{form_start(edit_form,{'enctype':'multipart/form-date'})}}
                                 {# <div class="">{{ form_widget(edit_form.loaClient,  { 'attr': {'class': 'form-control',"value":client.cliId } } ) }}</div> #}
                                 <div class="row">
                                     <div class="col-md-12 col-lg-12 col-sm-12">
                                         <div class="form-group">
                                             <div class="form_error">{{ form_errors(edit_form.loaLoanMade)}}</div>
-                                            <label for="" class=" control-label">Loan created at: <span class="text-danger">*</span></label>
+                                            <label for="" class=" control-label">{% trans %}loan_form_loan_created_at{% endtrans %}: <span class="text-danger">*</span></label>
 
                                             <div class="input-group">
                                                 <div class="input-group-addon">
@@ -132,14 +136,14 @@
                                                 </div>
                                                 <div class="">{{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
                                             </div>
-                                            <span id="helpBlock2" class="help-block">Date when was made the loan.</span>
+                                            <span id="helpBlock2" class="help-block">{% trans %}loan_form_loan_created_at_help{% endtrans %}</span>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12 col-lg-6 col-sm-12">
                                         <div class="form-group">
                                             <div class="form_error">{{ form_errors(edit_form.loaAmount)}}</div>
-                                            <label for="" class=" control-label">Requested amount: <span class="text-danger">*</span></label>
+                                            <label for="" class=" control-label">{% trans %}loan_form_requested_amount{% endtrans %}: <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-usd" aria-hidden="true"></i>
@@ -151,7 +155,7 @@
                                     <div class="col-md-12 col-lg-6 col-sm-12">
                                         <div class="form-group" id="holderRate">
                                             <div class="form_error">{{ form_errors(edit_form.loaRateInterestByDefault)}}</div>
-                                            <label for="" class=" control-label">Default Interest rate: <span class="text-danger">*</span></label>
+                                            <label for="" class=" control-label">{% trans %}loan_form_default_interest_rate{% endtrans %}: <span class="text-danger">*</span></label>
 
                                             <div class="input-group">
                                                 <div class="input-group-addon">
@@ -163,7 +167,7 @@
                                     </div>
                                     {% if loan.loc.locKey  != "inactive_rate" %}
                                         <div class="col-md-12 col-lg-12 col-sm-12">
-                                            <span id="helpBlock2" class="help-block">The interest rate may change due to non-compliance of payments not made on time</span>
+                                            <span id="helpBlock2" class="help-block">{% trans %}loan_form_general_help{% endtrans %}</span>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -172,7 +176,7 @@
                                     <div class="col-md-12 col-lg-6 col-sm-12">
                                         <div class="form-group">
                                             <div class="form_error">{{ form_errors(edit_form.loaRecurringDayPayment)}}</div>
-                                            <label for="" class=" control-label">Recurring day payment: <span class="text-danger">*</span></label>
+                                            <label for="" class=" control-label">{% trans %}loan_form_recurring_day_payment{% endtrans %}: <span class="text-danger">*</span></label>
 
                                             <div class="input-group">
                                                 <div class="input-group-addon">
@@ -180,7 +184,7 @@
                                                 </div>
                                                 <div class="">{{ form_widget(edit_form.loaRecurringDayPayment,  { 'attr': {'class': 'form-control', 'placeholder':'Number Days'} } ) }}</div>
                                             </div>
-                                            <span id="helpBlock2" class="help-block">Recurring day payment for example for every week enter number 7 </span>
+                                            <span id="helpBlock2" class="help-block">{% trans %}loan_form_recurring_day_payment_help{% endtrans %} </span>
                                         </div>
                                     </div>
                                     <div class="col-md-12 col-lg-6 col-sm-12">
@@ -189,12 +193,12 @@
                                             <label for="" class=" control-label">
                                                  
                                                 {% if hasPayments == 0 %} 
-                                                    First Payment Date: 
+                                                    {% trans %}loan_form_msg_first_payment_date{% endtrans %}:
                                                 {% else %} 
                                                     {% if loan.loc.locKey  == "inactive_rate" %}
-                                                        Last Payment done:
+                                                        {% trans %}loan_form_msg_last_payment_date{% endtrans %}:
                                                     {% else %}
-                                                        Next Payment date:
+                                                        {% trans %}loan_form_msg_next_payment_date{% endtrans %}:
                                                     {% endif %}
                                                      
                                                 {% endif %}
@@ -226,7 +230,7 @@
                                                     
                                                 </div>
                                             </div>
-                                            <span id="helpBlock2" class="help-block">Max date available to client can make the payment.</span>
+                                            <span id="helpBlock2" class="help-block">{% trans %}loan_form_first_payment_date_help{% endtrans %}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -237,15 +241,15 @@
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(edit_form.loaQuotas)}}</div>
                                         {# {% if hasPayments == 0 %} #}
-                                            <label for="" class=" control-label"># Quotas: <span class="text-danger">*</span></label>
+                                            <label for="" class=" control-label"># {% trans %}loan_form_quotas{% endtrans %}: <span class="text-danger">*</span></label>
                                             
                                             <div class="input-group">                                            
                                                 {{ form_widget(edit_form.loaQuotas,  { 'attr': {'class': 'form-control', 'placeholder':''},required: true } ) }}
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-primary" type="button" id="setPatments">Set payments</button>
+                                                    <button class="btn btn-primary" type="button" id="setPatments">{% trans %}loan_form_btn_set_payments{% endtrans %}</button>
                                                 </span>                    
                                             </div>
-                                            <span id="helpBlock2" class="help-block">Press <b>"Set payments"</b> button to get all payment date.</span>
+                                            <span id="helpBlock2" class="help-block">{% trans %}loan_form_quotas_help{% endtrans %}</span>
                                        {#
                                         {% else %}    
                                             <label for="" class=" control-label"># Quotas: <span class="badge">{{ loan.loaQuotas }}</span></label>
@@ -275,15 +279,15 @@
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(edit_form.loaDescription)}}</div>
-                                        <label for="" class=" control-label">Description:</label>
-                                        <div class="">{{ form_widget(edit_form.loaDescription,  { 'attr': {'class': 'form-control', 'placeholder':'Some description', "maxlength":"150"} } ) }}</div>
-                                        <span id="helpBlock2" class="help-block">Allowed characters 150.</span>
+                                        <label for="" class=" control-label">{% trans %}loan_form_description{% endtrans %}:</label>
+                                        <div class="">{{ form_widget(edit_form.loaDescription,  { 'attr': {'class': 'form-control', 'placeholder':'', "maxlength":"150"} } ) }}</div>
+                                        <span id="helpBlock2" class="help-block">{% trans %}loan_form_description_help{% endtrans %}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
                                         <div class="form_error">{{ form_errors(edit_form.loaCompleted)}}</div>
-                                        <label for="appbundle_loan_loaCompleted" class=" control-label">Status: &nbsp; </label>
+                                        <label for="appbundle_loan_loaCompleted" class=" control-label">{% trans %}loan_form_status{% endtrans %}: &nbsp; </label>
                                         {{ form_widget(edit_form.loaCompleted,  { 'attr': {'class': 'form-controlx'} } ) }}
                                         {# <span id="helpBlock2" class="help-block">If the checkbox is checked that means the loan is completed and paid.</span> #}
                                     </div>
@@ -294,21 +298,21 @@
                                         <ul class="list-inline">
                                             {{ form_start(edit_form) }}
                                                 {{ form_widget(edit_form) }}
-                                                <li><button type="submit" class="btn bg-navy marginBT"><i class="fa fa-check-circle" aria-hidden="true"></i> Save</button></li>
+                                                <li><button type="submit" class="btn bg-navy marginBT"><i class="fa fa-check-circle" aria-hidden="true"></i> {% trans %}general_btn_save{% endtrans %}</button></li>
                                                 
                                             {{ form_end(edit_form) }}
                                             
                                             <li>
-                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
+                                                <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %} </a>
                                             </li>
                                             {% if loan.loaCompleted == 0 %}
                                             <li>
                                                 {{ form_start(delete_form,{'attr':{"id":'formDelete'}} )  }}
-                                                    <button type="submit" class="btn btn-danger marginBT" ><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+                                                    <button type="submit" class="btn btn-danger marginBT" ><i class="fa fa-trash" aria-hidden="true"></i> {% trans %}general_btn_delete{% endtrans %}</button>
                                                 {{ form_end(delete_form) }}
                                             </li>
 
-                                             <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a></li>
+                                             <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</a></li>
                                             {% endif %}
                                         </ul>
                                         </div>    
@@ -326,7 +330,7 @@
 
                     #}
                     <hr>
-                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> {% trans %}loan_btn_attach_file{% endtrans %}</a>
                     <hr>
                 </div>
             </div>
@@ -335,15 +339,23 @@
                 {% if loan.loc.locKey == "active_rate" %}
                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
                 {% endif %}
-                    
-                    
-                   
-                    
+                
                         {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
                         {% if loan.loc.locKey  == "inactive_rate" %}
-                            <h4><span class="">Payments </span> - <small>If you remove or add items you must click in "Save" button to save all data </small></h4>
+                            <h4>
+                                <span class="">{% trans %}loan_edit_subtitle_payments{% endtrans %}</span> - 
+                                <small>{% trans %}loan_edit_comment_item{% endtrans %} </small>
+                            </h4>
                             <hr>
-                            <div class="text-right">Click <a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">here</a> to see the complete history</div><hr>
+                            <div class="text-right">
+                                    {# Click <a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">here</a> to see the complete history #}
+
+                                {% set linkHere = path('loanpayment_quotasHistory')~'?loaId='~loan.loaId %}
+                                
+                                {{ ('loan_msg_payments_click_here'|trans({ '%link%': linkHere}))|raw }}
+                            </div>
+                                
+                            <hr>
                             <div id="holderMainRight">
                                 {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"edit"}) }}
                             </div>
@@ -352,37 +364,6 @@
                                 {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
                             </div>
                         {% endif %}    
-                        
-                    
-
-                    {#
-                    <h4><span class="">Payment history</span></h4><hr>
-                    <table class="table table-striped" id="clientslist">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Created at</th>
-                                <th>Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1223444</td>
-                                <td>Pedro antanio</td>
-                                <td>2017-05-05</td>
-                                <td><a href="" class="btn btn-block btn-default">View</a></td>
-                            </tr>
-                            <tr>
-                                <td>1223444</td>
-                                <td>Pedro antanio</td>
-                                <td>2017-05-05</td>
-                                <td><a href="" class="btn btn-block btn-default">View</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    #}
-
             </div>
         </div>        
     </div>
@@ -418,11 +399,6 @@
             });
            //Date picker
             /*
-            $('.datepicker').datepicker({
-                autoclose: true,
-                format: 'yyyy-mm-dd'
-            });
-            */
             $('.datepicker').daterangepicker({
                 singleDatePicker: true,
                 showDropdowns: true,
@@ -435,6 +411,98 @@
                 //var years = moment().diff(start, 'years');
                 //alert("You are " + years + " years old!");
             });
+            */
+            {% if app.request.getLocale() == "en" %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Apply",
+                    "cancelLabel": "Cancel",
+                    "fromLabel": "From",
+                    "toLabel": "To",
+                    "customRangeLabel": "Custom Range",
+                    "daysOfWeek": [
+                        "Su",
+                        "Mo",
+                        "Tu",
+                        "We",
+                        "Th",
+                        "Fr",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ],
+                    "firstDay": 1
+                };
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,,
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                });
+
+                var all = "All";
+            {% else %}
+                var locale_daterangepicker = {
+                    "direction": "ltr",
+                    "format": "YYYY-MM-DD",
+                    "separator": " - ",
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "DE",
+                    "toLabel": "HASTA",
+                    "customRangeLabel": "Rango personalizado",
+                    "daysOfWeek": [
+                        "Dom",
+                        "Lun",
+                        "Mar",
+                        "Mie",
+                        "Jue",
+                        "Vie",
+                        "Sáb"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ],
+                    "firstDay": 1
+                };
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                });
+
+                var all = "Todo";
+            {% endif %}
 
             
 
@@ -466,7 +534,7 @@
 
                 ///var quotas =
                 //$("#appbundle_loan_loaCompleted").closest("div").remove();
-                $("#holderRate").html("<h5>Payments will be by established quotas</h5>");
+                $("#holderRate").html("<h5>{% trans %}loan_form_default_interest_rate_disabled{% endtrans %}</h5>");
                 $("#setPatments").on("click",function(){
                     var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
                     var nextDate = $("#appbundle_loan_loaDeadline").val();
@@ -476,7 +544,7 @@
                         $.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'Make sure the fields "<b>Recurring day payment, First Payment Date and Quotas</b>" are filled',
+							content: "{{ ('loan_msg_recurring_day_payment_empty'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -488,7 +556,7 @@
                         $.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
-							content: 'The fields "<b>Recurring day payment and Quotas</b>" must be numbers',
+							content: "{{ ('loan_msg_recurring_day_payment_zero'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -534,7 +602,7 @@
                                         $.alert({
                                             icon: 'glyphicon glyphicon-exclamation-sign',
                                             title: 'Error!',
-                                            content: "Some dates could not be removed due to already exist a period paid: <b>"+msg+"</b>",
+                                            content: "{{ ('loan_msg_error_remove_dates'|trans())|raw }}: <b>"+msg+"</b> ",
                                             type: 'red',
                                             typeAnimated: true,
 						                });
@@ -582,7 +650,13 @@
                     //alert();
                     var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
                     table += "<table class='table table-striped' id='tablePayments'>";
-                    table += "<thead><tr><th>Payment Date</th><th>Quota to pay</th><th>Action</th><th>Paid amount</th><th>Paid date</th><th>Note</th><th></th></tr></thead><tbody>";
+                    table += "<thead><tr><th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th>";
+                    table += "<th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th>";
+                    table += "<th>{% trans %}loan_table_payments_action{% endtrans %}</th>";
+                    table += "<th>{% trans %}loan_table_payments_paid_amount{% endtrans %}</th>";
+                    table += "<th>{% trans %}loan_table_payments_paid_date{% endtrans %}</th>";
+                    table += "<th>{% trans %}loan_table_payments_paid_note{% endtrans %}</th>";
+                    table += "<th></th></tr></thead><tbody>";
                     var trbody = "";
                     var firstPaymentDate = "";
                     for(var i = 0; i < arrDates.length; i++)
@@ -601,9 +675,9 @@
                         trbody += "<tr id='tr_"+i+"'>";
                         trbody += "<td> <i class='fa fa-calendarxxxxx' aria-hidden='true'></i> <span class='initDate'>"+ per +"</span> - <span class='maxDate'>"+ arrDates[i] + "</span></td>"
                         trbody += "<td> "+input+"</td>"
-                        trbody += "<td>Pending</td>";
-                        trbody += "<td>Pending</td>";
-                        trbody += "<td>Pending</td>";
+                        trbody += "<td>{% trans %}general_msg_pending{% endtrans %} </td>";
+                        trbody += "<td>{% trans %}general_msg_pending{% endtrans %} </td>";
+                        trbody += "<td>{% trans %}general_msg_pending{% endtrans %} </td>";
                         trbody += "<td>N/A</td>"
                         trbody += "<td>"+button+"</td>";
                         trbody += "</tr>";
@@ -613,7 +687,7 @@
                     table += "</table>";
                     table += "<input type='hidden' value='"+firstPaymentDate+"' id='inputfistPaymentDate'>";
 
-                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> Add item</button></div>";
+                    var  addInput = "<div class='text-right'><button id='addInput' class='btn btn-default'><i class='fa fa-plus-circle' aria-hidden='true'></i> {% trans %}loan_btn_add_item{% endtrans %}</button></div>";
                     var labelTotal = "<div><h2>Total: <span id='total' class='label label-default'>$0.00</span></h2></div>";
                     
 
@@ -663,7 +737,7 @@
                         $.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Info!',
-							content: "This loan <b>has already been completed</b>, if you want to add more items uncheck where it says <b>'Is this Loan finished?'</b>",
+							content: "{{ ('loan_msg_error_loan_completed'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -704,7 +778,7 @@
                         var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i> </span>";
                         $("body").find("#tablePayments tr:last" ).find("td").eq(6).html(button);
                         $("body").find("#tablePayments tr:last" ).find("td").eq(5).html("N/A");
-                        $("body").find("#tablePayments tr:last" ).find("td").eq(2).html("Pending");
+                        $("body").find("#tablePayments tr:last" ).find("td").eq(2).html("{% trans %}general_msg_pending{% endtrans %}");
             
                         //alert();
                         var rowCount = $('#tablePayments tbody tr').length;
@@ -742,7 +816,7 @@
                                 $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
                                     title: 'Info!',
-                                    content: "the new first payment date was setup at <b>"+newMaxDate+"</b>",
+                                    content: "{{ ('loan_msg_error_new_first_patment_date'|trans())|raw }}<b>"+newMaxDate+"</b>",
                                     type: 'blue',
                                     typeAnimated: true,
                                 });
@@ -772,7 +846,7 @@
                             $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
                                     title: 'Info!',
-                                    content: "You don't have first payment date selected, please select one",
+                                    content: "{{ ('loan_msg_error_no_first_pament_date'|trans())|raw }}",
                                     type: 'red',
                                     typeAnimated: true,
                             });
@@ -792,7 +866,7 @@
 						$.alert({
 						    icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Info!',
-							content: 'Click in "Set Payments" button to get all payment date',
+							content: "{{ ('loan_msg_error_click_set_payment_day'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 						});
@@ -826,7 +900,7 @@
                         $.alert({
                                 icon: 'glyphicon glyphicon-exclamation-sign',
                                 title: 'Error!',
-                                content: 'The field Quotas has a different number than total records in the payment table',
+                                content: "{{ ('loan_msg_error_quotas_not_equal_with_total_record'|trans())|raw }}",
                                 type: 'red',
                                 typeAnimated: true,
                         });
@@ -840,18 +914,11 @@
             $("#formDelete").click(function(e){
                 
                 {% set loanId = app.request.get('loaId') %}
-                var hasPayments = "{{ srv_Loans.getCountLoanPaymentsDone(loanId) }}"
+                /*{# var hasPayments = "{{ srv_Loans.getCountLoanPaymentsDone(loanId) }}" #}*/
                 $.confirm({
                     title: 'Confirm!',
-                    content: "Are you sure that you want to delete this record?.<br> This Loan has <strong>"+hasPayments+"</strong> payment(s) done" ,
+                    content: "{{ ('loan_msg_error_quotas_not_equal_with_total_record'|trans({'%hasPayments%': srv_Loans.getCountLoanPaymentsDone(loanId)}))|raw }}" ,
                     buttons: {
-                        /*
-                        confirm: function () {
-                            
-                        },
-                        */
-                        
-                        
                         customConfirm: {
                             text: 'Ok',
                             btnClass: 'btn-red',
@@ -893,7 +960,7 @@
 							$.confirm({
 								icon: 'fa fa-remove',
 								title: 'Error!',
-								content: 'An error occurred while trying to send the request',
+								content: "{{ ('general_msg_send_data'|trans())|raw }}",
 								type: 'red',
 								typeAnimated: true,
 								buttons: {
@@ -943,7 +1010,7 @@
 								$.alert({
 									icon: 'glyphicon glyphicon-exclamation-sign',
 									title: 'Info!',
-									content: 'An error occurred while trying to save the information <br>' + infoError,
+									content: "{{ ('general_msg_send_data'|trans())|raw }}" + infoError,
 									type: 'blue',
 									typeAnimated: true,
 								});

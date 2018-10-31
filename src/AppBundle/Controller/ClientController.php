@@ -49,6 +49,8 @@ class ClientController extends Controller
                 break;    
         }
 
+        
+
         return $this->render('app/client/index.html.twig', array(
             'clients' => $clients,
         ));
@@ -85,7 +87,8 @@ class ClientController extends Controller
             $em->persist($client);
             $em->flush();
 
-            $msg = "Client created successfully";
+            //$msg = "Client created successfully";
+            $msg = $this->get('translator')->trans('clients_new_msg_success');
             $this->session->getFlashBag()->add("success", $msg);
             return $this->redirectToRoute('client_edit', array('cliId' => $client->getCliid()));
         }
@@ -137,7 +140,8 @@ class ClientController extends Controller
                 
             
         }else{
-            throw new NotFoundHttpException("Record not found");
+            $msg = $this->get('translator')->trans('general_msg_record_no_found');
+            throw new NotFoundHttpException($msg);
         }
     }
 
@@ -162,14 +166,26 @@ class ClientController extends Controller
             {
                 if ( $userId != $oClient->getUsr()->getUsrId() )
                 {
-                    throw new AccessDeniedHttpException("Access Denied");
+                    $msg = $this->get('translator')->trans('gerenal_msg_access_denied');
+                    throw new AccessDeniedHttpException($msg);
                 } 
             }
         }
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
 
+            
+
+            $flush = $this->getDoctrine()->getManager()->flush();
+            if($flush == null)
+            {
+                $msg = $this->get('translator')->trans('clients_new_msg_updated');
+                $this->session->getFlashBag()->add("success", $msg);
+            }else{
+                $this->session->getFlashBag()->add("error", $msg);
+                $msg = $this->get('translator')->trans('clients_new_msg_no_updated');
+            }
+           
             return $this->redirectToRoute('client_edit', array('cliId' => $client->getCliid()));
         }
 

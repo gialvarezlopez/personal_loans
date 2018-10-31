@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Loan description - Money Loan
+    {% trans %}loan_show_title{% endtrans %} - {% trans %}app_name{% endtrans %}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -53,21 +53,21 @@
 
 <section class="content-header">
       <h1>
-        Loan 
-        <small>Previous detail</small>
+        {% trans %}loan_show_title{% endtrans %}
+        <small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-        <li><a href="{{ path('loan_index') }}">Loans</a></li>
-        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">History</a></li>
-        <li class="active">Detail</li>
+        <li><a href="{{ path('loan_index') }}">{% trans %}menu_left_loans{% endtrans %}</a></li>
+        <li><a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}menu_left_history{% endtrans %}</a></li>
+        
       </ol>
 </section>
 <hr>
 <div class="box">
     <div class="box-header">
         {# <h5 class="box-title"> #}
-            <i class="fa fa-user-circle-o" aria-hidden="true"></i> Client:
+            <i class="fa fa-user-circle-o" aria-hidden="true"></i> {% trans %}loan_edit_client{% endtrans %}:
             <span>
                 <a href="{{ loan.cli.cliId }}" class="btnShowClient">
                     {{ loan.cli.cliFirstName ~" "~ loan.cli.cliMiddleName ~" "~ loan.cli.cliFirstSurname ~" "~ loan.cli.cliSecondSurname }}
@@ -83,17 +83,15 @@
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <div class="well ">
                         {% set loanId = app.request.get('loaId') %}
-                        {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loanId) %}
-                        This loan has 
-                            {% if hasPayments %}
-                                <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}"><span class="badge">{{ hasPayments }}</span></a>
-                            {% else %}
-                                <span class="badge">{{ hasPayments }}</span> 
-                            {% endif %}
-                            
-                        payment(s) done, 
-                        {% set hasFiles = srv_Loans.getFilesPerLoan(loanId) %}
-                        Files attached <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><span class="badge">{{ hasFiles|length }}</span></a>
+                    {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loanId) %}
+                    {#
+                    This loan has <span class="badge">{{ hasPayments }}</span> payment(s) done,
+                    
+                    Files attached 
+                    #}
+                    {% set hasFiles = srv_Loans.getFilesPerLoan(loanId) %}
+                    {{ ('loan_edit_msg_count_files'|trans({ '%payments%': hasPayments}))|raw }}
+                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><span class="badge">{{ hasFiles|length }}</span></a>
                     </div>
                 <div class="well">
                      
@@ -107,28 +105,37 @@
                             </tr>
                             #}
                             <tr>
-                                <th>Loan Type</th>
-                                <td><b>{{ loan.loc.locType }}</b></td>
+                                <th>{% trans %}loan_index_table_title_loan_type{% endtrans %}</th>
+                                <td><b>
+                                        {% if loan.loc.locId == 1 %}
+                                            {% trans %}general_loan_with_percentage{% endtrans %}
+                                        {% elseif loan.loc.locId == 2 %}
+                                            {% trans %}general_loan_per_quotas{% endtrans %}
+                                        {% else %}
+                                            {{ loan.loc.locType }}
+                                        {% endif %}
+                                    </b>
+                                </td>
                             </tr>
                             <tr>
-                                <td>Code</td>
+                                <td>{% trans %}loan_edit_code{% endtrans %}</td>
                                 <td>{{ loan.loaCode }}</td>
                             </tr>
                             
                             <tr>
-                                <td>Init Requested Amount:</td>
+                                <td>{% trans %}loan_form_requested_amount{% endtrans %}:</td>
                                 <td><span class="amounts">${{ loan.loaAmount|number_format(2, '.', ',') }}</span></td>
                             </tr>
                            {% if loan.loc.locKey == "inactive_rate" %}
                                 <tr>
-                                    <td>Return amount</td>
+                                    <td>{% trans %}loan_msg_total_to_pay{% endtrans %}</td>
                                     <td><span class="amounts">
                                         {% set returnAmount = srv_Loans.getTotalReturnAmountRequested(loanId) %}
                                         ${{ returnAmount|number_format(2, '.', ',') }}</span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Payments done</td>
+                                    <td>{% trans %}loan_msg_total_paid{% endtrans %}</td>
                                     <td>
                                         <span class="amounts">
                                         {% set totalReturnAmountPaid = srv_Loans.getTotalAmountPaid(loanId) %}
@@ -137,7 +144,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Pending Amount</td>
+                                    <td>{% trans %}loan_msg_pending_to_pay{% endtrans %}</td>
                                     <td>
                                         <span class="amounts">${{ (returnAmount - totalReturnAmountPaid)|number_format(2, '.', ',') }}</span>
                                         
@@ -148,20 +155,20 @@
                             {% if loan.loc.locKey == "active_rate" %}
                                 {% set rate = 0 %}
                                 <tr>
-                                    <td>Default Interest Rate</td>
+                                    <td>{% trans %}loan_form_default_interest_rate{% endtrans %}</td>
                                     <td><span class="amounts">{{ loan.loaRateInterestByDefault }}%</span></td>
                                 </tr>
                                 {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                                 {% if pending %}
                                     <tr>
-                                        <td>Current Interest Rate</td>
+                                        <td>{% trans %}loan_form_default_current_interest_rate{% endtrans %}</td>
                                         <td>{% set rate = pending.rate %}   
                                              <span class="amounts">{{ rate }}%</span> 
                                         </td>
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td>Current Interest Rate</td>
+                                        <td>{% trans %}loan_form_default_current_interest_rate{% endtrans %}</td>
                                         <td>{% set rate = loan.loaRateInterest %}
                                             <span class="amounts">{{ loan.loaRateInterest }}%</span>
                                         </td>
@@ -175,7 +182,7 @@
                                     {% set money = loan.loaAmount %}
                                 {% endif %}
                                 <tr>
-                                    <td>Pending amount of interest rate</td>
+                                    <td>{% trans %}loan_label_pending_amount_rate{% endtrans %}</td>
                                     <td>
                                         <span class="amounts">
                                         ${{ (money)|number_format(2, '.', ',') }} x {{rate}}% <br>= 
@@ -184,7 +191,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Pending to pay</th>
+                                    <th>{% trans %}loan_msg_pending_to_pay{% endtrans %}</th>
                                     <td>
                                         <span class="amounts">
                                         ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} <br>= 
@@ -194,12 +201,12 @@
                                 </tr>
                             {% endif %}
                             <tr>
-                                <td>Recurring days to pay</td>
-                                <td>{{ loan.loaRecurringDayPayment }} Days</td>
+                                <td>{% trans %}loan_form_recurring_day_payment{% endtrans %}</td>
+                                <td>{{ loan.loaRecurringDayPayment }} {% trans %}general_msg_days{% endtrans %}</td>
                             </tr>
                             {% if loan.loc.locKey == "inactive_rate" %}
                                 <tr>
-                                    <td># Quotas</td>
+                                    <td># {% trans %}loan_form_quotas{% endtrans %}</td>
                                     <td>{{ loan.loaQuotas }}</td>
                                 </tr>
                             {% endif %}
@@ -207,9 +214,9 @@
                                 <tr>
                                     <th>
                                         {% if hasPayments ==  0 %} 
-                                            First payment date 
+                                            {% trans %}loan_form_msg_first_payment_date{% endtrans %}
                                         {% else %} 
-                                            Next payment date 
+                                            {% trans %}loan_form_msg_next_payment_date{% endtrans %}
                                         {% endif %}
                                     </th>
                                     <td>
@@ -223,40 +230,24 @@
                                     </td>
                                 </tr>
                             {% endif %}
-
-                            
-                            
-                            
-                            {# 
                             <tr>
-                                <th>Pending</th>
-                                <td>{{ loan.loaPending }}</td>
-                            </tr>
-                            
-                            {# 
-                            <tr>
-                                <th>Loaactive</th>
-                                <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td>
-                            </tr>
-                            #}
-                            <tr>
-                                <td>Created</td>
-                                <td>{% if loan.loaCreated %} {{ srv_TimeZone.getTimeZone(loan.loaCreated|date('Y-m-d H:i:s')) }} {% endif %}</td>
+                                <td>{% trans %}loan_form_loan_created_at{% endtrans %}</td>
+                                <td>{% if loan.loaLoanMade %} {# {{ srv_TimeZone.getTimeZone(loan.loaLoanMade|date('Y-m-d')) }} #}  {{loan.loaLoanMade|date('Y-m-d')}} {% endif %}</td>
                             </tr>
                             <tr>
-                                <td>Status</td>
+                                <td>{% trans %}loan_form_status{% endtrans %}</td>
                                 <td>
                                     {% if loan.loaCompleted == 1 %} 
-                                        <h4><span class="label label-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Finished </span></h4>
+                                        <h4><span class="label label-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {% trans %}general_msg_loan_finished{% endtrans %} </span></h4>
                                     {% elseif loan.loaCompleted == 2 %}     
-                                        <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Freezed </span></h4>
+                                        <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}general_msg_loan_freezed{% endtrans %} </span></h4>
                                     {% else %} 
-                                        <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Incomplete </span></h4>
+                                        <h4><span class="label label-default"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>  {% trans %}general_msg_loan_incomplete{% endtrans %}</span></h4>
                                     {% endif %}
                                 </td>
                             </tr>
                             <tr>
-                                <td>Description</td>
+                                <td>{% trans %}loan_form_description{% endtrans %}</td>
                                 <td>{{ loan.loaDescription }}</td>
                             </tr>
                         </tbody>
@@ -266,23 +257,25 @@
                     
                     <ul class="list-inline">
                         <li>
-                            <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> Loans list</a>
+                            <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %}</a>
                         </li>
                         <li>
-                            <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+                            <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %}general_btn_edit{% endtrans %}</a>
                         </li>
+                        {#
                         <li>
                             {{ form_start(delete_form,{'attr':{"id":'formDelete'}} )  }}
                                 <button class="btn btn-danger marginBT" type="submit"><i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
                             {{ form_end(delete_form) }}
                         </li>
+                        #}
                         <li>
                             {# <button type="button" value="5" id="" class="btn bg-olive marginBT "><i class="fa fa-usd" aria-hidden="true"></i> Payment</button> #}
-                            <a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> Payment</a>
+                            <a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</a>
                         </li>
                     </ul>
                     <hr>
-                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> Attach file at this loan</a>
+                    <a href="{{ path('gallery_index') }}?loanId={{loan.loaId}}"><i class="fa fa-upload" aria-hidden="true"></i> {% trans %}loan_btn_attach_file{% endtrans %}</a>
                     <hr>
                 </div>    
             </div>
@@ -307,9 +300,16 @@
                     <div id="holderMainRight">
                         {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
                         {% if loan.loc.locKey  == "inactive_rate" %}
-                            <h4><span class="">Payments</span></h4>
+                            <h4><span class="">{% trans %}loan_edit_subtitle_payments{% endtrans %}</span></h4>
                              <hr>
-                             <div class="text-right">Click <a href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">here</a> to see the complete history</div><hr>
+                             <div class="text-right">
+                                
+
+                                {% set linkHere = path('loanpayment_quotasHistory')~'?loaId='~loan.loaId %}
+                                
+                                {{ ('loan_msg_payments_click_here'|trans({ '%link%': linkHere}))|raw }}
+                            </div>
+                            <hr>
                             {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"show"}) }}
                         {% else %}
                             {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":false}) }}

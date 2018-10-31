@@ -10,7 +10,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-check" aria-hidden="true"></i> Client Information</h4>
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-check" aria-hidden="true"></i> {% trans %}clients_info_title_client{% endtrans %}</h4>
       </div>
       <div class="modal-body">
         <div id="holderBodyModal"></div>
@@ -18,12 +18,12 @@
       <div class="modal-footer">
         
         
-        <a href="#" id="btnModalEditClient" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+        <a href="#" id="btnModalEditClient" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>  {% trans %}general_btn_edit{% endtrans %}</a>
         {#
         <button type="button" value="" id="btnModalLoanClient" class="btn bg-olive btn-flat btnModalLoanClient" ><i class="fa fa-thumbs-up" aria-hidden="true"></i> New Loan</button>
         <button type="button" value="" id="btnModalLoanClient" class="btn btn-info btn-flat btnModalLoanClient" ><i class="fa fa-archive" aria-hidden="true"></i> My Loans</button>
         #}
-        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>  {% trans %}general_btn_close{% endtrans %}</button>
       </div>
     </div>
   </div>
