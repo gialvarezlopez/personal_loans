@@ -262,7 +262,7 @@ payment_rate_table_last_payments: Últimos pagos
 payment_rate_table_next_quota: Siguiete cuota
 payment_rate_table_col_date_paid_quota: Fecha pagada
 payment_rate_table_col_max_date_to_payment: Fecha maximo de pago
-payment_rate_table_col_amount: Monto a pagar
+payment_rate_table_col_amount: Capital
 payment_rate_table_col_interest: Interes
 payment_rate_table_col_sub_total: Sub total
 payment_rate_table_col_total: Total

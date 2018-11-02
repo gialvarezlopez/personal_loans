@@ -59,14 +59,14 @@
                                 {% set prev = (pendingAmount +  payment.lpaPaidCapital) %}
                                 {# ${{ (pendingAmount +  payment.lpaPaidCapital)|number_format(2, '.', ',') }} #}
                             {% else %}
-                                {% set prev = lastP %}
+                                {% set prev = lastP  %}
                                
                         {% endif %}  
 
                             
 
                         {% if last != payment.lpaCurrentAmount %}
-                            {% set prev =  payment.lpaCurrentAmount  %}
+                            {% set prev =  payment.lpaCurrentAmount %}
                             {# {% else %} #}
                                 
                         {% endif %}
@@ -81,7 +81,6 @@
                         </td>
                         <td>
                             
-
 
                              <span class="label label-default amounts">${{ prev|number_format(2, '.', ',')  }}</span>  
                             
@@ -115,7 +114,8 @@
                         <td>
                             <span class="label label-info amounts">
                             {# {% set lastP =  (pendingAmount + ((payment.lpaCurrentRateInterest/100) * pendingAmount ) )%} #}
-                            {% set lastP = pendingAmount %}
+                            {# {% set lastP = pendingAmount %} #}
+                            {% set lastP = (prev - payment.lpaPaidCapital)  %}
                             ${{ lastP|number_format(2, '.', ',')  }}
                             </span>
                         </td>
@@ -133,8 +133,8 @@
                                 {% endif %}
                             </span>
                         </td>
-                        <td> <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * pendingAmount ) )|number_format(2, '.', ',') }} </span></td>
-                        <td style="background-color: #00C0EF"><span class="label label-info amounts">${{ (pendingAmount + ((payment.lpaNextRateInterest/100) * pendingAmount ) )|number_format(2, '.', ',') }} </span></td>
+                        <td> <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * lastP ) )|number_format(2, '.', ',') }} </span></td>
+                        <td style="background-color: #00C0EF"><span class="label label-info amounts">${{ (lastP + ((payment.lpaNextRateInterest/100) * lastP ) )|number_format(2, '.', ',') }} </span></td>
                         <td ><div class="note">{{ payment.lpaNote }}</div></td>
                         
 

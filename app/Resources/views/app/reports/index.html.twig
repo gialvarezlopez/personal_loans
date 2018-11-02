@@ -252,16 +252,17 @@
                                                 
                                                 ${{ prevData[0].lpa_paid_capital|number_format(2, '.', ',')  }}    
                                             {% endif %}
-
-                                            
-                                            
                                         </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {% set pendingPayment = (item.loa_amount - item.lpa_paid_capital)  %}
+
+                                                {% set sumCapital = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+                                                {% set pendingPayment =  item.loa_amount - sumCapital[0]["paidCapital"] %}
+                                                
                                                 
 
-                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                {% if item.lpa_total_amount_paid > 0 or pendingPayment > 0 %}    
                                                     ${{ pendingPayment|number_format(2, '.', ',')  }}
                                                 {% else %}
                                                     N/A      
