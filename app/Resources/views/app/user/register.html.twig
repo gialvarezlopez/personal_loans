@@ -51,55 +51,47 @@
     <div class="text-center"><img src="{{ asset('bundles/app/images/logo.png')  }}"/></div>
     <hr>
     <p class="login-box-msg">Register a new membership</p>
-    {{ form_start(form) }}
+    <div id="holder-form">
+      {{ form_start(form) }}
+    
+      {# <form action="{{ path('register') }}" method="post"> #}
+        {#
+        <div class="form-group has-feedback">
+          <input type="text" class="form-control" placeholder="Full name">
+          <span class="glyphicon glyphicon-user form-control-feedback"></span>
+        </div>
+        #}
+        <div class="form-group has-feedback">
+          <div class="form_error">{{ form_errors(form.usrEmail)}}</div>
+          {{ form_widget(form.usrEmail,  { 'attr': {'class': 'form-control', 'placeholder':"Email"} } ) }}
+          
+          <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+          <div class="form_error">{{ form_errors(form.usrPassword)}}</div>
+          {{ form_widget(form.usrPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Password"} } ) }}
+          
+          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+          <div class="form_error">{{ form_errors(form.repeatPassword)}}</div>
+          {{ form_widget(form.repeatPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Retype password"} } ) }}
         
-        
-   
-    {# <form action="{{ path('register') }}" method="post"> #}
-      {#
-      <div class="form-group has-feedback">
-        <input type="text" class="form-control" placeholder="Full name">
-        <span class="glyphicon glyphicon-user form-control-feedback"></span>
-      </div>
-      #}
-      <div class="form-group has-feedback">
-        <div class="form_error">{{ form_errors(form.usrEmail)}}</div>
-        {{ form_widget(form.usrEmail,  { 'attr': {'class': 'form-control', 'placeholder':"Email"} } ) }}
-         {#<input type="email" class="form-control" placeholder="Email"> #}
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <div class="form_error">{{ form_errors(form.usrPassword)}}</div>
-        {{ form_widget(form.usrPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Password"} } ) }}
-        {#<input type="password" class="form-control" placeholder="Password"> #}
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <div class="form_error">{{ form_errors(form.repeatPassword)}}</div>
-        {{ form_widget(form.repeatPassword,  { 'attr': {'class': 'form-control', 'placeholder':"Retype password"} } ) }}
-        {# <input type="password" class="form-control" placeholder="Retype password"> #}
-        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-      </div>
-      <div class="row">
-        <div class="col-xs-8">
-          {#
-          <div class="checkbox icheck">
-            <label>
-              <input type="checkbox" required="required"> I agree to the 
-            </label>
-            <a href="#">terms</a>
+          <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+        </div>
+        <div class="row">
+          <div class="col-xs-8">
           </div>
-          #}
+          <!-- /.col -->
+          <div class="col-xs-4">
+            <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+            <br>
+          </div>
+          <!-- /.col -->
         </div>
-        <!-- /.col -->
-        <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
-          <br>
-        </div>
-        <!-- /.col -->
-      </div>
-     <!-- </form>-->
-     {{ form_end(form) }}
+      <!-- </form>-->
+      {{ form_end(form) }}
+     </div>
 
     {#
     <div class="social-auth-links text-center">
@@ -128,6 +120,8 @@ $(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip(); 
+
+    $("#holder-form").html("<h3 class='text-center'>Register new members is not available<h3>");
   });
 </script>
 {% endblock %}

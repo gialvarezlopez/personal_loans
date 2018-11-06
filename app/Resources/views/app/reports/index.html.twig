@@ -163,7 +163,7 @@
                                         <td>{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
                                         <td>{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_note{% endtrans %}</td>
-                                        <td>{% trans %} reports_table_title_next_interest {% endtrans %}</td>
+                                        <td>{% trans %} reports_table_title_next_interest {% endtrans %} %</td>
                                         <td>{% trans %}reports_table_title_next_interest_amount{% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_next_capital_amount{% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_total_payment{% endtrans %}</td>
@@ -173,10 +173,18 @@
                                 {% for item in lastLoan %}
                                     <tr>
                                         <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
-                                        <td>{{ item.loc_type }}</td>
                                         <td>
-                                            {{ item.name }}
+                                            
+                                            {% if item.loc_key == "active_rate" %}
+                                                <span class="label label-primary">{% trans %}general_loan_with_percentage{% endtrans %}</span>
+                                                
+                                            {% elseif item.loc_key == "inactive_rate"  %}
+                                                <span class="label label-warning">{% trans %} general_loan_per_quotas {% endtrans %}</span>
+                                            {% else %}
+                                                {{ item.loc_type }}
+                                            {% endif %}
                                         </td>
+                                        <td>{{ item.name }} </td>
                                         <td>
                                             {#
                                             {% if  item.loc_key == "active_rate" %}
@@ -199,7 +207,7 @@
                                                         N/A      
                                                 {% endif %}
                                             {% else %}
-                                                N/A    
+                                                -   
                                                 {# No Interesrt Rate#}
                                                 {% set prevData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "prev") %}
                                                 {% set nextData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "next") %}
@@ -211,31 +219,19 @@
                                         <td>
                                         {# Esto esta malo corregir y poner filtro de fecha #}
                                             {% if item.loc_key == "active_rate" %}
-                                            {#
-                                                {% set paidAmount = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
-                                                {% if paidAmount %}
-                                                    {% set money = (item.loa_amount - paidAmount[0]['paidCapital']) %}
-                                                {% else %}
-                                                    {% set money = item.loa_amount %}
-                                                {% endif %}
-                                            
-                                                Pending amount of interest rate
-                                                <span class="amounts">
-                                                    
-                                                    ${{  ((money) * (rate/100))|number_format(2, '.', ',') }} - 
-                                                </span>
-                                                    <span class="amounts">
-                                                    Capital = ${{ money|number_format(2, '.', ',') }} 
-                                                      
-                                                    </span>
-                                             #}   
+   
                                                 {% if item.lpa_total_amount_paid > 0 %}    
                                                     ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}
                                                 {% else %}
                                                     N/A      
                                                 {% endif %}
                                             {% else %}
-                                                ${{ prevData[0].lpa_paid_rate_interest|number_format(2, '.', ',')  }}
+                                                
+                                               {% if prevData %}
+                                                    ${{ prevData[0].lpa_paid_rate_interest|number_format(2, '.', ',')  }} 
+                                               {% else %}
+                                                    N/A
+                                               {% endif %}
                                             {% endif %}
 
                                              
@@ -249,8 +245,11 @@
                                                     N/A      
                                                 {% endif %}
                                             {% else %}
-                                                
-                                                ${{ prevData[0].lpa_paid_capital|number_format(2, '.', ',')  }}    
+                                                {% if prevData %}
+                                                    ${{ prevData[0].lpa_paid_capital|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A
+                                               {% endif %}
                                             {% endif %}
                                         </td>
                                         <td>
@@ -299,7 +298,7 @@
 
                                                 {# {{ item.lpa_next_rate_interest }}% #}
                                             {% else %}
-                                                N/A    
+                                                -    
                                             {% endif %}
                                         </td>
                                         <td>
@@ -307,7 +306,54 @@
                                                 {# Next Interest amont #}
                                                 ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
                                             {% else %}
-                                                N/A     
+
+                                                {# ----------- calculates the interest amount  if the payment has it, per quotas----------- #} 
+                                                {% set amount = nextData[0].lpa_current_amount %}
+                                                {% set amountRequested = item.loa_amount %}
+                                                {% set checkPayments = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+
+                                                {% set nextInt = 0 %}
+                                                {% set nextCap = 0 %}
+                                                {# {{ checkPayments[0]['paidTotal'] }}---------------{{ amountRequested }} *********** #}
+                                                {% if ( (checkPayments[0]['paidTotal'] < amountRequested) or  ( amount < amountRequested) ) %}
+                                                
+                                                    {% set t = checkPayments[0]['paidCapital'] +  amount %}
+
+                                                    {% if (t < amountRequested) %}
+                                                    
+                                                        {# $oPayment->setLpaPaidCapital($amount); #}
+                                                        {# hay capital #}
+                                                        {% set nextCap = amount %} 
+                                                    {% else %}
+                                                    
+                                                        {% set payInterest = (t - amountRequested) %}
+                                                        {% set payCapital = (amount - payInterest) %}
+                                                        {% if ( payCapital > 0 ) %}
+                                                            {# $oPayment->setLpaPaidCapital($payCapital); #}
+                                                            {# hay capital #}
+                                                            {% set nextCap = payCapital %} 
+                                                        {% endif %}
+
+                                                        {% if (payInterest > 0 ) %} 
+                                                            {# hay interes #}
+                                                            {# $oPayment->setLpaPaidRateInterest( ($amount-$payCapital)/*$payInterest*/); #}
+                                                            {% set nextInt = ( amount - payCapital) %}
+                                                        {% endif %}
+                                                        
+                                                   
+                                                    {% endif %}
+                                                    
+                                                {% else %}
+                                                    {# hay interes #}
+                                                    {# $oPayment->setLpaPaidRateInterest($amount); #}
+                                                    {% set nextInt = ( amount ) %} 
+                                                {% endif %}
+
+
+
+                                                {# N/A   -------------------- #} 
+                                                
+                                                ${{ nextInt|number_format(2, '.', ',') }}  
                                             {% endif %}
                                         </td>
                                         <td>
@@ -315,7 +361,7 @@
                                                 {# Next Capita Capital amount #}
                                                 ${{ (pendingPayment)|number_format(2, '.', ',')  }}
                                             {% else %}
-                                                N/A 
+                                                {# N/A  ---------------#} ${{ nextCap|number_format(2, '.', ',') }}  
                                             {% endif %}
                                         </td>
                                         <td>
@@ -323,12 +369,10 @@
                                                 {# Next Capita Capital amount #}
                                                 ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
                                             {% else %}
-                                                 ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }}
+                                                 {# ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }} #}
+                                                 {{ (nextInt + nextCap)|number_format(2, '.', ',')}}
                                             {% endif %}
                                         </td>
-                                       
-                                      
-                                        
                                     </tr>    
                                 {% endfor %}
                                 </tbody>    
@@ -524,7 +568,14 @@
                 "language": {
                     //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
                     {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
+                },
+                
+                /*
+                "fixedColumns":   {
+                    //leftColumns: 2,
+                    //rightColumns: 1
                 }
+                */
                 
                 
             });

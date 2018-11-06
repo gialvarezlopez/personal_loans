@@ -136,6 +136,12 @@ class LoanController extends Controller
             {
                 $rate = 0;
             }
+
+            if( $oLoanCategory->getLocKey() == "inactive_rate"  )
+            {
+                $loan->setLoaDeadline( null );
+            }
+
             //exit("sali");
             $loan->setCli($oUser);
             $loan->setLoaCreated( new \DateTime() );

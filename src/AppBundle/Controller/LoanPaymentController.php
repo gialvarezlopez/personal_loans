@@ -54,7 +54,8 @@ class LoanPaymentController extends Controller
 
         if( !is_numeric($loanId) || $loanId <= 0  )
         {
-            throw new NotFoundHttpException("Record not found");
+            $msg = $this->get('translator')->trans('general_msg_record_no_found');
+            throw new NotFoundHttpException($msg);
         }
         else
         {
@@ -65,7 +66,8 @@ class LoanPaymentController extends Controller
             {
                 if( $userId != $oLoan->getCli()->getUsr()->getUsrId() )
                 {
-                    throw new AccessDeniedHttpException("Access Denied");
+                    $msg = $this->get('translator')->trans('general_msg_access_denied');
+                    throw new AccessDeniedHttpException($msg);
                 }
 
                
@@ -199,15 +201,10 @@ class LoanPaymentController extends Controller
                             if( isset($amount) && $amount > 0 )
                             {
                                 $oPayment->setLpaTotalAmountPaid($amount);
-
-
-                                //$oPayment->setLpaPaidCapital($amount);
-                                
                                 //logic here
                                 
                                 $amountRequested = $oLoan->getLoaAmount();
                                 $checkPayments[0]['paidTotal'];
-
 
                                 if( ($checkPayments[0]['paidTotal'] < $amountRequested) ||  ($amount < $amountRequested) )
                                 {

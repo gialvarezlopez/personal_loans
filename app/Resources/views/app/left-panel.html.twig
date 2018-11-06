@@ -23,10 +23,12 @@
           <!-- /.search form -->
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu" data-widget="tree">
+          {#
             <li class="header">{% trans %}menu_left_payment_gateways{% endtrans %}</li>
             <li><a href="{{ path('payments_review') }}"><i class="fa fa-money" aria-hidden="true"></i> <span>{% trans %}menu_left_check_membership{% endtrans %}</span></a></li>
             <li><a href="{{ path('payments_info') }}"><i class="fa fa-book" aria-hidden="true"></i> <span>{% trans %}menu_left_my_transactions{% endtrans %}</span></a></li>
             <li class="header">{% trans %}menu_left_main_navigation{% endtrans %}</li>
+            #}
             <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard" aria-hidden="true"></i> <span>{% trans %}menu_left_dashboard{% endtrans %}</span></a></li>
             <li><a href="{{ path('report_index') }}"><i class="fa fa-th" aria-hidden="true"></i> <span>{% trans %}menu_left_reports{% endtrans %}</span></a></li>
             <li class="treeview">

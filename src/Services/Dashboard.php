@@ -152,29 +152,41 @@ class Dashboard
             $RAW_QUERY  = " SELECT * FROM loan_payment lp
                             INNER JOIN loan l ON l.loa_id = lp.loa_id
                             INNER JOIN `client` c ON c.cli_id = l.cli_id
-
                             WHERE c.usr_id = $userId ";
 
             if( is_array($periodDays) )
             {
-                //echo "ayy"; 
                 // 1 = Next Payment, 2 = Prev Payment, 3 = Both
                 if( $optOption == 3 )
                 {
                     $RAW_QUERY .= " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."'
                             OR
-                        (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL)
+                        (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' 
+                            AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' 
+                            AND lp.lpa_total_amount_paid IS NULL
+                        )
                     ";
                 }
                 else
                 { 
                     if( $optOption == 1 )
                     {
-                        $RAW_QUERY .=  " AND (lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' AND lp.lpa_total_amount_paid IS NULL) ";
-                    }else if( $optOption == 2 ) {
+                        $RAW_QUERY .=  " AND (
+                                                (
+                                                    lp.lpa_max_payment_date >= '".$periodDays["startDate"]."' AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' 
+                                                    AND lp.lpa_total_amount_paid IS NULL
+                                                )
+                                                OR
+                                                (
+                                                    l.loa_deadline >= '".$periodDays["startDate"]."' AND l.loa_deadline <= '".$periodDays['endDate']."' 
+                                                   
+                                                )
+                                            ) ";
+                    }
+                    else if( $optOption == 2 )
+                    {
                         $RAW_QUERY .=  " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."'";
                     }
-
                 }
             }
             //echo $RAW_QUERY;
@@ -187,7 +199,6 @@ class Dashboard
                 {
                     $itemLoans[$value["loa_id"]] = array(
                                                         "lpa_id"=>$value["lpa_id"],  
-                                                        
                                                         "loa_id"=>$value["loa_id"], 
                                                         "note"=>$value["lpa_note"],
                                                         "lpa_current_rate_interest"=>$value["lpa_current_rate_interest"],
@@ -196,7 +207,6 @@ class Dashboard
                                                         "lpa_total_amount_paid"=>$value["lpa_total_amount_paid"],
                                                         "lpa_current_amount"=>$value["lpa_current_amount"], // just no rate
                                                         "lpa_next_rate_interest"=>$value["lpa_next_rate_interest"]
-                                                        
                                                     );
                 }
             }

@@ -69,10 +69,9 @@ class PaymentsController extends Controller
             $res = $this->restingDays($created, $deadline);
             $restingDays = $restingDays + $res;
         }
-        //dump($result);
-        //exit();
 
-        return array("licences"=>count($result), "days"=> $restingDays );
+        return array("licences"=>count($result), "days"=> 1000000 ); // comentar esta linea despues
+        //return array("licences"=>count($result), "days"=> $restingDays ); // Descomentar esta liena despues del demo
     }
 
     public function restingDays($created, $deadline){
