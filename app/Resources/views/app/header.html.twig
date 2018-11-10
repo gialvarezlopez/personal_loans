@@ -264,7 +264,7 @@
           </div>
         </nav>
       </header>
-      {% if app.user != null %}
+      {% if app.user != null and app.user == "ROLE_USER" %}
       <div id="holderMsgBoxAlert" style="display:none">
         {{ render(controller('AppBundle:Payments:msgBoxPay')) }}
       </div>
