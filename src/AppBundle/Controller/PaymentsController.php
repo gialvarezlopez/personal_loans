@@ -54,26 +54,31 @@ class PaymentsController extends Controller
 
     public function getPayer()
     {
-        $em = $this->getDoctrine()->getManager();
-        $userId = $this->getUser()->getUsrId();
-		$RAW_QUERY = "SELECT pay_deadline, pay_created FROM payer p WHERE p.usr_id =:userId AND pay_deadline >= NOW() ORDER BY pay_id ";
-		$statement = $em->getConnection()->prepare($RAW_QUERY);
-		$statement->bindValue("userId", $userId);
-        $statement->execute();
-        $result = $statement->fetchAll();
-        $restingDays = 0;
-        for($i =0; $i < count($result); $i++)
-        {
-            $created =  $result[$i]['pay_created'];
-            $deadline =  $result[$i]['pay_deadline'];
-            $res = $this->restingDays($created, $deadline);
-            $restingDays = $restingDays + $res;
-        }
+        /*
+            $em = $this->getDoctrine()->getManager();
+            $userId = $this->getUser()->getUsrId();
+            $RAW_QUERY = "SELECT pay_deadline, pay_created FROM payer p WHERE p.usr_id =:userId AND pay_deadline >= NOW() ORDER BY pay_id ";
+            $statement = $em->getConnection()->prepare($RAW_QUERY);
+            $statement->bindValue("userId", $userId);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            $restingDays = 0;
+            for($i =0; $i < count($result); $i++)
+            {
+                $created =  $result[$i]['pay_created'];
+                $deadline =  $result[$i]['pay_deadline'];
+                $res = $this->restingDays($created, $deadline);
+                $restingDays = $restingDays + $res;
+            }
 
-        return array("licences"=>count($result), "days"=> 1000000 ); // comentar esta linea despues
-        //return array("licences"=>count($result), "days"=> $restingDays ); // Descomentar esta liena despues del demo
+            //return array("licences"=>count($result), "days"=> 1000000 ); // comentar esta linea despues
+            return array("licences"=>count($result), "days"=> $restingDays ); // Descomentar esta liena despues del demo
+        */
+        $payments = $this->get('srv_PayerTransactions');			
+        return $payments->getRestingDays( $this->getUser()->getUsrId() );
     }
 
+    /*
     public function restingDays($created, $deadline){
         $deadline = $deadline; //$result[0]['pay_deadline'];
         //$created = date('Y-m-d',strtotime($created));
@@ -85,6 +90,7 @@ class PaymentsController extends Controller
         
         return ( $diferencia > 0 )?$diferencia:0;
     }
+    */
 
     public function checkInAction(Request $request)
     {
@@ -271,7 +277,10 @@ class PaymentsController extends Controller
 
     public function freePaymentAccount( $userId, $oPricing, $months, $paymentProcessorId )
     {
-        date_default_timezone_set("UTC");
+        //date_default_timezone_set("UTC");
+        $srv = $this->get('srv_TimeZone');
+        $timezone =  $srv->getNameTimeZone();
+        date_default_timezone_set($timezone);
         
         $em = $this->getDoctrine()->getManager();
         $payer = new \AppBundle\Entity\Payer();

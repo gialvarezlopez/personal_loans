@@ -8,6 +8,7 @@ general_btn_save: Save
 general_btn_create: Create
 general_btn_close: Close
 general_btn_unfreeze: Unfreeze
+general_btn_get_it_now: Get it Now
 
 general_msg_yes: Yes
 gerenal_msg_access_denied: Access denied

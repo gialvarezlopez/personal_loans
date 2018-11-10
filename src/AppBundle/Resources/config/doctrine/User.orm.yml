@@ -88,6 +88,10 @@ AppBundle\Entity\User:
             options:
                 default: '1'
             column: usr_active
+        usrLastLogin:
+            type: datetime
+            nullable: true
+            column: usr_last_login
         usrNotificationContactForm:
             type: boolean
             nullable: true

@@ -551,4 +551,33 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->stId;
     }
+    /**
+     * @var \DateTime
+     */
+    private $usrLastLogin;
+
+
+    /**
+     * Set usrLastLogin
+     *
+     * @param \DateTime $usrLastLogin
+     *
+     * @return User
+     */
+    public function setUsrLastLogin($usrLastLogin)
+    {
+        $this->usrLastLogin = $usrLastLogin;
+
+        return $this;
+    }
+
+    /**
+     * Get usrLastLogin
+     *
+     * @return \DateTime
+     */
+    public function getUsrLastLogin()
+    {
+        return $this->usrLastLogin;
+    }
 }

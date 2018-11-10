@@ -44,6 +44,7 @@ twig:
         srv_TimeZone: "@srv_TimeZone"
         srv_Loans: "@srv_Loans"
         srv_Dashboard: "@srv_Dashboard"
+        srv_PayerTransactions: "@srv_PayerTransactions"
 
 # Doctrine Configuration
 doctrine:

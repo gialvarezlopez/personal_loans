@@ -44,5 +44,6 @@ security:
     access_control:
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/backend, roles: ROLE_USER }    
+        - { path: ^/backend/users-control-app, roles: [ROLE_ADMIN] }
+        - { path: ^/backend, roles: [ROLE_USER, ROLE_ADMIN] }    
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

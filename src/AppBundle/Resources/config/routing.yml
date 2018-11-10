@@ -16,6 +16,10 @@ app_settings:
         resource: "@AppBundle/Resources/config/routing/settings.yml"
         prefix:   /backend/settings
 
+app_userscontrolapp:
+        resource: "@AppBundle/Resources/config/routing/usersControlApp.yml"
+        prefix:   /backend/users-control-app       
+
 app_setProfileImage:
         resource: "@AppBundle/Resources/config/routing/setProfileImage.yml"
         prefix:   /backend/setprofileimage

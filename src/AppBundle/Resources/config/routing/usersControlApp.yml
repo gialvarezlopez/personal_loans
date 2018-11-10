@@ -1,0 +1,10 @@
+usercontrolapp_user:
+    path:   /show/
+    defaults: { _controller: "AppBundle:UsersControlApp:index" }
+
+usercontrolapp_checkUserControlEvent:
+    path:   /checkUserControlEvent
+    defaults: { _controller: "AppBundle:UsersControlApp:checkUserControlEvent" }    
+    
+   
+   

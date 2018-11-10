@@ -167,4 +167,33 @@ class Pricing
     {
         return $this->prActive;
     }
+    /**
+     * @var string
+     */
+    private $prKey;
+
+
+    /**
+     * Set prKey
+     *
+     * @param string $prKey
+     *
+     * @return Pricing
+     */
+    public function setPrKey($prKey)
+    {
+        $this->prKey = $prKey;
+
+        return $this;
+    }
+
+    /**
+     * Get prKey
+     *
+     * @return string
+     */
+    public function getPrKey()
+    {
+        return $this->prKey;
+    }
 }

@@ -32,6 +32,13 @@ AppBundle\Entity\Pricing:
             precision: 10
             scale: 0
             column: pr_price
+        prKey:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: pr_key
         prDescription:
             type: string
             nullable: true

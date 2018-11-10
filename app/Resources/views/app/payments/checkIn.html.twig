@@ -138,9 +138,14 @@
                                         {% if value.prPrice == 0 %}
                                             {% set existFree = value.prId %}
                                             <input type = "hidden" id="f" value="{{ existFree }}">
-                                            <h4 ><span class="label label-success">$ {{ value.prPrice|number_format(2, '.', ',') }}</span></h4>
+                                            <h4 ><span class="label label-success">$ {{ value.prPrice|number_format(2, '.', ',') }}
+                                                / {% trans %}merbership_table_td_per{% endtrans %} <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}{% trans %}merbership_table_td_month{% endtrans %}{% else %}{% trans %}merbership_table_td_months{% endtrans %}{% endif %}
+                                            </span>
+
+                                            </h4>
                                         {% else %}
-                                        $ {{ value.prPrice|number_format(2, '.', ',') }} /  {% trans %}merbership_table_td_per{% endtrans %} <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}{% trans %}merbership_table_td_month{% endtrans %}{% else %}{% trans %}merbership_table_td_months{% endtrans %}{% endif %}
+                                        $ {{ value.prPrice|number_format(2, '.', ',') }} /  
+                                        {% trans %}merbership_table_td_per{% endtrans %} <b>{{ value.prMonths }}</b> {% if value.prMonths == 1 %}{% trans %}merbership_table_td_month{% endtrans %}{% else %}{% trans %}merbership_table_td_months{% endtrans %}{% endif %}
                                         {% endif %}
                                         
                                     </td>
@@ -199,12 +204,12 @@
                         $(".paymentGateway").addClass("noPayMent");
                         $(".optionPayment").attr("disabled", true);
                         $(".optionPayment").prop('checked', false);
-                        var btn = "<button class='btn btn-primary' id='btnPay'><i class='fa fa-smile-o' aria-hidden='true'></i> Get it Now</button>";
+                        var btn = "<button class='btn btn-primary' id='btnPay'><i class='fa fa-smile-o' aria-hidden='true'></i> {% trans %}general_btn_get_it_now{% endtrans %}</button>";
                         itemFree = true;
                     }else{
                         $(".paymentGateway").removeClass("noPayMent");
                         $(".optionPayment").attr("disabled", false);
-                        var btn = "<button class='btn btn-primary' id='btnPay'><i class='fa fa-credit-card' aria-hidden='true'></i> Pay Now</button>";
+                        var btn = "<button class='btn btn-primary' id='btnPay'><i class='fa fa-credit-card' aria-hidden='true'></i> {% trans %}merbership_btn_pay_now{% endtrans %}</button>";
                         itemFree = false;
                     }
                     $("#holderBtnSend").html(btn);

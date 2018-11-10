@@ -1,0 +1,230 @@
+{% extends 'app/base.html.twig' %}
+
+{% block title_page %}
+    Users control app - Personal Loans
+{% endblock %}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %} 
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %} 
+
+
+
+{% block header %}
+        
+{% endblock %}
+
+{% block content %}
+
+{#  Check the notifications #}
+    {% set created = 0 %}
+    {% for message in app.session.flashbag().get("success") %}
+        <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+    {% endfor %}
+    {% for message in app.session.flashbag().get("error") %}
+        <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+    {% endfor %}
+    {# End notifications #}
+
+<section class="content-header">
+      <h1>
+        Users control
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="{{ path('dashboard_index') }}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">Setting</li>
+      </ol>
+</section>
+<hr>
+
+        <div class="box  {# collapsed-box #}">
+            <div class="box-header">
+                <h3 class="box-title">list
+                   {# <small>Advanced and full of features</small> #}
+                </h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body pad">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="box box-success">
+                            {#
+                            <div class="box-header with-border">
+                                <h3 class="box-title">List</h3>
+                            </div>
+                            #}
+                            <div class="box-body">
+
+                                <table class="table table-bordered table-striped dataTable">
+                                    <thead>
+                                        <tr>
+                                            <td>ID</td>
+                                            <td>Email</td>
+                                            
+                                            <td>Token validation</td>
+                                            <td>Paid amount</td>
+                                            <td>Remaining days of membership</td>
+                                            <td>Acquired memberships</td>
+                                            <td>Set membership</td>
+                                        </tr>
+                                    </thead>    
+                                    <tbody>
+                                            {% for user in users %}
+                                                <tr id="tr_{{ user.usrId }}">
+                                                    <td>{{ user.usrId }}</td>
+                                                    <td>{{ user.usrEmail }}</td>
+                                                    
+                                                    <td>
+                                                        {% if user.usrStatus == 0 %}
+                                                         <button class="btn btn-block btn-default btn-sm btnAction validateToken" value="{{ user.usrId }}">Validate token</button>
+                                                         {% else %}
+                                                            Validated
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% set amount = srv_PayerTransactions.checkPayments(user.usrId) %}
+                                                        ${{amount[0]["total"]|number_format(2, '.', ',')}}
+
+                                                        
+                                                    </td>
+                                                    <td class="td_restingDays">
+                                                        {% set restingDays = srv_PayerTransactions.getRestingDays(user.usrId) %}
+                                                        {{restingDays["days"]}}
+                                                    </td>
+                                                    <td class="td_acquiredMemberships">
+                                                        {% set memberships = srv_PayerTransactions.countAcquiredMemberships(user.usrId) %}
+                                                        {{memberships[0]["total"]}}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-block btn-success btn-sm btnAction setFreeMembership" value="{{ user.usrId }}">Set free membership</button>
+                                                    </td>
+                                                    
+                                                </tr>
+                                            {% endfor %}
+                                    </tbody>
+                                </table> 
+                            </div>
+                        </div>  
+                    </div>
+                </div>           
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+            $("body").on("click",".btnAction",function(){
+                //alert("click");
+                var element = $(this);
+                var cla = element.attr("class").split(" ");
+                for(i=0; i < cla.length; i++)
+                {
+                    console.log(cla[i]);
+                    item = $.trim(cla[i]);
+                    switch(item)
+                    {
+                        case "validateToken":
+                        case "activeUser":
+                        case "deactivateUser":
+                        case "setFreeMembership":
+                            var id = element.val();
+                            action = item;
+                            sendData(id, action);
+                        break;
+                    }
+                }
+            });
+            
+            function sendData(id, action) {
+                var id = id;
+                var routeShow = "{{ path('usercontrolapp_checkUserControlEvent') }}";
+                //routeShow = routeShow.replace("PLACEHOLDER", id);
+				$("#holder_loading").show();
+				$.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { user_id:id, action: action},
+                        dataType: "json",
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											sendData(id);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data) {
+                            //alert(data);
+                            //var content = JSON.parse(data);
+                            //console.log(content)
+                            //alert(data.res);
+							if (data.res == "1")
+							{
+								
+                                //$('#modalLoans').modal({backdrop: 'static', keyboard: false});
+                                //$("#holderBodyModalLoand").html(data);
+                                switch(action)
+                                {
+                                    case "setFreeMembership":
+                                        $("#tr_"+id).find(".td_restingDays").html(data.days);
+                                        $("#tr_"+id).find(".td_acquiredMemberships").html(data.menberships[0]["total"]);
+                                        break;
+                                    case "validateToken":
+                                         $("#tr_"+id).find(".validateToken").closest("td").html("Validated");
+                                        break;    
+                                }
+                                
+                               
+
+                                //var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                //href = href.replace("PLACEHOLDER", id);    
+                                //$("body").find("#btnModalEditClient").attr("href", href);
+
+                                $("#holder_loading").hide();
+                                $.alert({
+									icon: 'fa fa-check-circle',
+									title: 'OK!',
+									content: 'Request sent successfully <br>',
+									type: 'green',
+									typeAnimated: true,
+								});
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: 'An error occurred while trying to send the request <br>' + infoError,
+									type: 'red',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+        });
+    </script>
+{% endblock %}        
