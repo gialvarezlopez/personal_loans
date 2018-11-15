@@ -45,6 +45,11 @@
     background: #9b1111;
     color:#fff;
 }
+.amounts{
+    font-size:16px;
+    font-weight: 700;
+    color: #34825F;
+}
 </style>
 
 {#  Check the notifications #}
@@ -421,13 +426,15 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if item.loc_key == "active_rate" %}
-                                                {# Next Capita Capital amount #}
-                                                ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
-                                            {% else %}
-                                                 {# ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }} #}
-                                                 {{ (nextInt + nextCap)|number_format(2, '.', ',')}}
-                                            {% endif %}
+                                            <span class="amounts">
+                                                {% if item.loc_key == "active_rate" %}
+                                                    {# Next Capita Capital amount #}
+                                                    ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
+                                                {% else %}
+                                                    {# ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }} #}
+                                                    ${{ (nextInt + nextCap)|number_format(2, '.', ',')}}
+                                                {% endif %}
+                                            </span>
                                         </td>
                                     </tr>    
                                 {% endfor %}
