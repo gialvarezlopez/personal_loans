@@ -41,6 +41,10 @@
     height: 20px;
     display: inline-block;
 }
+.bgred{
+    background: #9b1111;
+    color:#fff;
+}
 </style>
 
 {#  Check the notifications #}
@@ -151,7 +155,7 @@
                                         <th colspan="3" class="text-center"></th>
 
                                         <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}reports_table_title_previous_payments{% endtrans %}</th>
-                                        <th colspan="4" style="background-color: #00C0EF; color: #fff" class="text-center">{% trans %}reports_table_title_next_payment{% endtrans %}</th>
+                                        <th colspan="6" style="background-color: #00C0EF; color: #fff" class="text-center">{% trans %}reports_table_title_next_payment{% endtrans %}</th>
 
                                     </tr>
                                     <tr>
@@ -163,6 +167,10 @@
                                         <td>{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
                                         <td>{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_note{% endtrans %}</td>
+                                        <td>{% trans %}reports_table_title_pending_and_current_quotas{% endtrans %}<br>
+                                            ( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )
+                                        </td>
+                                        <td>{% trans %}reports_table_title_deadline_to_pay{% endtrans %}</td>
                                         <td>{% trans %} reports_table_title_next_interest {% endtrans %} %</td>
                                         <td>{% trans %}reports_table_title_next_interest_amount{% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_next_capital_amount{% endtrans %}</td>
@@ -279,6 +287,51 @@
                                            
                                         </td>
                                         <td>{{ item.note }}</td>
+                                            {% set totalPendingAmountQuotas = 0 %}
+                                            {% set currentQuota = 0 %}
+                                            {% set noapply = "" %}
+                                            {% set deadlineLastQuota = "" %}
+                                            {% if item.loc_key == "inactive_rate" %} 
+                                                {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
+                                                {% if noPaid %}
+                                                    {% set lastPending = 0 %}
+                                                    {% for n in noPaid %}
+                                                        {% set lastPending =  lastPending + 1 %}
+                                                        {% set totalPendingAmountQuotas = totalPendingAmountQuotas + n['lpa_current_amount'] %}
+                                                        {% if noPaid|length == lastPending %}
+                                                            {% set currentQuota = n['lpa_current_amount'] %}
+                                                            {% set deadlineLastQuota = n['lpa_max_payment_date']|date("Y-m-d") %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    
+                                                {% else %}
+                                                    {% set noapply = "-" %}
+                                                {% endif %}
+                                            {% else %}
+                                                
+                                                {% set noapply = "N/A" %}   
+                                            {% endif %}
+                                        <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">    
+                                            {% if item.loc_key == "inactive_rate" %}    
+                                                ${{ 
+                                                    ((totalPendingAmountQuotas  - currentQuota )|abs)|number_format(2, '.', ',')  
+                                                }}   
+                                                    +
+                                                ${{    
+                                                    currentQuota|number_format(2, '.', ',')
+                                                }}
+                                                
+                                            {% else %}
+                                                 {{ noapply }}   
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.loc_key == "inactive_rate" %}
+                                                {{ deadlineLastQuota }}
+                                            {% else %}
+                                                {{ item.loa_deadline|date("Y-m-d") }}
+                                            {% endif %}
+                                        </td>
                                         <td>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# next Interest #}
@@ -308,7 +361,12 @@
                                             {% else %}
 
                                                 {# ----------- calculates the interest amount  if the payment has it, per quotas----------- #} 
-                                                {% set amount = nextData[0].lpa_current_amount %}
+                                                {% if totalPendingAmountQuotas == 0 %}
+                                                    {% set amount = nextData[0].lpa_current_amount %}
+                                                {% else %}
+                                                    {% set amount = totalPendingAmountQuotas %}
+                                                {% endif %}
+                                                
                                                 {% set amountRequested = item.loa_amount %}
                                                 {% set checkPayments = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
 
@@ -348,8 +406,6 @@
                                                     {# $oPayment->setLpaPaidRateInterest($amount); #}
                                                     {% set nextInt = ( amount ) %} 
                                                 {% endif %}
-
-
 
                                                 {# N/A   -------------------- #} 
                                                 
@@ -569,6 +625,16 @@
                     //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
                     {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
                 },
+                'columnDefs': [
+                {
+                    "targets": [3,4,5,6,8,9,10,11,12,13], // your case first column
+                    "className": "text-center",
+                    //"width": "4%"
+                },
+                {
+                    "targets": [3,4,5,6,8,9,10,11,12,13],
+                    "className": "text-right",
+                }]
                 
                 /*
                 "fixedColumns":   {

@@ -210,4 +210,26 @@ class Loans
             return $result;
         }
     }
+
+    function getPendingQuotasNoPaid($loanId, $initDate, $endDate)
+    {
+        if( $loanId >0 && $initDate !="" && $endDate != "" )
+        {
+            /*
+            $RAW_QUERY = "SELECT lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
+                            AND lpa_total_amount_paid IN NULL
+                            AND lpa_max_payment_date >= '".$initDate."' AND lpa_max_payment_date <= '".$endDate."'
+                            ";
+            */
+            $RAW_QUERY = "SELECT lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
+            AND lpa_total_amount_paid IS NULL
+            AND lpa_max_payment_date <= '".$endDate."'
+            ";                
+
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return $result;                
+        }
+    }
 }

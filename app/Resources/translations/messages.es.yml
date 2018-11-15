@@ -99,6 +99,8 @@ reports_table_title_paid_interest: Interes pagado
 reports_table_title_paid_capital: Capital pagado
 reports_table_title_pending_to_pay : Pendiente a pagar 
 reports_table_title_note: Comentario
+reports_table_title_pending_and_current_quotas: Cuotas pendientes + Cuota actual
+reports_table_title_deadline_to_pay: Fecha límite para pagar
 reports_table_title_next_interest: Próximo interes
 reports_table_title_next_interest_amount : Próximo monto de interes
 reports_table_title_next_capital_amount: Próximo monto de capital
@@ -171,7 +173,7 @@ loan_btn_payment_history: Histórico de pagos
 loan_edit_title: Editar prestamo
 loan_edit_client: Cliente
 loan_edit_code: Código
-loan_edit_msg_count_files: Pagos realizados <span class="badge">%payments% </span>, archivos adjuntos
+loan_edit_msg_count_files: Pagos realizados <span class="badge">%payments% </span> - archivos adjuntos
 loan_edit_subtitle_payments : Pagos 
 loan_edit_comment_item: Si elimina o agrega registros haga click en el boton guardar
 

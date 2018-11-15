@@ -99,6 +99,8 @@ reports_table_title_paid_interest: Paid interest
 reports_table_title_paid_capital: Paid capital
 reports_table_title_pending_to_pay : Pending to pay 
 reports_table_title_note: Note
+reports_table_title_pending_and_current_quotas: Pending quotas + Current quota
+reports_table_title_deadline_to_pay: Deadline to pay
 reports_table_title_next_interest: Next interest
 reports_table_title_next_interest_amount : Next interest amount 
 reports_table_title_next_capital_amount: Next capital amount
@@ -171,7 +173,7 @@ loan_btn_payment_history: Payments history
 loan_edit_title: Loan edit
 loan_edit_client: Client
 loan_edit_code: Code
-loan_edit_msg_count_files: Payments done <span class="badge">%payments% </span>, Files attached
+loan_edit_msg_count_files: Payments done <span class="badge">%payments% </span> - Files attached
 loan_edit_subtitle_payments : Payments 
 loan_edit_comment_item:  If you remove or add items you must click in "Save button" to save all data
 

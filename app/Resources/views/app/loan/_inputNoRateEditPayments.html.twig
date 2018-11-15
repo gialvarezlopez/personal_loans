@@ -60,8 +60,15 @@
 .widthAuto {
    width: auto !important;
 }
+
+.markerToday{
+    background: #bcf4db !important;   
+}
 </style>
                         
+                        {% set today = "now"|date("Y-m-d", srv_TimeZone.getNameTimeZone()) %}
+                        {% set initDate = "" %}
+                        {% set endDate = "" %}
                         
                         <input type='hidden' value="{{ loan.loaRecurringDayPayment }}" id='curringDaySelected'>
                         {% set firstPaymentDate = "" %}
@@ -100,20 +107,37 @@
                                             {% set readonly = "" %}
                                             {% set done = "" %}
                                         {% endif %}
-                                        <tr id="tr_{{ counter }}" class="{{done}} {{ item.lpt_key }}" data-paymentid="{{ item.lpa_id }}" data-paymenttypeid="{{ item.lpt_id }}">
-                                            {# <td>{{ counter }}</td> #}
-                                            <td>
+
                                                 {% if counter > 1 %}
-                                                    <span class='initDate'>{{ item.lpa_max_payment_date|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date("Y-m-d") }}</span>
+                                                    
+                                                        {% set initDate =  item.lpa_max_payment_date|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date("Y-m-d") %}
+                                                        
                                                 {% else %}
-                                                    N/A
+                                                    {% set initDate = "N/A" %}
                                                 {% endif %}    
-                                                -
-                                                <span class="maxDate">{{ item.lpa_max_payment_date }}</span>
+                                                
+                                                {% set max_date = item.lpa_max_payment_date %}
+                                                
 
                                                 {% if counter == 1 %}
-                                                    {% set firstPaymentDate = item.lpa_max_payment_date %}
+                                                    {% set firstPaymentDate = max_date %}
                                                 {% endif %}
+
+
+                                                {% if (today) >= initDate and today <= max_date %}
+                                                    {% set markerToday = "markerToday" %}
+                                                {% else %}
+                                                    {% set markerToday = "" %}
+                                                {% endif %}
+                                        <tr id="tr_{{ counter }}" class="{{done}} {{ item.lpt_key }} {{ markerToday }}" data-paymentid="{{ item.lpa_id }}" data-paymenttypeid="{{ item.lpt_id }}">
+                                            {# <td>{{ counter }}</td> #}
+                                            <td>
+                                                {% if initDate and (initDate) != "N/A" %} 
+                                                    <span class='initDate'>{{ initDate }}</span>
+                                                {% else %}
+                                                    {{ initDate }}
+                                                {% endif %}    
+                                                - <span class="maxDate">{{ max_date }}</span>
                                             </td>
                                             <td>
                                                 {% if  action is defined and (action == "edit" ) %}
