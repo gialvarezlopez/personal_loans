@@ -35,7 +35,7 @@ general_msg_loan_incomplete: Incompleto
 menu_left_payment_gateways: VIA DE PAGO
 menu_left_main_navigation: NAVEGACIÓN PRINCIPAL
 menu_left_security: SEGURIDAD
-menu_left_check_membership: Ver membrecías
+menu_left_check_membership: Ver membresías
 menu_left_my_transactions: Mis transacciones
 menu_left_dashboard: Dashboard
 menu_left_reports: Reportes
@@ -125,7 +125,7 @@ clients_table_title_id_type: Tipo identificación
 clients_table_title_ative: Activo
 clients_table_title_actions: Acciones
 clients_info_title_client: Cliente
-clients_info_title_contact_info: Informacion de contacto
+clients_info_title_contact_info: Información de contacto
 clients_info_address: Dirección
 clients_info_phone1: Teléfono 1
 clients_info_phone2: Teléfono 2
@@ -239,7 +239,7 @@ loan_table_rate_payments_note: <strong>Nota:</strong>Puedes cambiar la tasa de i
 loan_table_rate_payments_loan_origiinal_rate: Este prestamo fue creado con una tasa de interes inicial al 
 
 loan_msg_recurring_day_payment_empty: Asegures de que los campos '<b>Dias recurrentes a pagar, Primera fecha de pago y Cuotas </b>' no esten vacios
-loan_msg_recurring_day_payment_zero: Los campos '<bDias recurrentes del pago y Cuotas</b>' deben ser numeros
+loan_msg_recurring_day_payment_zero: Los campos '<b>Dias recurrentes del pago y Cuotas</b>' deben ser numeros
 loan_msg_error_remove_dates: Alguna fechas no pudieron ser removidas debido a que ya existe un periodo pagado
 loan_msg_error_loan_completed: Este prestamo <b>ya ha sido completado</b>, si desea agregar mas elementos desmarque la casilla donde dice <b>'Este prestamo esta finalizado?'</b>
 loan_msg_error_new_first_patment_date: La nueva primer fecha de pago fue modificada a
