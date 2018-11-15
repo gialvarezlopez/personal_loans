@@ -559,7 +559,7 @@
 
                 function printPayments(arrDates, recurringDays)
                 {
-                    var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
+                    var table = "<input type='text' value='"+recurringDays+"' id='curringDaySelected'>";
                     table += "<table class='table table-striped' id='tablePayments'>";
                     table += "<thead><tr><th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th><th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th><th>{% trans%}dashboard_loans_history_status{% endtrans%}</th><th>{% trans %}loan_table_payments_action{% endtrans %}</th></tr></thead><tbody>";
                     var firstPaymentDate = "";
@@ -567,7 +567,7 @@
                     {
                         if( i != 0 )
                         {
-                            var per = moment(arrDates[i], 'YYYY-MM-DD').add(-6, 'days').format('YYYY-MM-DD'); 
+                            var per = moment(arrDates[i], 'YYYY-MM-DD').add(-(recurringDays-1), 'days').format('YYYY-MM-DD'); 
                             var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i> </span>";
                         }else{
                             var per = " N/A ";

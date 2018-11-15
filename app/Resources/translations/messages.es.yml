@@ -303,13 +303,13 @@ my_payments_table_starting_date: Fecha de inicio
 my_payments_table_expiration_date: Fecha expiración
 my_payments_table_remaining_days: Días restantes
 my_payments_table_status: Estatus
-my_payments_btn: Revisar membrecías
+my_payments_btn: Revisar membresías
 my_payments_msg_no_payments: No tienes ningún pago
 my_payments_msg_remaining_days_expired: Expirada
 my_payments_msg_remaining_days_expire_soon: licencia expirará pronto
 my_payments_msg_remaining_days_active: Activa
 
-merbership_title: Membrecías
+merbership_title: Membresías
 merbership_sub_title: Nuestros planes
 merbership_table_select: Seleccione una opción
 merbership_table_plan: plan
