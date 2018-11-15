@@ -262,7 +262,7 @@ class UserController extends Controller
 
                             $em->getConnection()->commit();
                             $typeMsg = "success";
-                            $status = "To validate the user creation it was sent you an email confirmation, it's possible the email show up in spam, this can take a little bit minutes";
+                            $status = "To validate the user creation it was sent you an email confirmation, it's possible the email shows up in spam, this can take a little bit minutes";
                             $this->session->getFlashBag()->add($typeMsg, $status);
                             return $this->redirectToRoute("login");
                         }
