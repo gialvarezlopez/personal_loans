@@ -284,7 +284,7 @@
                                         <ul class="list-inline">
                                             {{ form_start(form) }}
                                             {{ form_widget(form) }}
-                                                <button type="submit" class="btn bg-navy" id="btnCreate"><i class="fa fa-check-circle" aria-hidden="true"></i> {% trans %}general_btn_create{% endtrans %}</button>
+                                                <button type="submit" class="btn bg-navy" id="btnCreate"><i class="fa fa-check-circle" aria-hidden="true"></i> {% trans %}general_btn_create_loan{% endtrans %}</button>
                                              {{ form_end(form) }}
                                             
                                             <li>
@@ -559,7 +559,7 @@
 
                 function printPayments(arrDates, recurringDays)
                 {
-                    var table = "<input type='text' value='"+recurringDays+"' id='curringDaySelected'>";
+                    var table = "<input type='hidden' value='"+recurringDays+"' id='curringDaySelected'>";
                     table += "<table class='table table-striped' id='tablePayments'>";
                     table += "<thead><tr><th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th><th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th><th>{% trans%}dashboard_loans_history_status{% endtrans%}</th><th>{% trans %}loan_table_payments_action{% endtrans %}</th></tr></thead><tbody>";
                     var firstPaymentDate = "";

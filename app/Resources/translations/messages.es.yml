@@ -6,6 +6,7 @@ general_btn_delete: Eliminar
 general_btn_update: Actualizar
 general_btn_save: Guardar
 general_btn_create: Crear
+general_btn_create_loan: Crear prestamo
 general_btn_close: Cerrar
 general_btn_unfreeze: Descongelar
 general_btn_get_it_now: Adquirir plan gratis

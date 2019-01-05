@@ -94,3 +94,9 @@ Loading
 .content{
     display: none;
 }
+
+
+span.help-block{
+    font-size: 13px !important;
+
+}
