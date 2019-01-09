@@ -164,7 +164,8 @@ class Loans
                         //echo "i - ".$i;
                 }
                */
-               $totalPeriods = $periods+1; //sum the init period
+               //$totalPeriods = $periods+1; //sum the init period
+               $totalPeriods = $periods; //sum the init period
 
                for($i=0; $i < $periods; $i++)
                {
@@ -195,6 +196,24 @@ class Loans
             $statement->execute();
             $result = $statement->fetchAll();
             return $result;
+        }
+    }
+
+    function checkChangeAmountPerLoan($loanId)
+    {
+        $changed = false;
+        if( isset($loanId) && !empty($loanId) )
+        {
+            $RAW_QUERY  = "SELECT lpa_next_amount 
+                            FROM loan_payment where loa_id = $loanId ORDER BY loa_id DESC LIMIT 1 ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            if( $result[0]["lpa_next_amount"] > 0 )
+            {
+                $changed = $result[0]["lpa_next_amount"];
+            }
+            return $changed;
         }
     }
 

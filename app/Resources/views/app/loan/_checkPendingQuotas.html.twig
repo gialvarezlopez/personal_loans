@@ -61,6 +61,7 @@
                                         
                                         {# {{ maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") }} #}
                                     </td>
+                                    {#
                                     <td>
                                         {% if (pending.quotas - 1) == i %}
                                             <span class="badgex bc">{% trans %}loan_table_rate_payments_current_period{% endtrans %}</span>
@@ -68,6 +69,7 @@
                                             <span class="badgex bc">{% trans %}loan_table_rate_payments_next_payment{% endtrans %}</span>  
                                         {%  endif %}
                                     </td>
+                                    #}
                                 </tr>
                                 {% set counter =  counter + 1 %}
                             {% endfor %}

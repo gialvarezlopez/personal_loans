@@ -32,8 +32,8 @@
 }
 
 .amounts{
-    font-size:16px;
-    font-weight: 700;
+    font-size:15px;
+    font-weight: 600;
     color: #34825F;
 }
 
@@ -59,6 +59,10 @@
 
 #holderPaymentDetail{
     display:none;
+}
+
+.control-label{
+    font-weight: 550!important
 }
 </style>
 
@@ -204,7 +208,14 @@
                                         <span>{% trans %}payment_rata_already_paid{% endtrans %} :<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
                                     </div>
                                     <div class="col-lg-6">
-                                        {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
+                                        
+                                        {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} {# veirifico si ha habido un cambio de monto solicitado #}
+                                        {% if changedAmount %}
+                                            {% set pendingPaid = (loan.loaAmount)%}
+                                        {% else %} {# todo igual no hay cambio #}
+                                            {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
+                                        {% endif %}
+                                        
                                         <input type="hidden" value="{{ pendingPaid }}" id="pendingAmountWithoutRate">
                                         <input type="hidden" value="{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">
                                         {#
@@ -436,7 +447,11 @@
                                             <a href="{{ path('loan_index') }}" class="btn btn-info marginBT"><i class="fa fa-list" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %}</a>
                                         </li>
                                         <li>
-                                            <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btn btn-primary marginBT"><i class="fa fa-address-card-o" aria-hidden="true"></i> {% trans %}general_btn_show{% endtrans %}</a>
+                                            <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}" class="btn btn-warning marginBT"><i class="fa fa-address-card-o" aria-hidden="true"></i> {% trans %}general_btn_show{% endtrans %}</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}" class="btn btn-primary marginBT"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %}general_btn_edit{% endtrans %}</a>
                                         </li>
                                         
                                         

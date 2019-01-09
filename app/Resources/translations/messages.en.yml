@@ -238,7 +238,7 @@ loan_table_rate_payments_pending_quotas: Pending Quotas
 loan_table_rate_payments_current_period: Current period
 loan_table_rate_payments_next_payment: Next payment
 loan_table_rate_payments_dates: Payments date
-loan_table_rate_payments_msg_pay_cuotas: This loan has <span class='bc'>%pending_quotas% pending quotas</span><b>(Including the current quota)</b> with a total of <span class='bc'>%pending_days%  day(s) of delay</span>. The interest has been increased to <span class='bc'>%pending_rate% %</span>
+loan_table_rate_payments_msg_pay_cuotas: This loan has <span class='bc'>%pending_quotas% pending quotas</span> with a total of <span class='bc'>%pending_days%  day(s) of delay</span>. The interest has been increased to <span class='bc'>%pending_rate% %</span>
 loan_table_rate_payments_note: <strong>Note:</strong> If you wish you can change the interest rate when you do the payment
 loan_table_rate_payments_loan_origiinal_rate: This loan was created with interest rate init at 
 

@@ -4,7 +4,7 @@
                    
                     <th colspan="3" class="text-center">{% trans %}payment_rate_table_payments_date{% endtrans %}</th>
 
-                    <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}payment_rate_table_previous_payments{% endtrans %}</th>
+                    <th colspan="4" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}payment_rate_table_previous_payments{% endtrans %}</th>
 
                     <th colspan="3" style="background-color: #00A65A; color: #fff" class="text-center">{% trans %}payment_rate_table_last_payments{% endtrans %}</th>
 
@@ -17,7 +17,7 @@
                     <th><div class="col text-center">A</div>#</th>
                     <th><div class="col text-center">B</div>{% trans %}payment_rate_table_col_date_paid_quota{% endtrans %}</th>
                     <th><div class="col text-center">C</div>{% trans %}payment_rate_table_col_max_date_to_payment{% endtrans %}</th>
-                    <th class="no-sort"></th>
+                    {# <th class="no-sort"></th> #}
                     <th colspan><div class="col text-center">D</div> {% trans %}payment_rate_table_col_amount{% endtrans %}</th>
                     <th><div class="col text-center">E</div>{% trans %}payment_rate_table_col_interest{% endtrans %}</th>
                     <th><div class="col text-center">F</div>Col(D) x Col(E)<div class="col text-center">{% trans %}payment_rate_table_col_sub_total{% endtrans %}</div></th>
@@ -70,8 +70,9 @@
                             {# {% else %} #}
                                 
                         {% endif %}
+                        {#
                         <td>
-                            {#
+                            
                             {% if last > 0 %}
                                 {% set added = payment.lpaCurrentAmount - last %}
                                 {% if added !="" %}
@@ -79,8 +80,9 @@
                                     ${{ added|number_format(2, '.', ',') }} = 
                                 {% endif %}
                             {% endif %}
-                            #}
+                            
                         </td>
+                        #}
                         <td>
                             
 
@@ -123,7 +125,10 @@
                             <span class="label label-info amounts">
                             {# {% set lastP =  (pendingAmount + ((payment.lpaCurrentRateInterest/100) * pendingAmount ) )%} #}
                             {# {% set lastP = pendingAmount %} #}
-                            {% set lastP = (prev - payment.lpaPaidCapital)  %}
+                            
+
+
+                            {% set lastP = (prev - payment.lpaPaidCapital) %}
                             ${{ lastP|number_format(2, '.', ',')  }}
                             </span>
                                 
@@ -152,9 +157,9 @@
                             {% else %}   
                                  {% set nextAmount = 0 %}
                             {% endif %}
-                            <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * ( lastP) ) ) |number_format(2, '.', ',') }} </span>
+                            <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * ( lastP + nextAmount ) ) ) |number_format(2, '.', ',') }} </span>
                         </td>
-                        <td style="background-color: #00C0EF"><span class="label label-info amounts">${{ (lastP + ((payment.lpaNextRateInterest/100) * lastP ) )|number_format(2, '.', ',') }} </span></td>
+                        <td style="background-color: #00C0EF"><span class="label label-info amounts">${{ ( (lastP + nextAmount) + ((payment.lpaNextRateInterest/100) * (lastP + nextAmount) ) )|number_format(2, '.', ',') }} </span></td>
                         <td ><div class="note">{{ payment.lpaNote }}</div></td>
                         
 
@@ -201,7 +206,7 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th></th>
+                    {# <th></th>#}
                     <th></th>
                     <th></th>
                     <th></th>

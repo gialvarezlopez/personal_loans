@@ -144,13 +144,13 @@
         <ul class="list-inline">
             <li>
                 <a class="btn btn-info marginBT" href="{{ path('loan_index') }}"><i class="fa fa-list-ul" aria-hidden="true"></i> {% trans %}loan_btn_loans_list{% endtrans %}</a>
-                <li>
-                    <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %}general_btn_edit{% endtrans %}</a>
-                </li>
-                {% if loan.loaCompleted == 0 %}
-                    <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</a></li>
-                {% endif %}
+            </li>    
+            <li>
+                <a class="btn btn-primary marginBT" href="{{ path('loan_edit', { 'loaId': loan.loaId }) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {% trans %}general_btn_edit{% endtrans %}</a>
             </li>
+            {% if loan.loaCompleted == 0 %}
+                <li><a href="{{ path('loanpayment_new',{'loaId':loan.loaId} ) }}" id="" class="btn bg-olive marginBT "><i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_btn_payment{% endtrans %}</a></li>
+            {% endif %}
             {#
             <li>
                 <a href="{{ path('loanpayment_edit', { 'lpaId': loanPayment.lpaId }) }}">Edit</a> 
