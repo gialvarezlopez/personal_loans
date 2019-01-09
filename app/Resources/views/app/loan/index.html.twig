@@ -128,9 +128,9 @@
                     <td>{{ loan.loa_code }} </td>
                     <td>
                         {% if loan.loc_id == 1 %}
-                            {% trans %}general_loan_with_percentage{% endtrans %}
+                            <span class="label label-primary">{% trans %}general_loan_with_percentage{% endtrans %}</span>
                         {% elseif loan.loc_id == 2 %}
-                            {% trans %}general_loan_per_quotas{% endtrans %}
+                            <span class="label label-warning">{% trans %}general_loan_per_quotas{% endtrans %}</span>
                         {% else %}
                             {{ loan.loc_type }}
                         {% endif %}
@@ -159,7 +159,7 @@
                     {# <td>{% if loan.loaActive %}Yes{% else %}No{% endif %}</td> #}
                     <td>{% if loan.loa_created %} {{ srv_TimeZone.getTimeZone(loan.loa_created|date('Y-m-d H:i:s')) }} {% endif %}</td>
                     <td>
-                        <ul class="list-inline">
+                        <ul class="list-inline" style="margin-bottom: 0px;">
                             
                             <li>
                                 <div class="btn-group">

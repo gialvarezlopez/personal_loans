@@ -15,7 +15,11 @@ loanpayment_quotasHistory:
 
 loanpayment_doPaymentNoRate:
     path:     /doPaymentNoRate
-    defaults: { _controller: "AppBundle:LoanPayment:doPaymentNoRate" }    
+    defaults: { _controller: "AppBundle:LoanPayment:doPaymentNoRate" }
+
+loanpayment_setHistorialAmounts:
+    path:     /set-historial-amounts
+    defaults: { _controller: "AppBundle:LoanPayment:setHistoricalAmounts" }        
 
 loanpayment_new:
     path:     /{loaId}/new

@@ -370,4 +370,62 @@ class LoanPayment
     {
         return $this->lpt;
     }
+    /**
+     * @var boolean
+     */
+    private $lpaChangedAmount = '0';
+
+
+    /**
+     * Set lpaChangedAmount
+     *
+     * @param boolean $lpaChangedAmount
+     *
+     * @return LoanPayment
+     */
+    public function setLpaChangedAmount($lpaChangedAmount)
+    {
+        $this->lpaChangedAmount = $lpaChangedAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaChangedAmount
+     *
+     * @return boolean
+     */
+    public function getLpaChangedAmount()
+    {
+        return $this->lpaChangedAmount;
+    }
+    /**
+     * @var float
+     */
+    private $lpaNextAmount;
+
+
+    /**
+     * Set lpaNextAmount
+     *
+     * @param float $lpaNextAmount
+     *
+     * @return LoanPayment
+     */
+    public function setLpaNextAmount($lpaNextAmount)
+    {
+        $this->lpaNextAmount = $lpaNextAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaNextAmount
+     *
+     * @return float
+     */
+    public function getLpaNextAmount()
+    {
+        return $this->lpaNextAmount;
+    }
 }

@@ -22,8 +22,11 @@ general_msg_status_loan_no_finished: Prestamo no finalizado
 general_msg_status_loan_freezed: Prestamo congelado
 general_msg_send_data: Ocurrio un error al enviar los datos
 general_msg_pending: Pendiente
+general_msg_paid: Pagada
+general_msg_freezed: Congelado
 general_msg_success: Registro creado con éxito
 general_msg_saved: Datos guardados con éxito
+general_msg_error_update: Error al actualizar los datos
 general_msg_error_delete: El registro no se pudo eliminar
 general_msg_days: Días
 

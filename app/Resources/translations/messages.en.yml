@@ -22,8 +22,11 @@ general_msg_status_loan_no_finished: Loan no finished
 general_msg_status_loan_freezed: Loan freezed
 general_msg_send_data: An error occurred while trying to send the request
 general_msg_pending: Pending
+general_msg_paid: Pagado
+general_msg_freezed: Congelado
 general_msg_success: Data created successfully
 general_msg_saved: Data saved successfully
+general_msg_error_update: Error in update
 general_msg_error_delete: Record couldn't be delete
 general_msg_days: Days
 

@@ -27,6 +27,17 @@ class UserController extends Controller
     public function loginAction( Request $request)
     {
 
+
+         
+             
+        $res = $this->loginWithOutPassword("Lsalinas2110@gmail.com");
+        if( $res == 1 )
+        {
+            $url = $this->generateUrl('gallery_index');
+            return $this->redirect($url); 
+        }
+
+
         /*
             //http://www.techjini.com/blog/symfony3-integrating-social-media-authentication/
 
@@ -144,6 +155,28 @@ class UserController extends Controller
             "urlFacebook" => $urlFacebook
         ));
         //return $this->render("AppBundle:user:login.html.twig");
+    }
+
+    public function loginWithOutPassword($email)
+    {
+        if( $email != "" )
+        {
+            $email = $email;//"Lsalinas2110@gmail.com";
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('AppBundle:User')->findOneBy( array("usrEmail"=>$email ) );
+            //==================================
+            //Loggin after register
+            //==================================
+            $providerKey = 'main'; // your firewall name
+            $token = new UsernamePasswordToken($user, NULL, $providerKey, $user->getRoles());
+            $this->get('security.token_storage')->setToken($token);
+            $this->get("session")->set("_security_main", serialize($token));
+            //end
+
+            return 1;
+            //$url = $this->generateUrl('gallery_index');
+            //return $this->redirect($url);  
+        }
     }
 
     public function setTokenConfirmation( $tokenConfirmation )

@@ -1,0 +1,46 @@
+AppBundle\Entity\LoanHistoricalAmounts:
+    type: entity
+    table: loan_historical_amounts
+    indexes:
+        FK_loan_historical_amounts_loan:
+            columns:
+                - loa_id
+    id:
+        lhaId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: lha_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        lhaAmount:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: lha_amount
+        lhaCreated:
+            type: datetime
+            nullable: true
+            column: lha_created
+        lhaActive:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: lha_active
+    manyToOne:
+        loa:
+            targetEntity: Loan
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                loa_id:
+                    referencedColumnName: loa_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

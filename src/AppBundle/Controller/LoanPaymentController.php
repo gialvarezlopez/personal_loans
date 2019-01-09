@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+use AppBundle\Entity\LoanHistoricalAmounts;
+
 /**
  * Loanpayment controller.
  *
@@ -334,6 +336,70 @@ class LoanPaymentController extends Controller
             'payments' => $oPayments,
             "loan"=>$oLoan
         ));
+    }
+
+    public function setHistoricalAmountsAction()
+    {
+        date_default_timezone_set("UTC");
+        $em = $this->getDoctrine()->getManager();
+
+        $oHistoricalAmounts = $em->getRepository('AppBundle:LoanHistoricalAmounts')->findBy( array("lhaActive"=>1) );
+        //echo count($oHistoricalAmounts);
+        if( count($oHistoricalAmounts) == 0 )
+        {
+            // echo "aqui";
+            $oLoans = $em->getRepository('AppBundle:Loan')->findBy( array("loaActive"=> 1 ));
+            if( $oLoans )
+            {
+                $total =  count($oLoans);
+                $pros = 0;
+                $em->getConnection()->beginTransaction(); // suspend auto-commit
+                try {
+                    foreach( $oLoans as $item)
+                    {
+
+                        $oHistoricalAmount = new LoanHistoricalAmounts();
+                        $oLoan = $em->getRepository('AppBundle:Loan')->find( $item->getLoaId() );
+                        $oHistoricalAmount->setLoa( $oLoan );
+                        $oHistoricalAmount->setLhaAmount( $item->getLoaAmount() );
+                        $oHistoricalAmount->setLhaCreated( new \datetime("now") );
+                        $em->persist($oHistoricalAmount);			
+                        $flush = $em->flush();
+                        if( $flush == null)
+                        {
+                            $pros++;
+                        }
+
+                       
+                    }
+                    if( $total == $pros)
+                    {
+                        $em->getConnection()->commit();
+                        echo "Ok!. Registros procesados: ".$total;
+                    }
+                    else
+                    {
+                        echo "No se pudo hacer las actualizaciones debido a que no se pudieron crear todos los registros";
+                    }
+                    
+                }catch (Exception $e) {
+                    $em->getConnection()->rollBack();
+                    throw $e;
+                }
+            }
+            else
+            {
+                echo "No se encontraron prestamos a procesar";
+            }
+            
+        }
+        else
+        {
+            echo "Datos no procesados debido a que ya existen datos";
+        }
+        
+        
+        exit("<br><br>Fin");
     }
 
     /**

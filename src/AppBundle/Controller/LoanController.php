@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 use AppBundle\Entity\LoanPayment;
+use AppBundle\Entity\LoanHistoricalAmounts;
 
 /**
  * Loan controller.
@@ -256,11 +257,34 @@ class LoanController extends Controller
     {
         
 
+        $loanId = $request->get("loaId");
+
+
+        $em = $this->getDoctrine()->getManager();
+        $oCheckLoan = $em->getRepository('AppBundle:Loan')->findOneBy(array( "loaId"=>$loanId ) );
+        $currentAmount = "";
+        //$loanId = $request->get("loanId");
+        //$changeAmount = false;
+        if( $oCheckLoan )
+        {
+            $currentAmount =  $oCheckLoan->getLoaAmount();
+            //echo "<BR>".$oCheckLoan->getLoaCode();
+            //if( number_format($oCheckLoan->getLoaAmount(), 2, '.', '') != number_format($currentAmount, 2, '.', '') )
+            //{
+               // $changeAmount = true;
+            //}else{
+                //echo "ELSE";
+            //}
+        }
+
+
         $deleteForm = $this->createDeleteForm($loan);
         $editForm = $this->createForm('AppBundle\Form\LoanType', $loan);
         $editForm->handleRequest($request);
 
-        $loanId = $request->get("loaId");
+        
+
+        
         if( $loanId > 0 )
         {
             $userId = $this->getUser()->getUsrId();
@@ -279,6 +303,8 @@ class LoanController extends Controller
                 $msg = $this->get('translator')->trans('general_msg_record_no_found');
                 throw new NotFoundHttpException($msg);
             }
+
+            
         }
         else
         {
@@ -288,154 +314,241 @@ class LoanController extends Controller
         //loaId
 
         //$oUser= $em->getRepository('AppBundle:Client')->findOneBy( array( "usr"=> $userId, "cliId"=>$clientId) );
-        $em = $this->getDoctrine()->getManager();
+        
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             date_default_timezone_set("UTC");
 
-            echo $rate = $editForm->get("loaRateInterestByDefault")->getData();
+            $rate = $editForm->get("loaRateInterestByDefault")->getData();
             $loan->setLoaRateInterest($rate);
 
             //echo $statusList = $editForm->get("statusList")->getData();
             //exit("xxxx");
             //$loan->setLoaCompleted($statusList);
             //exit();
-            $this->getDoctrine()->getManager()->flush();
-
-            
-            $loanType =  $loan->getLoc()->getLocKey();
-            if( $loanType == "inactive_rate" )
+            $status_update = false;
+            $em->getConnection()->beginTransaction(); // suspend auto-commit
+            try 
             {
-                
-                /*
-                $itemsLoan = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "lpaPaidDate" => null, "loa"=>$loanId ) ) ;
-                $em->remove($itemsLoan);
-                $res = $em->flush(); 
-                */
-                
-                $q = $em->createQuery("DELETE FROM AppBundle\Entity\LoanPayment tb WHERE tb.loa=".$loanId." AND tb.lpaPaidDate IS NULL ");
-                $res = $q->execute();
 
-                //if( $res  )
-                //{
-                    $paymentDates = $request->get("paymentDates");
-                    //exit();
-                    if( isset($paymentDates) && !empty($paymentDates) )
+                //Save data in historial if the amount changes
+                
+                
+                if( $oCheckLoan )
+                {
+                    //echo $oCheckLoan->getLoaAmount()." ".$currentAmount;
+                    $newAmount = $editForm->get("loaAmount")->getData();
+                    if( $currentAmount != $newAmount )
                     {
-                        var_dump($paymentDates);
-                        $arr = explode(",", $paymentDates);
-                        for ($i = 0; $i < count($arr); $i++) {
-                            $item = explode("=", $arr[$i]);
-                            $maxDate = $item[0];
-                            $amountPlusId = @$item[1];
+                        $oHistoricalAmount = new LoanHistoricalAmounts();
+                        //$oLoan = $em->getRepository('AppBundle:Loan')->find( $item->getLoaId() );
+                        $oHistoricalAmount->setLoa( $oCheckLoan );
+                        $oHistoricalAmount->setLhaAmount( $newAmount );
+                        $oHistoricalAmount->setLhaCreated( new \datetime("now") );
+                        $em->persist($oHistoricalAmount);			
+                        $flush = $em->flush();
 
-                            $str = explode("|", $amountPlusId);
-                            $amount = @$str[0];
-                            $paymentId = @$str[1];
-                            $paymentTypeId = @$str[2];
-
-                            if( isset($paymentId) and $paymentId > 0 )
+                        /*    
+                            //Update the last payment WITH persentage
+                            if(  $oCheckLoan->getLoc() == 1 ) // 1 = with percentage
                             {
-                                $oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "lpaId"=> $paymentId, "loa"=>$loanId ) );
-                                if( !$oLoanPayment )
+                                $RAW_QUERY  = "SELECT * FROM loan_payment l WHERE l.loa_id = $loanId AND  ORDER BY lpa_id DESC LIMIT 1";
+                                $statement  = $em->getConnection()->prepare($RAW_QUERY);
+                                $statement->execute();
+                                $result   = $statement->fetchAll();
+                                if( count($result ) > 0 )
                                 {
-                                    $oLoanPayment = new LoanPayment();
+                                    $idLoanPayment = $result[0]["lpa_id"];
+                                    $oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaMaxPaymentDate"=>'DESC' ), 1 );
                                 }
-                            }else{
-                                //echo "maxdate".$maxDate;
+                            }
+                        */
+
+
+
+                    }else{
+                        //echo "ELSE";
+                    }
+                }
+                //exit($newAmount);
+
+                $this->getDoctrine()->getManager()->flush();
+
+                
+                $loanType =  $loan->getLoc()->getLocKey();
+                if( $loanType == "inactive_rate" )
+                {
+                    
+                    /*
+                    $itemsLoan = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "lpaPaidDate" => null, "loa"=>$loanId ) ) ;
+                    $em->remove($itemsLoan);
+                    $res = $em->flush(); 
+                    */
+                    
+                    $q = $em->createQuery("DELETE FROM AppBundle\Entity\LoanPayment tb WHERE tb.loa=".$loanId." AND tb.lpaPaidDate IS NULL ");
+                    $res = $q->execute();
+
+                    //if( $res  )
+                    //{
+                        $paymentDates = $request->get("paymentDates");
+                        //exit();
+                        if( isset($paymentDates) && !empty($paymentDates) )
+                        {
+                            var_dump($paymentDates);
+                            $arr = explode(",", $paymentDates);
+                            for ($i = 0; $i < count($arr); $i++) {
+                                $item = explode("=", $arr[$i]);
+                                $maxDate = $item[0];
+                                $amountPlusId = @$item[1];
+
+                                $str = explode("|", $amountPlusId);
+                                $amount = @$str[0];
+                                $paymentId = @$str[1];
+                                $paymentTypeId = @$str[2];
+
+                                if( isset($paymentId) and $paymentId > 0 )
+                                {
+                                    $oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "lpaId"=> $paymentId, "loa"=>$loanId ) );
+                                    if( !$oLoanPayment )
+                                    {
+                                        $oLoanPayment = new LoanPayment();
+                                    }
+                                }else{
+                                    //echo "maxdate".$maxDate;
+                                    $oLoanPayment = new LoanPayment();
+                                    
+                                    
+                                    
+                                }
+
+                            
+                                if( $paymentTypeId > 0 )
+                                {
+                                    $oLoanPaymentType = $em->getRepository('AppBundle:LoanPaymentType')->findOneBy( array( "lptId"=> $paymentTypeId) );
+                                    if( $oLoanPaymentType )
+                                    {
+                                        $oLoanPayment->setLpt( $oLoanPaymentType );
+                                    }
+                                    
+                                }
+                                
+                                $oLoanPayment->setLoa( $loan );
+                                $oLoanPayment->setLpaMaxPaymentDate( new \datetime($maxDate) );
+                                $oLoanPayment->setLpaCurrentAmount( $amount );
+                                $em->persist($oLoanPayment);
+                                $em->flush();
+                            }
+                        }
+                        //var_dump($paymentDates);
+                        //exit();
+                        //check all total of payments
+                        /*
+                            $srvLoan = $this->get('srv_Loans');  
+                            $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);  
+                            if( $checkPayments )
+                            {
+                                $oLoan= $em->getRepository('AppBundle:Loan')->findOneBy( array( "loaId"=> $loanId, "loaActive"=>1) );
+                                if( $checkPayments[0]['paidTotal'] >= $checkPayments[0]['currentAmount'] )
+                                {
+                                    $oLoan->setLoaCompleted(1);
+                                }
+                                else
+                                {
+                                    $oLoan->setLoaCompleted(0);
+                                }
+                                $em->persist($oLoan);
+                                $flus = $em->flush();
+                            }    
+                        */
+
+                    //}
+                    //var_dump($paymentDates);
+                    //exit("xxx");
+                }
+                else if( $loanType == "active_rate"  )
+                {  
+                    $deadline = $editForm->get("loaDeadline")->getData();
+
+                    //Verifico el monto;
+                    //echo $editForm->get("loaAmount")->getData();
+                    //die();
+                
+                    //$rate = $editForm->get("loaRateInterestByDefault")->getData();
+
+                    //$rate = $editForm->get("loaRateInterest")->getData();
+                    //$pays = $em->getRepository('AppBundle:Payer')->findBy( array("usr"=> $userId,"payActive"=>1), array('payId' => 'DESC'), "LIMIT" );
+                        
+                            //$deadline = $editForm->get("loaDeadline")->getData();
+
+
+                            //$oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaMaxPaymentDate"=>'DESC' ), 1 );
+                            $oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaId"=>'DESC' ), 1 );
+
+                            if( $oLoanPayment )
+                            {
+                                //echo "dentro";
+                                //if( $oLoanPayment->getLpaTotalAmountPaid() > 0 )
+                                if( count($oLoanPayment) == 0 )
+                                {
+                                    //$oLoanPayment->setLpaMaxPaymentDate($deadline);
+                                    $oLoanPayment = new LoanPayment();
+                                    echo "nuevo";
+                                }
+                                else
+                                {
+                                    echo "update";
+                                    //$oLoanPayment->get
+                                    
+                                }
+
+                                $currentCapita = $oLoanPayment->getLpaCurrentAmount() - $oLoanPayment->getLpaPaidCapital();
+                            }
+                            else
+                            {
                                 $oLoanPayment = new LoanPayment();
-                                
-                                
-                                
+                            }
+                            $oLoanPayment->setLpaMaxPaymentDate( $deadline );
+                            $oLoanPayment->setLoa( $loan );
+                            $oLoanPayment->setLpaCurrentRateInterest( $rate );
+
+                            $oLoanPaymentTotal = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId) );
+                            if( count($oLoanPaymentTotal) == 1 && $oLoanPayment->getLpaChangedAmount() == 0 )
+                            {
+                                $oLoanPayment->setLpaCurrentAmount( $editForm->get("loaAmount")->getData() );
+                                $oLoanPayment->setLpaChangedAmount( 1 );    
                             }
 
-                           
-                            if( $paymentTypeId > 0 )
+                            //Aquiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+                            if( $editForm->get("loaAmount")->getData() != $currentAmount )
                             {
-                                $oLoanPaymentType = $em->getRepository('AppBundle:LoanPaymentType')->findOneBy( array( "lptId"=> $paymentTypeId) );
-                                if( $oLoanPaymentType )
-                                {
-                                    $oLoanPayment->setLpt( $oLoanPaymentType );
-                                }
-                                
+                                $oLoanPayment->setLpaNextAmount( ($editForm->get("loaAmount")->getData() - $currentCapita ) );   
                             }
                             
-                            $oLoanPayment->setLoa( $loan );
-                            $oLoanPayment->setLpaMaxPaymentDate( new \datetime($maxDate) );
-                            $oLoanPayment->setLpaCurrentAmount( $amount );
+
                             $em->persist($oLoanPayment);
                             $em->flush();
-                        }
-                    }
-                    //var_dump($paymentDates);
-                    //exit();
-                    //check all total of payments
-                    /*
-                    $srvLoan = $this->get('srv_Loans');  
-                    $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);  
-                    if( $checkPayments )
-                    {
-                        $oLoan= $em->getRepository('AppBundle:Loan')->findOneBy( array( "loaId"=> $loanId, "loaActive"=>1) );
-                        if( $checkPayments[0]['paidTotal'] >= $checkPayments[0]['currentAmount'] )
-                        {
-                            $oLoan->setLoaCompleted(1);
-                        }
-                        else
-                        {
-                            $oLoan->setLoaCompleted(0);
-                        }
-                        $em->persist($oLoan);
-                        $flus = $em->flush();
-                    }    
-                    */
 
-                //}
-                //var_dump($paymentDates);
-                //exit("xxx");
-            }
-            else if( $loanType == "active_rate"  )
-            {  
-                $deadline = $editForm->get("loaDeadline")->getData();
-                //$rate = $editForm->get("loaRateInterestByDefault")->getData();
-
-                //$rate = $editForm->get("loaRateInterest")->getData();
-                    //$pays = $em->getRepository('AppBundle:Payer')->findBy( array("usr"=> $userId,"payActive"=>1), array('payId' => 'DESC'), "LIMIT" );
-                    $oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaMaxPaymentDate"=>'DESC' ), 1 );
-                    
-                    
-                    if( $oLoanPayment )
-                    {
-                        //echo "dentro";
-                        //if( $oLoanPayment->getLpaTotalAmountPaid() > 0 )
-                        if( count($oLoanPayment) == 0 )
-                        {
-                            //$oLoanPayment->setLpaMaxPaymentDate($deadline);
-                            $oLoanPayment = new LoanPayment();
-                            echo "nuevo";
-                        }
-                        else
-                        {
-                            echo "update";
                             
-                        }
-                        
-                        //exit("<hr> entre");
+                    
+                }
 
-                    }
-                    else
-                    {
-                        $oLoanPayment = new LoanPayment();
-                    }
-                    $oLoanPayment->setLpaMaxPaymentDate( $deadline );
-                    $oLoanPayment->setLoa( $loan );
-                    $oLoanPayment->setLpaCurrentRateInterest( $rate );
-                    //$oLoanPayment->setLpaCurrentAmount( $amount );    
-
-                    $em->persist($oLoanPayment);
-                    $em->flush();
+                $em->getConnection()->commit();
+                $status_update = true;
+            }catch (Exception $e) {
+                $em->getConnection()->rollBack();
+                throw $e;
             }
             //exit("<hr>fin");
-            $msg = $this->get('translator')->trans('general_msg_saved');
-            $this->session->getFlashBag()->add("success", $msg);
+            if( $status_update == true )
+            {
+                $msg = $this->get('translator')->trans('general_msg_saved');
+                $this->session->getFlashBag()->add("success", $msg);
+            }
+            else
+            {
+                $msg = $this->get('translator')->trans('general_msg_error_update');
+                $this->session->getFlashBag()->add("error", $msg);
+            }
+            
 
             return $this->redirectToRoute('loan_edit', array('loaId' => $loan->getLoaid()));
         }

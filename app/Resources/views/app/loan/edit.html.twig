@@ -161,7 +161,8 @@
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-percent" aria-hidden="true"></i>
                                                 </div>
-                                                <div class="">{{ form_widget(edit_form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'},type:"number" } ) }}</div>
+                                                <div class="">{{ form_widget(edit_form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'}} ) }}</div>
+                                                {# <div class="">{{ form_widget(edit_form.loaRateInterestByDefault,  { 'attr': {'class': 'form-control'},type:"number" } ) }}</div> #}
                                             </div>
                                         </div>
                                     </div>
@@ -250,10 +251,10 @@
                                                 </span>                    
                                             </div>
                                             <span id="helpBlock2" class="help-block">{% trans %}loan_form_quotas_help{% endtrans %}</span>
-                                       {#
-                                        {% else %}    
-                                            <label for="" class=" control-label"># Quotas: <span class="badge">{{ loan.loaQuotas }}</span></label>
-                                        {% endif %}
+                                        {#
+                                            {% else %}    
+                                                <label for="" class=" control-label"># Quotas: <span class="badge">{{ loan.loaQuotas }}</span></label>
+                                            {% endif %}
                                         #}
                                        
                                     </div>
@@ -262,19 +263,19 @@
 
                                 
                                 {#
-                                <div class="col-md-12 col-lg-12 col-sm-12">
-                                    <div class="form-group">
-                                        <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
-                                        <label for="" class=" control-label">Dead Line: <span class="text-danger">*</span></label>
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
+                                            <label for="" class=" control-label">Dead Line: <span class="text-danger">*</span></label>
 
-                                        <div class="input-group">
-                                            <div class="input-group-addon">
-                                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                </div>
+                                                <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD'} } ) }}</div>
                                             </div>
-                                            <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD'} } ) }}</div>
                                         </div>
                                     </div>
-                                </div>
                                 #}
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
@@ -344,7 +345,7 @@
                         {% if loan.loc.locKey  == "inactive_rate" %}
                             <h4>
                                 <span class="">{% trans %}loan_edit_subtitle_payments{% endtrans %}</span> - 
-                                <small>{% trans %}loan_edit_comment_item{% endtrans %} </small>
+                                <small>{% trans %}loan_edit_comment_item{% endtrans %}</small>
                             </h4>
                             <hr>
                             <div class="text-right">
@@ -399,18 +400,18 @@
             });
            //Date picker
             /*
-            $('.datepicker').daterangepicker({
-                singleDatePicker: true,
-                showDropdowns: true,
-                locale: {
-                    format: 'YYYY-MM-DD'
-                },
-                //minYear: 1901,
-                //maxYear: parseInt(moment().format('YYYY'),10)
-            }, function(start, end, label) {
-                //var years = moment().diff(start, 'years');
-                //alert("You are " + years + " years old!");
-            });
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    //minYear: 1901,
+                    //maxYear: parseInt(moment().format('YYYY'),10)
+                }, function(start, end, label) {
+                    //var years = moment().diff(start, 'years');
+                    //alert("You are " + years + " years old!");
+                });
             */
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
@@ -875,6 +876,7 @@
                    else
                    {
                        var arr = [];
+                       //bar arrDone = [];
                        $("#tablePayments tbody tr").each(function(){
                             if( !$(this).hasClass("done") )
                             {
@@ -884,6 +886,10 @@
                                 var amount = $(this).find("td").eq(1).find("input[type='number']").val();
                                 
                                 arr.push(date+"="+amount+"|"+paymentId+"|"+paymenttypeId);
+                            }
+                            else
+                            {
+
                             }
                        });
                        $("form[name='appbundle_loan']").append("<input name='paymentDates' id='paymentsDate' type='hidden' value='"+arr.join(",")+"'>");
@@ -910,6 +916,9 @@
 
                 $("#holder_loading").show();
             }); 
+
+            
+            
 
             $("#formDelete").click(function(e){
                 

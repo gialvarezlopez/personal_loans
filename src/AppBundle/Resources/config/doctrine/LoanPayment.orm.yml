@@ -71,6 +71,14 @@ AppBundle\Entity\LoanPayment:
             precision: 10
             scale: 0
             column: lpa_next_rate_interest
+        lpaNextAmount:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            options:
+                comment: 'Just for loan with interest rate to calculate next amount if there is an change amount'
+            column: lpa_next_amount
         lpaNote:
             type: string
             nullable: true
@@ -84,6 +92,12 @@ AppBundle\Entity\LoanPayment:
             options:
                 default: '0'
             column: lpa_is_payment
+        lpaChangedAmount:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: lpa_changed_amount
     manyToOne:
         loa:
             targetEntity: Loan

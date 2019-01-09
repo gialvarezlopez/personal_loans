@@ -64,6 +64,10 @@
 .markerToday{
     background: #bcf4db !important;   
 }
+
+.updateItemDone{
+    cursor: pointer;
+}
 </style>
                         
                         {% set today = "now"|date("Y-m-d", srv_TimeZone.getNameTimeZone()) %}
@@ -139,7 +143,7 @@
                                                 {% endif %}    
                                                 - <span class="maxDate">{{ max_date }}</span>
                                             </td>
-                                            <td>
+                                            <td data-amount="{{ item.lpa_current_amount }}">
                                                 {% if  action is defined and (action == "edit" ) %}
                                                     <div class="input-group">
                                                         
@@ -161,7 +165,7 @@
                                                 {% endif %}
                                                 {% set totalToPay = totalToPay + item.lpa_current_amount %}
                                             </td>
-                                            <td>
+                                            <td data-status="{{item.lpt_id}}">
                                                 {% if item.lpt_id == ""  %}
                                                     {% if  action is defined and (action == "payment" ) %}
                                                         {% if paymentType is defined %}
@@ -176,13 +180,13 @@
                                                     {% endif %}
                                                 {% else %}
                                                      {% if item.lpt_key == "freezed" %}
-                                                                <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i> {{ item.lpt_key|capitalize  }}</span>
+                                                                <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i>  {% trans %}general_msg_freezed{% endtrans %}</span>
                                                             {% else %}
-                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {{ item.lpt_key|capitalize  }}</span>
+                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {% trans %}general_msg_paid{% endtrans %}</span>
                                                             {% endif %}
                                                 {% endif %}
                                             </td>
-                                            <td>
+                                            <td data-paid="{{ item.lpa_total_amount_paid }}">
                                                 {% if item.lpa_paid_capital or item.lpa_paid_rate_interest %}
                                                     <span class="amounts">${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span> 
                                                     {% set totalPaid = totalPaid + item.lpa_total_amount_paid %}
@@ -218,7 +222,7 @@
                                                 {% endif %}
                                             {% endif %}
 
-                                            <td>
+                                            <td data-paidDate="{{item.lpa_paid_date}}">
                                                 {% if item.lpa_paid_date  %} 
                                                     {{  item.lpa_paid_date }}
                                                 {% else %} 
@@ -253,7 +257,7 @@
                                             </td>
                                             <td>
                                                 {% if item.lpa_paid_capital > 0 or item.lpa_paid_rate_interest > 0 %}
-                                                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                                    <span class="updateItemDone"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span>
                                                 {% else %}
                                                     {% if loan.loaCompleted == 0 %}
                                                         {% if  action is defined and action == "edit" %}
@@ -301,4 +305,68 @@
                                 <span id="pending" class="label label-default {{stalabel}}">${{ (totalToPay - totalPaid)|number_format(2, '.', ',') }}</span>
                             </h3>
                             <hr>
+                        </div>
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="myModalUpdatePaid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Actualizacion de cuota ya pagada</h4>
+                                </div>
+                                <div class="modal-body">
+                                
+                                        <input type="text" value="" id="updateId">
+                                        <div class="form-group">
+                                            <div>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</div>
+                                            <div>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="number" class="form-control" id="updateQuota" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div>{% trans %}loan_table_payments_action{% endtrans %}</div>
+                                            <div>
+                                                <select class="form-control" id="updateAction">
+                                                    <option value="1">{% trans %}general_msg_paid{% endtrans %}</option>
+                                                    {# <option value="2">{% trans %}general_msg_freezed{% endtrans %}</option> #}
+                                                    <option value="0">{% trans %}general_msg_pending{% endtrans %}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div>{% trans %}loan_table_payments_paid_amount{% endtrans %}</div>
+                                            <div>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="number" class="form-control" id="updatePaid" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div>{% trans %}loan_table_payments_paid_date{% endtrans %}</div>
+                                            <div>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control datepicker" id="updatePaidDate" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                </div>
+                                </div>
+                            </div>
                         </div>

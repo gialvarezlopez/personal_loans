@@ -428,6 +428,40 @@
 						}
 					});
             }
+
+
+            updateItemAlreadyPaid();
+            function updateItemAlreadyPaid()
+            {
+                $("body").on("click", ".updateItemDone", function(){
+                    $("#myModalUpdatePaid").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                });
+
+                $("#updateAction").change(function(){
+                    var id = $(this).val();
+                    var updatePaid = $("#updatePaid");
+                    var updatePaidDate = $("#updatePaidDate");
+                    var updateId = $("#updateId").val();
+                    if( id == 0 )
+                    {
+                        updatePaid.attr("readonly", true);
+                        updatePaid.val("");
+
+                        updatePaidDate.attr("readonly", true);
+                        updatePaidDate.val("");
+                    }
+                    else
+                    {
+                        updatePaid.attr("readonly", false);
+
+                        updatePaidDate.attr("readonly", false);
+                    }
+                });
+            }
+
             /*
                 var inputPaid = $("#alreadyPaidAmount");
                 var iniPaid = inputPaid.text();

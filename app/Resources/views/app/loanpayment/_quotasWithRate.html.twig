@@ -71,6 +71,7 @@
                                 
                         {% endif %}
                         <td>
+                            {#
                             {% if last > 0 %}
                                 {% set added = payment.lpaCurrentAmount - last %}
                                 {% if added !="" %}
@@ -78,6 +79,7 @@
                                     ${{ added|number_format(2, '.', ',') }} = 
                                 {% endif %}
                             {% endif %}
+                            #}
                         </td>
                         <td>
                             
@@ -108,16 +110,27 @@
                              ${{ (prev + amonXrate)|number_format(2, '.', ',') }}
                             </span>
                         </td>
-                        <td><span class="label label-success amounts">${{ payment.lpaTotalAmountPaid|number_format(2, '.', ',') }}</span></td>
+                        <td><span class="label label-success amounts">
+                            
+
+                            ${{ payment.lpaTotalAmountPaid|number_format(2, '.', ',') }}</span>
+                        
+                        </td>
                         <td><span class="label label-success amounts">${{ payment.lpaPaidRateInterest|number_format(2, '.', ',') }}</span></td>
                         <td><span class="label label-success amounts">${{ payment.lpaPaidCapital|number_format(2, '.', ',') }}</span></td>
                         <td>
+
                             <span class="label label-info amounts">
                             {# {% set lastP =  (pendingAmount + ((payment.lpaCurrentRateInterest/100) * pendingAmount ) )%} #}
                             {# {% set lastP = pendingAmount %} #}
                             {% set lastP = (prev - payment.lpaPaidCapital)  %}
                             ${{ lastP|number_format(2, '.', ',')  }}
                             </span>
+                                
+                            {% if payment.lpaNextAmount %}
+                                + 
+                                <span class="label label-info amounts">{{payment.lpaNextAmount|number_format(2, '.', ',')}}</span>
+                            {% endif %}    
                         </td>
                         <td>
                             <span class="label label-info amounts">
@@ -133,7 +146,14 @@
                                 {% endif %}
                             </span>
                         </td>
-                        <td> <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * lastP ) )|number_format(2, '.', ',') }} </span></td>
+                        <td> {# --------------------------------------------------------------------------  #}
+                            {% if payment.lpaNextAmount %}
+                                {% set nextAmount = payment.lpaNextAmount %}
+                            {% else %}   
+                                 {% set nextAmount = 0 %}
+                            {% endif %}
+                            <span class="label label-info amounts">${{ (((payment.lpaNextRateInterest/100) * ( lastP) ) ) |number_format(2, '.', ',') }} </span>
+                        </td>
                         <td style="background-color: #00C0EF"><span class="label label-info amounts">${{ (lastP + ((payment.lpaNextRateInterest/100) * lastP ) )|number_format(2, '.', ',') }} </span></td>
                         <td ><div class="note">{{ payment.lpaNote }}</div></td>
                         
