@@ -194,7 +194,7 @@
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
-                                        <div class="">{{ form_widget(form.lpaPaidDate,  { 'attr': {'class': 'form-control datepicker', "autocomplete":"off", "readonly":"true" } } ) }}</div>
+                                        <div class="">{{ form_widget(form.lpaPaidDate,  { 'attr': {'class': 'form-control datepicker', "autocomplete":"off" } } ) }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -612,6 +612,8 @@
                 //alert("You are " + years + " years old!");
                 //setNextPaymentDate();
             });
+
+            $("#appbundle_loanpayment_lpaPaidDate").val("");
 
             $("#appbundle_loanpayment_loaNextPaymentDate").daterangepicker({
                 singleDatePicker: true,
