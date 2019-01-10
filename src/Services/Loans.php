@@ -152,10 +152,10 @@ class Loans
             $days = abs($days); //convert to positive numbers
             if(isset($recurringDays) && $recurringDays > 0 )
             {
-               $periods = ($days/$recurringDays); 
-               $filterPeriod = abs(floor($periods));
+                $periods = ($days/$recurringDays); 
+                $filterPeriod = abs(floor($periods));
                
-               $newRate = $rate; 
+                $newRate = $rate; 
                /*
                 //$newRate = ( $filterPeriod == 0)? ($rate*2) : $rate;
                 for($i=0; $i <= $filterPeriod; $i++)
@@ -166,11 +166,15 @@ class Loans
                */
                //$totalPeriods = $periods+1; //sum the init period
                $totalPeriods = $periods; //sum the init period
-
+               $pros=0;     
                for($i=0; $i < $periods; $i++)
                {
+                   if( $pros != 0 )
+                   {
                     $newRate += $rate;
+                   }
                     //echo "i - ".$i;
+                    $pros++;
                }
                //ECHO $newRate;
                $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate);
