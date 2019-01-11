@@ -208,13 +208,26 @@
                                         <span>{% trans %}payment_rata_already_paid{% endtrans %} :<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
                                     </div>
                                     <div class="col-lg-6">
-                                        
-                                        {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} {# veirifico si ha habido un cambio de monto solicitado #}
-                                        {% if changedAmount %}
+                                        {#
+                                        {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
+                                       
+                                        {% if changedAmount == 1 %}
                                             {% set pendingPaid = (loan.loaAmount)%}
-                                        {% else %} {# todo igual no hay cambio #}
+                                        {% else %} 
                                             {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
                                         {% endif %}
+
+                                        #}
+
+                                        {# {% set pendingPaid = (loan.loaAmount) %} #}
+
+                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
+                                        {% set pendingPaid = arrPendingAmount[0]["pending"] %}
+                                        
+                                        
+                                        {# {% set pendingPaid = (loan.loaAmount)%} #}
+
+                                        
                                         
                                         <input type="hidden" value="{{ pendingPaid }}" id="pendingAmountWithoutRate">
                                         <input type="hidden" value="{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">

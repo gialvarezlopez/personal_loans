@@ -137,8 +137,41 @@
             {% set arr =  srv_Loans.getAllDetailLoan(loan.loaId) %}
             {{ include('app/loan/_inputNoRateEditPayments.html.twig',{"action":"history"} )  }} 
         {% else %}
+            {% if loan.loaCompleted != 1 %}
+                <div>
+                    
+                    {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
+                    {# {{ dump(arrPendingAmount[0]["pending"]) }} #}
+                    <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
+                    {% if loan.loaCompleted != 1 %}
+                        <span class="amountsX">
+                            {% set rate = loan.loaRateInterest %}
+                            {% set money =  arrPendingAmount[0]["pending"] %}
+                             ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+
+                            {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                            {% if pending > 0 %}
+                                {% set stalabel = "pending" %}
+                            {% else %}
+                                {% set stalabel = "nothingPending" %}
+                            {% endif %}
+                            <span class="label label-default {{stalabel}}">${{  pending }}</span>
+                        </span>
+                        {% else %}
+                            <span class="label label-default nothingPending">$0.00</span>      
+                         {% endif %}
+                     </h3> 
+                     <hr>
+                </div>
+            {% endif  %}                        
             {{ include('app/loanpayment/_quotasWithRate.html.twig' )  }} 
         {% endif %}
+
+        {#
+        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
+        {{ dump(arrPendingAmount[0]["pending"]) }}
+        #}
+        
         
         <hr>
         <ul class="list-inline">

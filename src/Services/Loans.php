@@ -205,20 +205,72 @@ class Loans
 
     function checkChangeAmountPerLoan($loanId)
     {
-        $changed = false;
+        $total = 0;
         if( isset($loanId) && !empty($loanId) )
         {
-            $RAW_QUERY  = "SELECT lpa_next_amount 
-                            FROM loan_payment where loa_id = $loanId ORDER BY loa_id DESC LIMIT 1 ";
+            //$RAW_QUERY  = "SELECT lpa_next_amount 
+            //                FROM loan_payment where loa_id = $loanId ORDER BY loa_id DESC LIMIT 1 ";
+
+            $RAW_QUERY = "SELECT  COUNT(*) AS total from loan_payment where loa_id = $loanId AND lpa_next_amount > 0 order by lpa_id";              
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
-            if( $result[0]["lpa_next_amount"] > 0 )
-            {
-                $changed = $result[0]["lpa_next_amount"];
-            }
-            return $changed;
+            $total =  $result[0]["total"];
         }
+        return $total;
+    }
+
+
+
+
+    function getPendingAmount($loanId)
+    {
+        //select * from loan_payment where loa_id = 117 order by lpa_id desc
+        $aResult = array();
+        if( isset($loanId) && !empty($loanId) )
+        {
+            $RAW_QUERY  = "SELECT *  FROM loan_payment where loa_id = $loanId";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+
+            $total_pending = 0.00;
+            $pros = 0;
+            $total_items = count($result);
+
+            $amount = 0.00;
+            $max = 0;
+            foreach($result as $item)
+            {
+                $current_amount = $item["lpa_current_amount"]."-";
+                $plus_amount = ($item["lpa_next_amount"] != "" )?$item["lpa_next_amount"]:0;
+                $paid_capital =  $item["lpa_paid_capital"];
+
+                //$next_rate =  $item["lpa_next_rate_interest"];
+                
+
+                if( $pros == 0 )
+                {
+                    $max = ($current_amount + $plus_amount) - $paid_capital;
+                }
+                else
+                {
+                    $max = ($max + $plus_amount) - $paid_capital;
+                }
+
+                $amount = $max;
+                   
+                $pros++;
+               
+            }
+
+            //echo $amount."-";
+
+            $aResult[] = array("pending"=>$amount);
+           
+        }
+
+        return $aResult;
     }
 
 

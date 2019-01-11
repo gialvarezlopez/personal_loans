@@ -29,7 +29,7 @@ class UserController extends Controller
 
 
          
-        /*  
+        /*
         $res = $this->loginWithOutPassword("Lsalinas2110@gmail.com");
         if( $res == 1 )
         {
@@ -37,6 +37,7 @@ class UserController extends Controller
             return $this->redirect($url); 
         }
         */
+        
 
 
         /*

@@ -133,6 +133,29 @@ class LoanController extends Controller
             }
            
             $rate = $form->get("loaRateInterestByDefault")->getData();
+
+            $loan->setLoaRateInterest( $rate ); //Save in the original form
+
+            //$rate = $form->get("loaRateInterestByDefault")->getData();
+
+            $recurringDays = $form->get("loaRecurringDayPayment")->getData();
+            $loaDeadline = $form->get("loaDeadline")->getData();
+            
+
+            $srv = $this->get('srv_TimeZone');
+            $zone =  $srv->getNameTimeZone();
+
+            $sCheckRate = $this->get('srv_Loans');	
+            $maxPayDate = $loaDeadline->format('Y-m-d');
+
+            //echo $maxPayDate->format('Y-m-d');;
+            //exit();
+            $arrCheck = $sCheckRate->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);
+
+            $rate = $arrCheck["rate"];
+            //$loan->setLoaRateInterest($rate);
+
+
             if( trim($rate) == "" || !is_numeric($rate) || $rate < 0 )
             {
                 $rate = 0;
@@ -147,7 +170,7 @@ class LoanController extends Controller
             $loan->setCli($oUser);
             $loan->setLoaCreated( new \DateTime() );
             $loan->setLoaCode( strtoupper( uniqid() ) );
-            $loan->setLoaRateInterest( $rate );
+            
             $loan->setLoaCompleted(0);
             $em->persist($loan);
             $em->flush();
@@ -179,9 +202,23 @@ class LoanController extends Controller
                 $oLoanPayment = new LoanPayment();
                 $oLoanPayment->setLpaMaxPaymentDate( $deadline );
                 $oLoanPayment->setLoa( $loan );
-                $oLoanPayment->setLpaCurrentRateInterest( $rate );
+                $oLoanPayment->setLpaCurrentRateInterest( $form->get("loaRateInterestByDefault")->getData() );
                 $oLoanPayment->setLpaNextRateInterest( $rate );
                 $oLoanPayment->setLpaCurrentAmount( $form->get("loaAmount")->getData() );
+
+
+                //$recurringDays = $form->get("loaRecurringDayPayment")->getData(); 
+                //$srvTimezone = $this->get('srv_TimeZone');
+                //$zone = $srvTimezone->getNameTimeZone();
+                //$srvLoan = $this->get('srv_Loans');  
+                //$checkPayments = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $deadline, $zone);  
+                $period = 1;
+                if( $arrCheck )
+                {
+                    $period = $arrCheck["quotas"];
+                }  
+                $oLoanPayment->setLpaMultipliedInterestBy($period);
+
                 $em->persist($oLoanPayment);
                 $em->flush();
             }
@@ -497,7 +534,6 @@ class LoanController extends Controller
                                 {
                                     echo "update";
                                     //$oLoanPayment->get
-                                    
                                 }
 
                                 $currentCapita = $oLoanPayment->getLpaCurrentAmount() - $oLoanPayment->getLpaPaidCapital();
@@ -506,21 +542,46 @@ class LoanController extends Controller
                             {
                                 $oLoanPayment = new LoanPayment();
                             }
-                            $oLoanPayment->setLpaMaxPaymentDate( $deadline );
+                            
                             $oLoanPayment->setLoa( $loan );
-                            $oLoanPayment->setLpaCurrentRateInterest( $rate );
+
+                            if( $oLoanPayment->getLpaTotalAmountPaid() == "" )
+                            {
+                                $oLoanPayment->setLpaCurrentRateInterest( $rate );
+                                $oLoanPayment->setLpaMaxPaymentDate( $deadline );
+
+                                
+                                $recurringDays = $editForm->get("loaRecurringDayPayment")->getData(); 
+                                $srvTimezone = $this->get('srv_TimeZone');
+                                $zone = $srvTimezone->getNameTimeZone();
+                                $srvLoan = $this->get('srv_Loans');  
+                                $maxPayDate = $deadline->format('Y-m-d');
+                                $checkPayments = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);  
+                                if( $checkPayments )
+                                {
+                                    $period = $checkPayments["quotas"];
+                                }  
+                                $oLoanPayment->setLpaMultipliedInterestBy($period);
+                                $oLoanPayment->setLpaNextRateInterest( $rate*$period);
+                            }
+                            
 
                             $oLoanPaymentTotal = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId) );
-                            if( count($oLoanPaymentTotal) == 1 && $oLoanPayment->getLpaChangedAmount() == 0 )
+                            if( count($oLoanPaymentTotal) == 1 && $oLoanPayment->getLpaChangedAmount() == 0 /*&& $oLoanPayment->getLpaTotalAmountPaid() > 0*/ )
                             {
-                                $oLoanPayment->setLpaCurrentAmount( $editForm->get("loaAmount")->getData() );
+                                //$oLoanPayment->setLpaCurrentAmount( $editForm->get("loaAmount")->getData() );
                                 $oLoanPayment->setLpaChangedAmount( 1 );    
                             }
 
                             //Aquiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-                            if( $editForm->get("loaAmount")->getData() != $currentAmount )
+                            if( ($editForm->get("loaAmount")->getData() != $currentAmount) && $oLoanPayment->getLpaTotalAmountPaid() > 0 )
                             {
                                 $oLoanPayment->setLpaNextAmount( ($editForm->get("loaAmount")->getData() - $currentCapita ) );   
+                            }
+
+                            if( count($oLoanPaymentTotal) > 1 )
+                            {
+                                $oLoanPayment->setLpaNextRateInterest( ($editForm->get("loaRateInterestByDefault")->getData() ) ); 
                             }
                             
 

@@ -82,68 +82,89 @@ class LoanPaymentController extends Controller
             //$em = $this->getDoctrine()->getManager();
             
             //exit();
-
-            $endLoan = $request->get("endLoan");
-            $nextRate = $form->get("loaNextInterestRate")->getData();
-            $nextPayment = $form->get("loaNextPaymentDate")->getData();
-
-            if(isset($nextRate) || isset($nextPayment) || isset($endLoan) )
+            $em->getConnection()->beginTransaction(); // suspend auto-commit
+            try
             {
-                if( $endLoan == 1 )
-                {
-                    $oLoan->setLoaCompleted(1);
-                    $paidDate = $form->get("lpaPaidDate")->getData();
-                    $oLoan->setLoaCompletedDate( $paidDate );
-                    //$oLoan->setLoa
-                }
-                else
-                {
-                    $oLoan->setLoaDeadline($nextPayment);
-                    $oLoan->setLoaRateInterest($nextRate);
-                    //$oLoan->setLoa
-                }
-                $em->persist($oLoan);
-                $em->flush();
-            }
+                $endLoan = $request->get("endLoan");
+                $nextRate = $form->get("loaNextInterestRate")->getData();
+                $nextPayment = $form->get("loaNextPaymentDate")->getData();
 
-            $paidInterestRate = $request->get("inputPaidInterest");
-            $paidCapital = $request->get("inputPaidCapital");
+                if(isset($nextRate) || isset($nextPayment) || isset($endLoan) )
+                {
+                    if( $endLoan == 1 )
+                    {
+                        $oLoan->setLoaCompleted(1);
+                        $paidDate = $form->get("lpaPaidDate")->getData();
+                        $oLoan->setLoaCompletedDate( $paidDate );
+                        //$oLoan->setLoa
+                    }
+                    else
+                    {
+                        $oLoan->setLoaDeadline($nextPayment);
+                        $oLoan->setLoaRateInterest($nextRate);
+                        //$oLoan->setLoa
+                    }
+                    $em->persist($oLoan);
+                    $em->flush();
+                }
+
+                $paidInterestRate = $request->get("inputPaidInterest");
+                $paidCapital = $request->get("inputPaidCapital");
+
+                
+
+                //loanPayment
+                //$oCheckFistPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId, "lpaTotalAmountPaid"=>"IS NULL", "lpaPaidDate"=>"IS NULL") );
+                $oCheckFistPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaMaxPaymentDate"=>'DESC' ), 1 );
+                if(  $oCheckFistPayment )
+                {
+                    if( $oCheckFistPayment->getLpaTotalAmountPaid() == "" )
+                    {
+                        $loanPayment = $oCheckFistPayment;
+                    
+                    }
+                    
+                }
+                 $currentRate = $form->get("lpaCurrentRateInterest")->getData();
+                $totalAmountPaid = $form->get("lpaTotalAmountPaid")->getData();
+                $paidDate = $form->get("lpaPaidDate")->getData();
+                $loanPayment->setLpaCurrentRateInterest($currentRate);
+                $loanPayment->setLpaTotalAmountPaid($currentRate);
+                $loanPayment->setLpaPaidRateInterest($paidInterestRate);
+                $loanPayment->setLpaPaidCapital($paidCapital);
+                $loanPayment->setLpaPaidDate( $paidDate );
+                $loanPayment->setLpaNextRateInterest( $nextRate );
+                $loanPayment->setLpaTotalAmountPaid($totalAmountPaid);
+
+                if( $loanType == "active_rate" )
+                {
+                    $loanPayment->setLpaCurrentAmount($oLoan->getLoaAmount());
+                }
+
+                $loanPayment->setLoa($oLoan);
+                $em->persist($loanPayment);
+                $em->flush();
+
+                //$amountRequested = $oLoan->getLoaAmount();
+
+                //$remainingAmount = 
+
+                //exit("<br> Fin");
+                $em->getConnection()->commit();
+
+                
+
+                $msg = "Success";
+                $this->session->getFlashBag()->add("success", $msg);
+                return $this->redirectToRoute('loanpayment_quotasHistory', array('loaId' => $loanId ));
+            }
+            catch (Exception $e) {
+                $this->session->getFlashBag()->add("error", $e);
+                $em->getConnection()->rollBack();
+                throw $e;
+            }
 
             
-
-            //loanPayment
-            //$oCheckFistPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId, "lpaTotalAmountPaid"=>"IS NULL", "lpaPaidDate"=>"IS NULL") );
-            $oCheckFistPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId), array("lpaMaxPaymentDate"=>'DESC' ), 1 );
-            if(  $oCheckFistPayment )
-            {
-                if( $oCheckFistPayment->getLpaTotalAmountPaid() == "" )
-                {
-                    $loanPayment = $oCheckFistPayment;
-                   
-                }
-                
-            }
-            $currentRate = $form->get("lpaCurrentRateInterest")->getData();
-            $totalAmountPaid = $form->get("lpaTotalAmountPaid")->getData();
-            $paidDate = $form->get("lpaPaidDate")->getData();
-            $loanPayment->setLpaCurrentRateInterest($currentRate);
-            $loanPayment->setLpaTotalAmountPaid($currentRate);
-            $loanPayment->setLpaPaidRateInterest($paidInterestRate);
-            $loanPayment->setLpaPaidCapital($paidCapital);
-            $loanPayment->setLpaPaidDate( $paidDate );
-            $loanPayment->setLpaNextRateInterest( $nextRate );
-            $loanPayment->setLpaTotalAmountPaid($totalAmountPaid);
-
-            if( $loanType == "active_rate" )
-            {
-                $loanPayment->setLpaCurrentAmount($oLoan->getLoaAmount());
-            }
-
-            $loanPayment->setLoa($oLoan);
-            $em->persist($loanPayment);
-            $em->flush();
-
-            return $this->redirectToRoute('loanpayment_quotasHistory', array('loaId' => $loanId ));
         }
 
         //$loanType =  $oLoan->getLoc()->getLocKey();

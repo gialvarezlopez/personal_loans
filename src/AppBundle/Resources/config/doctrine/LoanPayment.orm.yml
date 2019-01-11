@@ -51,6 +51,12 @@ AppBundle\Entity\LoanPayment:
             precision: 10
             scale: 0
             column: lpa_current_rate_interest
+        lpaMultipliedInterestBy:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+            column: lpa_multiplied_interest_by
         lpaCurrentAmount:
             type: float
             nullable: true

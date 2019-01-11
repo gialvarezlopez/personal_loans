@@ -114,7 +114,14 @@
                                                    <span class="label label-default amounts"> ${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span>
                                                     {% set totalAmount =  totalAmount + item.lpa_total_amount_paid %}
                                             </td>
-                                            <td>{{ item.lpa_current_rate_interest }}%</td>
+                                            <td>
+                                                {% if item.lpa_total_amount_paid > 0 %}
+                                                    {{ item.lpa_current_rate_interest }}
+                                                {% else %}
+                                                    {{ item.lpa_current_rate_interest * item.lpa_multiplied_interest_by }}
+                                                {% endif %}
+                                                %
+                                            </td>
                                             <td><span class="label label-success amounts">
                                                 {% set totalPaid = totalPaid + item.lpa_paid_capital %}
                                                 ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}</span>

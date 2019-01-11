@@ -236,6 +236,7 @@
                                                             {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }} #}
                                                         {% endif %}
                                                     {% else %}
+                                                        
                                                         {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}
                                                     {% endif %}
                                                     
@@ -372,7 +373,36 @@
                             </div>
                         {% else %}
                             <div id="holderMainRight">
-                                {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
+                                {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
+                                {% if changedAmount > 0 %}
+                                    <div>
+                                        <div>Este prestamo tiene actualizaciones en el monto inicial. <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}loan_table_rate_payments_full_history{% endtrans %}</a></div>
+                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
+                                        {# {{ dump(arrPendingAmount[0]["pending"]) }} #}
+                                        <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
+                                        {% if loan.loaCompleted != 1 %}
+                                            <span class="amountsX">
+                                            {% set rate = loan.loaRateInterest %}
+                                            {% set money =  arrPendingAmount[0]["pending"] %}
+                                            ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+
+                                            {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                                            {% if pending > 0 %}
+                                                {% set stalabel = "pending" %}
+                                            {% else %}
+                                                {% set stalabel = "nothingPending" %}
+                                            {% endif %}
+                                            <span class="label label-default {{stalabel}}">${{  pending }}</span>
+                                            </span>
+                                        {% else %}
+                                              <span class="label label-default nothingPending">$0.00</span>      
+                                        {% endif %}
+                                        </h3> 
+                                    </div>
+                                {% else %}
+                                    {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
+                                {% endif  %}
+                               
                             </div>
                         {% endif %}    
             </div>
@@ -388,6 +418,12 @@
     <script>
         //$(document).on("ready", function(){
         $(function (){
+
+            {% if loan.loaCompleted == 1 %}
+                $("form[name='appbundle_loan'] input[type='text'], form[name='appbundle_loan'] input[type='number'], form[name='appbundle_loan'] textarea").attr("readonly", true);
+                $("#appbundle_loan_loaDeadline").removeClass("datepicker").val("");
+                $("#appbundle_loan_loaLoanMade").removeClass("datepicker");
+            {% endif %}
             
             $("#appbundle_loan_loaRateInterest").closest("div").remove();    
 
@@ -1037,6 +1073,10 @@
 						}
 					});
             }    
+
+
+            
+
         });
     </script>    
 {% endblock %}

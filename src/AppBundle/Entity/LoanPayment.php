@@ -38,6 +38,11 @@ class LoanPayment
     private $lpaCurrentRateInterest;
 
     /**
+     * @var integer
+     */
+    private $lpaMultipliedInterestBy;
+
+    /**
      * @var float
      */
     private $lpaCurrentAmount;
@@ -53,6 +58,11 @@ class LoanPayment
     private $lpaNextRateInterest;
 
     /**
+     * @var float
+     */
+    private $lpaNextAmount;
+
+    /**
      * @var string
      */
     private $lpaNote;
@@ -61,6 +71,11 @@ class LoanPayment
      * @var boolean
      */
     private $lpaIsPayment = '0';
+
+    /**
+     * @var boolean
+     */
+    private $lpaChangedAmount = '0';
 
     /**
      * @var \AppBundle\Entity\Loan
@@ -204,6 +219,30 @@ class LoanPayment
     }
 
     /**
+     * Set lpaMultipliedInterestBy
+     *
+     * @param integer $lpaMultipliedInterestBy
+     *
+     * @return LoanPayment
+     */
+    public function setLpaMultipliedInterestBy($lpaMultipliedInterestBy)
+    {
+        $this->lpaMultipliedInterestBy = $lpaMultipliedInterestBy;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaMultipliedInterestBy
+     *
+     * @return integer
+     */
+    public function getLpaMultipliedInterestBy()
+    {
+        return $this->lpaMultipliedInterestBy;
+    }
+
+    /**
      * Set lpaCurrentAmount
      *
      * @param float $lpaCurrentAmount
@@ -276,6 +315,30 @@ class LoanPayment
     }
 
     /**
+     * Set lpaNextAmount
+     *
+     * @param float $lpaNextAmount
+     *
+     * @return LoanPayment
+     */
+    public function setLpaNextAmount($lpaNextAmount)
+    {
+        $this->lpaNextAmount = $lpaNextAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaNextAmount
+     *
+     * @return float
+     */
+    public function getLpaNextAmount()
+    {
+        return $this->lpaNextAmount;
+    }
+
+    /**
      * Set lpaNote
      *
      * @param string $lpaNote
@@ -321,6 +384,30 @@ class LoanPayment
     public function getLpaIsPayment()
     {
         return $this->lpaIsPayment;
+    }
+
+    /**
+     * Set lpaChangedAmount
+     *
+     * @param boolean $lpaChangedAmount
+     *
+     * @return LoanPayment
+     */
+    public function setLpaChangedAmount($lpaChangedAmount)
+    {
+        $this->lpaChangedAmount = $lpaChangedAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaChangedAmount
+     *
+     * @return boolean
+     */
+    public function getLpaChangedAmount()
+    {
+        return $this->lpaChangedAmount;
     }
 
     /**
@@ -370,62 +457,5 @@ class LoanPayment
     {
         return $this->lpt;
     }
-    /**
-     * @var boolean
-     */
-    private $lpaChangedAmount = '0';
-
-
-    /**
-     * Set lpaChangedAmount
-     *
-     * @param boolean $lpaChangedAmount
-     *
-     * @return LoanPayment
-     */
-    public function setLpaChangedAmount($lpaChangedAmount)
-    {
-        $this->lpaChangedAmount = $lpaChangedAmount;
-
-        return $this;
-    }
-
-    /**
-     * Get lpaChangedAmount
-     *
-     * @return boolean
-     */
-    public function getLpaChangedAmount()
-    {
-        return $this->lpaChangedAmount;
-    }
-    /**
-     * @var float
-     */
-    private $lpaNextAmount;
-
-
-    /**
-     * Set lpaNextAmount
-     *
-     * @param float $lpaNextAmount
-     *
-     * @return LoanPayment
-     */
-    public function setLpaNextAmount($lpaNextAmount)
-    {
-        $this->lpaNextAmount = $lpaNextAmount;
-
-        return $this;
-    }
-
-    /**
-     * Get lpaNextAmount
-     *
-     * @return float
-     */
-    public function getLpaNextAmount()
-    {
-        return $this->lpaNextAmount;
-    }
 }
+

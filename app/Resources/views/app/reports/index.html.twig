@@ -271,6 +271,9 @@
 
                                                 {% set sumCapital = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
                                                 {% set pendingPayment =  item.loa_amount - sumCapital[0]["paidCapital"] %}
+
+                                                {% set arrPendingAmount = srv_Loans.getPendingAmount(item.loa_id) %}
+                                                {% set pendingPayment =  arrPendingAmount[0]["pending"] %}
                                                 
                                                 
 
