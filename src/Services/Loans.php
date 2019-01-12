@@ -140,6 +140,9 @@ class Loans
     {
         date_default_timezone_set($zone);
 
+        //echo $maxPayDate;
+        //echo $rate;
+
         //echo floor(9.999); // 9
         $today = strtotime(date('Y-m-d')); 
         $expireDay = strtotime( $maxPayDate ); 
@@ -156,25 +159,25 @@ class Loans
                 $filterPeriod = abs(floor($periods));
                
                 $newRate = $rate; 
-               /*
-                //$newRate = ( $filterPeriod == 0)? ($rate*2) : $rate;
-                for($i=0; $i <= $filterPeriod; $i++)
-                {
-                        $newRate += $rate;
-                        //echo "i - ".$i;
-                }
-               */
+
                //$totalPeriods = $periods+1; //sum the init period
                $totalPeriods = $periods; //sum the init period
                $pros=0;     
                for($i=0; $i < $periods; $i++)
                {
-                   if( $pros != 0 )
+                   if( $pros != 0 || $days > 0 )
                    {
                     $newRate += $rate;
                    }
                     //echo "i - ".$i;
                     $pros++;
+               }
+
+                $check = $this->saber_dia($maxPayDate, $zone);
+               if($check == "sabado" )
+               {
+                   $totalPeriods++;
+                   $newRate += $rate;
                }
                //ECHO $newRate;
                $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate);
@@ -186,6 +189,16 @@ class Loans
         }
 
     }
+
+    function saber_dia($checkDate, $zone) {
+        //echo $zone;
+        date_default_timezone_set($zone);
+        $dias = array('domingo','lunes','martes','miercoles','jueves','viernes','sabado');
+        $fecha = $dias[date('N', strtotime($checkDate))];
+        return $fecha;
+    }
+        // ejecutamos la función pasándole la fecha que queremos
+    //saber_dia('2015-03-13');
 
     function checkPaymentsPerLoan($loanId)
     {

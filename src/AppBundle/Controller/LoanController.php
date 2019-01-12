@@ -203,7 +203,24 @@ class LoanController extends Controller
                 $oLoanPayment->setLpaMaxPaymentDate( $deadline );
                 $oLoanPayment->setLoa( $loan );
                 $oLoanPayment->setLpaCurrentRateInterest( $form->get("loaRateInterestByDefault")->getData() );
-                $oLoanPayment->setLpaNextRateInterest( $rate );
+
+                /*
+                $nextRate = $rate;
+                if( $period == 1 )
+                {
+                    for($i = 0; $i < $period; $i++ )
+                    {
+                        $nextRate = $nextRate + $rate;
+                    }
+                }
+                else
+                {
+                    $nextRate = $rate* $period;
+                }
+                */
+                $nextRate = $rate* ($period + 1 );
+
+                $oLoanPayment->setLpaNextRateInterest( $nextRate );
                 $oLoanPayment->setLpaCurrentAmount( $form->get("loaAmount")->getData() );
 
 
@@ -561,8 +578,28 @@ class LoanController extends Controller
                                 {
                                     $period = $checkPayments["quotas"];
                                 }  
+
                                 $oLoanPayment->setLpaMultipliedInterestBy($period);
-                                $oLoanPayment->setLpaNextRateInterest( $rate*$period);
+                                /*        
+                                $nextRate = $rate;
+                                if( $period == 1 )
+                                {
+                                    for($i = 0; $i < $period; $i++ )
+                                    {
+                                        $nextRate = $nextRate + $rate;
+                                    }
+                                }
+                                else
+                                {
+                                    $nextRate = $rate*$period;
+                                }
+                                */
+
+                                $nextRate = $rate * ($period + 1);
+
+                                $oLoanPayment->setLpaNextRateInterest( $nextRate );
+                                //$oLoanPayment->setLpaNextRateInterest( $rate*$period);
+                                //exit($nextRate);
                             }
                             
 

@@ -140,27 +140,35 @@
             {% if loan.loaCompleted != 1 %}
                 <div>
                     
-                    {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
-                    {# {{ dump(arrPendingAmount[0]["pending"]) }} #}
-                    <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
-                    {% if loan.loaCompleted != 1 %}
-                        <span class="amountsX">
-                            {% set rate = loan.loaRateInterest %}
-                            {% set money =  arrPendingAmount[0]["pending"] %}
-                             ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+                    {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                {% if pending %}
+                                    {% set rate = pending.rate %}   
 
-                            {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
-                            {% if pending > 0 %}
-                                {% set stalabel = "pending" %}
-                            {% else %}
-                                {% set stalabel = "nothingPending" %}
-                            {% endif %}
-                            <span class="label label-default {{stalabel}}">${{  pending }}</span>
-                        </span>
-                        {% else %}
-                            <span class="label label-default nothingPending">$0.00</span>      
-                         {% endif %}
-                     </h3> 
+                                {% else %}
+                                    {% set rate = loan.loaRateInterest %}     
+                                {% endif %}
+
+                                {% set paidAmount = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
+                                {% if paidAmount %}
+                                    {% set money = (loan.loaAmount - paidAmount[0]['paidCapital']) %}
+                                {% else %}
+                                    {% set money = loan.loaAmount %}
+                                {% endif %}
+                                <div>
+                                    <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
+                                    <span class="amountsX">
+                                        ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+
+                                        {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                                        {% if pending > 0 %}
+                                            {% set stalabel = "pending" %}
+                                        {% else %}
+                                            {% set stalabel = "nothingPending" %}
+                                        {% endif %}
+                                        <span class="label label-default {{stalabel}}">${{  pending }}</span>
+                                        </span>
+                                    </h3>    
+                                </div>
                      <hr>
                 </div>
             {% endif  %}                        

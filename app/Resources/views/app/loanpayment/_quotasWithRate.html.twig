@@ -15,8 +15,9 @@
                 </tr>
                 <tr>
                     <th><div class="col text-center">A</div>#</th>
-                    <th><div class="col text-center">B</div>{% trans %}payment_rate_table_col_date_paid_quota{% endtrans %}</th>
-                    <th><div class="col text-center">C</div>{% trans %}payment_rate_table_col_max_date_to_payment{% endtrans %}</th>
+                    
+                    <th><div class="col text-center">B</div>{% trans %}payment_rate_table_col_max_date_to_payment{% endtrans %}</th>
+                    <th><div class="col text-center">C</div>{% trans %}payment_rate_table_col_date_paid_quota{% endtrans %}</th>
                     {# <th class="no-sort"></th> #}
                     <th colspan><div class="col text-center">D</div> {% trans %}payment_rate_table_col_amount{% endtrans %}</th>
                     <th><div class="col text-center">E</div>{% trans %}payment_rate_table_col_interest{% endtrans %}</th>
@@ -70,8 +71,15 @@
                     {% endif %}
                     <tr>
                         <td>{{ num }}</td>{# Column A #}
-                        <td>{{ payment.lpaPaidDate|date('Y-m-d') }}</td>{# Column B #}
-                        <td>{{ payment.lpaMaxPaymentDate|date("Y-m-d") }}</td>{# Column C #}
+                        
+                        <td>{{ payment.lpaMaxPaymentDate|date("Y-m-d") }}</td>{# Column B #}
+                        <td>{# Column C #}
+                            {% if payment.lpaTotalAmountPaid > 0  %}
+                                {{ payment.lpaPaidDate|date('Y-m-d') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
 
                         <td>{# Column D #}
                             {% if item_number != 0 or  payment.lpaTotalAmountPaid > 0  %}

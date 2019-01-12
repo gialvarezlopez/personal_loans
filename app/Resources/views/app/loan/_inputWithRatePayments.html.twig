@@ -118,7 +118,12 @@
                                                 {% if item.lpa_total_amount_paid > 0 %}
                                                     {{ item.lpa_current_rate_interest }}
                                                 {% else %}
-                                                    {{ item.lpa_current_rate_interest * item.lpa_multiplied_interest_by }}
+                                                    
+
+                                                    {# {{ item.lpa_current_rate_interest * item.lpa_multiplied_interest_by }} #}
+
+                                                    {% set nextRate =  item.lpa_current_rate_interest * (item.lpa_multiplied_interest_by + 1) %} 
+                                                    {{ nextRate }}
                                                 {% endif %}
                                                 %
                                             </td>
