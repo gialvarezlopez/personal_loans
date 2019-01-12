@@ -141,7 +141,7 @@ class Loans
         date_default_timezone_set($zone);
 
         //echo $maxPayDate;
-        //echo $rate;
+        $newRate = $rate;
 
         //echo floor(9.999); // 9
         $today = strtotime(date('Y-m-d')); 
@@ -159,7 +159,7 @@ class Loans
                 $filterPeriod = abs(floor($periods));
                
                 $newRate = $rate; 
-
+                
                $totalPeriods = $periods+1; //sum the init period
                //$totalPeriods = $periods; //sum the init period
                $pros=0;     

@@ -122,7 +122,7 @@
 
                                                     {# {{ item.lpa_current_rate_interest * item.lpa_multiplied_interest_by }} #}
 
-                                                    {% set nextRate =  item.lpa_current_rate_interest * (item.lpa_multiplied_interest_by + 1) %} 
+                                                    {% set nextRate =  item.lpa_current_rate_interest * (item.lpa_multiplied_interest_by) %} 
                                                     {{ nextRate }}
                                                 {% endif %}
                                                 %
