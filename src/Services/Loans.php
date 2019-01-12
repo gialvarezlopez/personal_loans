@@ -160,8 +160,8 @@ class Loans
                
                 $newRate = $rate; 
 
-               //$totalPeriods = $periods+1; //sum the init period
-               $totalPeriods = $periods; //sum the init period
+               $totalPeriods = $periods+1; //sum the init period
+               //$totalPeriods = $periods; //sum the init period
                $pros=0;     
                for($i=0; $i < $periods; $i++)
                {
@@ -176,8 +176,8 @@ class Loans
                 $check = $this->saber_dia($maxPayDate, $zone);
                if($check == "sabado" )
                {
-                   $totalPeriods++;
-                   $newRate += $rate;
+                   //$totalPeriods++;
+                   //$newRate += $rate;
                }
                //ECHO $newRate;
                $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate);

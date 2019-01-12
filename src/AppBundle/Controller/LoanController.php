@@ -218,7 +218,7 @@ class LoanController extends Controller
                     $nextRate = $rate* $period;
                 }
                 */
-                $nextRate = $rate* ($period + 1 );
+                $nextRate = $rate* ($period);
 
                 $oLoanPayment->setLpaNextRateInterest( $nextRate );
                 $oLoanPayment->setLpaCurrentAmount( $form->get("loaAmount")->getData() );
@@ -595,7 +595,7 @@ class LoanController extends Controller
                                 }
                                 */
 
-                                $nextRate = $rate * ($period + 1);
+                                $nextRate = $rate * ($period);
 
                                 $oLoanPayment->setLpaNextRateInterest( $nextRate );
                                 //$oLoanPayment->setLpaNextRateInterest( $rate*$period);
