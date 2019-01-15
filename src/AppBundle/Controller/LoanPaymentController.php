@@ -135,6 +135,7 @@ class LoanPaymentController extends Controller
                 $loanPayment->setLpaPaidDate( $paidDate );
                 $loanPayment->setLpaNextRateInterest( $nextRate );
                 $loanPayment->setLpaTotalAmountPaid($totalAmountPaid);
+                $loanPayment->setLpaNextPaymentDate($nextPayment);
 
                 if( $loanType == "active_rate" )
                 {

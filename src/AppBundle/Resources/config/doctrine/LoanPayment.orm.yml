@@ -85,6 +85,10 @@ AppBundle\Entity\LoanPayment:
             options:
                 comment: 'Just for loan with interest rate to calculate next amount if there is an change amount'
             column: lpa_next_amount
+        lpaNextPaymentDate:
+            type: datetime
+            nullable: true
+            column: lpa_next_payment_date
         lpaNote:
             type: string
             nullable: true

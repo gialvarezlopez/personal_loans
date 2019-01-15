@@ -457,4 +457,33 @@ class LoanPayment
     {
         return $this->lpt;
     }
+    /**
+     * @var \DateTime
+     */
+    private $lpaNextPaymentDate;
+
+
+    /**
+     * Set lpaNextPaymentDate
+     *
+     * @param \DateTime $lpaNextPaymentDate
+     *
+     * @return LoanPayment
+     */
+    public function setLpaNextPaymentDate($lpaNextPaymentDate)
+    {
+        $this->lpaNextPaymentDate = $lpaNextPaymentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaNextPaymentDate
+     *
+     * @return \DateTime
+     */
+    public function getLpaNextPaymentDate()
+    {
+        return $this->lpaNextPaymentDate;
+    }
 }

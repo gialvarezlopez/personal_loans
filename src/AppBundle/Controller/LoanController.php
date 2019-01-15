@@ -204,6 +204,9 @@ class LoanController extends Controller
                 $oLoanPayment->setLoa( $loan );
                 $oLoanPayment->setLpaCurrentRateInterest( $form->get("loaRateInterestByDefault")->getData() );
 
+                $nextPayment = $loaDeadline; //$editForm->get("loaDeadline")->getData();
+                $oLoanPayment->setLpaNextPaymentDate($nextPayment);
+
                 /*
                 $nextRate = $rate;
                 if( $period == 1 )
@@ -567,6 +570,9 @@ class LoanController extends Controller
                                 }
 
                                 $currentCapita = $oLoanPayment->getLpaCurrentAmount() - $oLoanPayment->getLpaPaidCapital();
+
+                                $nextPayment = $deadline; //$editForm->get("loaDeadline")->getData();
+                                $oLoanPayment->setLpaNextPaymentDate($nextPayment);
                             }
                             else
                             {
@@ -633,6 +639,8 @@ class LoanController extends Controller
                             {
                                 $oLoanPayment->setLpaNextRateInterest( ($editForm->get("loaRateInterestByDefault")->getData() ) ); 
                             }
+
+                            
                             
 
                             $em->persist($oLoanPayment);
