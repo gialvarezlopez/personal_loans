@@ -458,4 +458,3 @@ class LoanPayment
         return $this->lpt;
     }
 }
-

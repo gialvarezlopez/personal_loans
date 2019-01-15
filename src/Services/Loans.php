@@ -180,7 +180,7 @@ class Loans
                    //$newRate += $rate;
                }
                //ECHO $newRate;
-               $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate);
+               $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate, "rateWithoutCurrentPeriod"=>($newRate - $rate)  );
                return $data;
             }
 

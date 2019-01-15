@@ -110,4 +110,12 @@ AppBundle\Entity\User:
             options:
                 default: '1'
             column: usr_show
+        usrDateFormat:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+                default: mm/dd/yyyy
+            column: usr_date_format
     lifecycleCallbacks: {  }

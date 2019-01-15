@@ -57,6 +57,7 @@ class LoanType extends AbstractType
 
                     // adds a class that can be selected in JavaScript
                     'attr' => ['class' => 'datepicker'],
+                    //'format' => 'MM-dd-yyyy',
                 ))
                 ->add('loaRecurringDayPayment')
                 ->add('loaLoanMade', DateType::class, array(

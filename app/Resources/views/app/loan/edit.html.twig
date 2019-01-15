@@ -76,6 +76,9 @@
       </ol>
 </section>
 <hr>
+
+
+
 <div class="box">
     
     <div class="box-header">
@@ -98,6 +101,8 @@
             
     </div>
      
+     
+
     <div class="box-body">
         <div class="well ">
             <div class="row">
@@ -137,14 +142,14 @@
                                 <div class="row">
                                     <div class="col-md-12 col-lg-12 col-sm-12">
                                         <div class="form-group">
-                                            <div class="form_error">{{ form_errors(edit_form.loaLoanMade)}}</div>
+                                            <div class="form_error">{{ form_errors(edit_form.loaLoanMade) }}</div>
                                             <label for="" class=" control-label">{% trans %}loan_form_loan_created_at{% endtrans %}: <span class="text-danger">*</span></label>
 
                                             <div class="input-group">
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                                 </div>
-                                                <div class="">{{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                                <div class="">{{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaLoanMade|date(app.user.usrDateFormat)  } } ) }}</div>
                                             </div>
                                             <span id="helpBlock2" class="help-block">{% trans %}loan_form_loan_created_at_help{% endtrans %}</span>
                                         </div>
@@ -224,25 +229,27 @@
                                                 <div class="">
                                                     {% if loan.loc.locKey  == "inactive_rate" %}
                                                         {% if hasPayments == 0 %}
-                                                            {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}
+                                                            {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }}
                                                         {% else %}
                                                             
                                                             {% set lastPayment = srv_Loans.getLastPayment(loanId) %}
                                                             {% if lastPayment and lastPayment[0]['lpa_paid_date'] != "" %}
-                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly", "value": lastPayment[0]['lpa_paid_date'] } } ) }}
+                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly", "value": (lastPayment[0]['lpa_paid_date'])|date(app.user.usrDateFormat) } } ) }}
                                                             {% else %}
-                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }}
+                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly"} } ) }}
                                                             {% endif %}
                                                             {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }} #}
                                                         {% endif %}
                                                     {% else %}
                                                         
-                                                        {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}
+                                                        {{ form_widget(edit_form.loaDeadline , { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }}
                                                     {% endif %}
                                                     
                                                 </div>
                                             </div>
                                             <span id="helpBlock2" class="help-block">{% trans %}loan_form_first_payment_date_help{% endtrans %}</span>
+
+                                            {# {{ loan.loaDeadline|date(app.user.usrDateFormat) }} #}
                                         </div>
                                     </div>
                                 </div>
@@ -408,9 +415,12 @@
             </div>
         </div>        
     </div>
- </div>   
+ </div>  
+
+
 
 {{ include('app/client/_modals.html.twig' )  }}  
+
 
 {% endblock %}
 
@@ -459,10 +469,18 @@
                     //alert("You are " + years + " years old!");
                 });
             */
+            var dateFormat = "{{app.user.usrDateFormat}}";
+            if( dateFormat == "m/d/Y")
+            {
+                dateFormat = "MM-DD-YYYY";
+            }else{
+                dateFormat = "YYYY-MM-DD";
+            }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    //"format": "YYYY-MM-DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Apply",
                     "cancelLabel": "Cancel",
@@ -507,7 +525,9 @@
             {% else %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    //"format": "YYYY-MM-DD",
+                    "format": dateFormat,
+                    //"format": "{{ app.user.usrDateFormat }}",
                     "separator": " - ",
                     "applyLabel": "Aplicar",
                     "cancelLabel": "Cancelar",

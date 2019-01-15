@@ -580,4 +580,33 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->usrLastLogin;
     }
+    /**
+     * @var string
+     */
+    private $usrDateFormat = 'mm/dd/yyyy';
+
+
+    /**
+     * Set usrDateFormat
+     *
+     * @param string $usrDateFormat
+     *
+     * @return User
+     */
+    public function setUsrDateFormat($usrDateFormat)
+    {
+        $this->usrDateFormat = $usrDateFormat;
+
+        return $this;
+    }
+
+    /**
+     * Get usrDateFormat
+     *
+     * @return string
+     */
+    public function getUsrDateFormat()
+    {
+        return $this->usrDateFormat;
+    }
 }

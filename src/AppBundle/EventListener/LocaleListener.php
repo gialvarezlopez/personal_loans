@@ -41,6 +41,7 @@ class LocaleListener implements EventSubscriberInterface
     */
 
     private $defaultLocale;
+    private $dateFormat = "m/d/Y";
 
     public function __construct($defaultLocale = 'en')
     {
@@ -62,6 +63,9 @@ class LocaleListener implements EventSubscriberInterface
         {
             $request->setLocale($request->getSession()->get("_locale",  $this->defaultLocale));
         }
+
+
+        //$request->setSession()->set("_dateFormat",$this->dateFormat);
     } 
 
     public static function getSubscribedEvents()

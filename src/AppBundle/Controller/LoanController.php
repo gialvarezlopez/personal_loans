@@ -299,7 +299,13 @@ class LoanController extends Controller
                 throw new AccessDeniedHttpException($msg);
             }
         } 
-        //echo "xxx";
+        
+       // $originalDate = ("21/05/2010");
+       // echo  date('Y-m-d',strtotime(str_replace("/",".",$originalDate )));
+
+       //var_dump($this->getUser());
+    
+
         $em = $this->getDoctrine()->getManager();
         $oPaymentType = $em->getRepository('AppBundle:LoanPaymentType')->findAll();
         return $this->render('app/loan/show.html.twig', array(
@@ -342,7 +348,8 @@ class LoanController extends Controller
         $editForm = $this->createForm('AppBundle\Form\LoanType', $loan);
         $editForm->handleRequest($request);
 
-        
+        //$loan->setLoaLoanMade("2018-11-24");
+        //$loan->setloaDeadline("2019-05-01");
 
         
         if( $loanId > 0 )

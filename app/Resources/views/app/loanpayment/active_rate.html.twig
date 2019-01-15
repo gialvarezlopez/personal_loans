@@ -250,7 +250,9 @@
                                                 <td>
                                                     <span class="amounts">
                                                         <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
-                                                        x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span> = 
+                                                        x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span> 
+                                                           
+                                                        = 
                                                     </span>
                                                 </td>
                                                 <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate">{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}</span> </div></td>        
@@ -814,6 +816,21 @@
                                 Dnewrate = DnewrateSplit[0];
                             }
                         }
+
+                        
+
+                        //loan.loaRateInterestByDefault
+                        $nextPayment = $("#pendingNextDeadlineToPaid").text();
+
+                        var x = $("#appbundle_loanpayment_loaNextPaymentDate").val();
+                        if( x <= $nextPayment )
+                        {
+                            var n = parseFloat("{{loan.loaRateInterestByDefault}}");
+                            
+                            Dnewrate = (Dnewrate-n);
+                            $("#appbundle_loanpayment_loaNextInterestRate").val(Dnewrate);
+                        }
+                        //alert(x+" | "+$nextPayment);
 
                         //var result = iconMoney+DnewAmount+" x "+Dnewrate+"% = "+iconMoney+calculate.toFixed(2);
 

@@ -135,7 +135,7 @@
                                                 {% set totalInterest = totalInterest + item.lpa_paid_rate_interest %}
                                                 ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}</span>
                                             </td>
-                                            <td>
+                                            <td id="currentPiriod">
                                                 {% if item.lpa_total_amount_paid > 0 %}
                                                     {# <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> #}
                                                     {% trans %}loan_table_rate_payments_node{% endtrans %} 
