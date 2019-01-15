@@ -22,7 +22,7 @@
                     The interest has been increased to <span class='bc'>{{ pending.rate }}%</span>.
                     #}
                     
-                    {{ ('loan_table_rate_payments_msg_pay_cuotas'|trans({'%pending_quotas%': pending.quotas, '%pending_days%':pending.days, '%pending_rate%': pending.rate }))|raw }}
+                    {{ ('loan_table_rate_payments_msg_pay_cuotas'|trans({'%pending_quotas%': (pending.quotas - 1), '%pending_days%':pending.days, '%pending_rate%': pending.rate }))|raw }}
                     <br><br>
                     <P>{{ ('loan_table_rate_payments_note'|trans())|raw }}<p>
 
@@ -63,7 +63,7 @@
                                         
                                         {# {{ maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") }} #}
                                     </td>
-                                    {#
+                                    
                                     <td>
                                         {% if (pending.quotas - 1) == i %}
                                             <span class="badgex bc">{% trans %}loan_table_rate_payments_current_period{% endtrans %}</span>
@@ -71,7 +71,7 @@
                                             <span class="badgex bc">{% trans %}loan_table_rate_payments_next_payment{% endtrans %}</span>  
                                         {%  endif %}
                                     </td>
-                                    #}
+                                    
                                 </tr>
                                 {% set counter =  counter + 1 %}
                             {% endfor %}

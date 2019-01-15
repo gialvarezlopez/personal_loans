@@ -238,7 +238,8 @@ loan_table_rate_payments_pending_quotas: Cuotas pendientes
 loan_table_rate_payments_current_period: Periodo actual
 loan_table_rate_payments_next_payment: Siguiente pago
 loan_table_rate_payments_dates: Fechas de pago
-loan_table_rate_payments_msg_pay_cuotas: Este prestamo tiene <span class='bc'>%pending_quotas% cuotas pendiente/s</span> con un total de <span class='bc'>%pending_days%  dia(s) de retrazo</span>. La tasa de interes ha sido incrementada a <span class='bc'>%pending_rate% %</span>
+#loan_table_rate_payments_msg_pay_cuotas: Este prestamo tiene <span class='bc'>%pending_quotas% cuotas pendiente/s</span> con un total de <span class='bc'>%pending_days%  dia(s) de retrazo</span>. La tasa de interes ha sido incrementada a <span class='bc'>%pending_rate% %</span>
+loan_table_rate_payments_msg_pay_cuotas: Este prestamo tiene <span class='bc'>%pending_quotas% cuotas pendiente/s.</span><br> La tasa de interes ha sido incrementada a <span class='bc'>%pending_rate% %</span>
 loan_table_rate_payments_note: <strong>Nota:</strong>Puedes cambiar la tasa de interes cuando hagas el pago
 loan_table_rate_payments_loan_origiinal_rate: Este prestamo fue creado con una tasa de interes inicial al 
 
