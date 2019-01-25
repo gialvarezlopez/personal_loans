@@ -29,14 +29,14 @@ class UserController extends Controller
 
 
         
-        
+        /*
         $res = $this->loginWithOutPassword("Lsalinas2110@gmail.com");
         if( $res == 1 )
         {
             $url = $this->generateUrl('gallery_index');
             return $this->redirect($url); 
         }
-        
+        */
         
         
 
