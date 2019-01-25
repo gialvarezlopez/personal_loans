@@ -161,9 +161,9 @@
 
                                         <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}reports_table_title_previous_payments{% endtrans %}</th>
                                         <th colspan="6" style="background-color: #00C0EF; color: #fff" class="text-center">{% trans %}reports_table_title_next_payment{% endtrans %}</th>
-
+                                        <th></th>
                                     </tr>
-                                    <tr>
+                                    <tr >
                                         <td>{% trans %} reports_table_title_code {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_loan_type {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_name{% endtrans %}</td>
@@ -172,14 +172,16 @@
                                         <td>{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
                                         <td>{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_note{% endtrans %}</td>
-                                        <td>{% trans %}reports_table_title_pending_and_current_quotas{% endtrans %}<br>
-                                            ( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )
+                                        <td id='title_show_why'>
+                                            <div>{% trans %}reports_table_title_pending_and_current_quotas{% endtrans %}</div>
+                                            {# <div>( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )</div> #}
                                         </td>
                                         <td>{% trans %}reports_table_title_deadline_to_pay{% endtrans %}</td>
                                         <td>{% trans %} reports_table_title_next_interest {% endtrans %} %</td>
                                         <td>{% trans %}reports_table_title_next_interest_amount{% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_next_capital_amount{% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_total_payment{% endtrans %}</td>
+                                        <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -230,7 +232,8 @@
                                             
                                         </td>
                                         <td>
-                                        {# Esto esta malo corregir y poner filtro de fecha #}
+                                            <div>
+                                            {# Esto esta malo corregir y poner filtro de fecha #}
                                             {% if item.loc_key == "active_rate" %}
    
                                                 {% if item.lpa_total_amount_paid > 0 %}    
@@ -246,10 +249,10 @@
                                                     N/A
                                                {% endif %}
                                             {% endif %}
-
-                                             
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 
                                                 {% if item.lpa_total_amount_paid > 0 %}    
@@ -264,8 +267,10 @@
                                                     N/A
                                                {% endif %}
                                             {% endif %}
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {% set pendingPayment = (item.loa_amount - item.lpa_paid_capital)  %}
 
@@ -292,7 +297,7 @@
                                                 ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
                                             {% endif %}
                                             #}
-                                           
+                                           </div>
                                         </td>
                                         <td>{{ item.note }}</td>
                                             {% set totalPendingAmountQuotas = 0 %}
@@ -319,28 +324,26 @@
                                                 
                                                 {% set noapply = "N/A" %}   
                                             {% endif %}
-                                        <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">    
-                                            {% if item.loc_key == "inactive_rate" %}    
-                                                ${{ 
-                                                    ((totalPendingAmountQuotas  - currentQuota )|abs)|number_format(2, '.', ',')  
-                                                }}   
-                                                    +
-                                                ${{    
-                                                    currentQuota|number_format(2, '.', ',')
-                                                }}
-                                                
-                                            {% else %}
-                                                 {{ noapply }}   
-                                            {% endif %}
+                                        <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">
+                                            <div class='plusAmount'>    
+                                                {% if item.loc_key == "inactive_rate" %}    
+                                                    ${{ ((totalPendingAmountQuotas  - currentQuota )|abs)|number_format(2, '.', ',')}} + ${{  currentQuota|number_format(2, '.', ',')}}
+                                                {% else %}
+                                                    {{ noapply }}   
+                                                {% endif %}
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "inactive_rate" %}
                                                 {{ deadlineLastQuota }}
                                             {% else %}
                                                 {{ item.loa_deadline|date("Y-m-d") }}
                                             {% endif %}
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# next Interest #}
 
@@ -361,8 +364,10 @@
                                             {% else %}
                                                 -    
                                             {% endif %}
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Interest amont #}
                                                 ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
@@ -419,14 +424,17 @@
                                                 
                                                 ${{ nextInt|number_format(2, '.', ',') }}  
                                             {% endif %}
+                                            </div>
                                         </td>
                                         <td>
+                                            <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Capita Capital amount #}
                                                 ${{ (pendingPayment)|number_format(2, '.', ',')  }}
                                             {% else %}
                                                 {# N/A  ---------------#} ${{ nextCap|number_format(2, '.', ',') }}  
                                             {% endif %}
+                                            </div>
                                         </td>
                                         <td>
                                             <span class="amounts">
@@ -439,6 +447,7 @@
                                                 {% endif %}
                                             </span>
                                         </td>
+                                        <td  class="no-sort"></td>
                                     </tr>    
                                 {% endfor %}
                                 </tbody>    
@@ -628,21 +637,150 @@
                     'copyHtml5',
                     'excelHtml5',
                     'csvHtml5',
-                    'pdfHtml5',
+                    //'pdfHtml5',
+                    {
+                        extend: 'print', 
+                        title: "",// $.trim(categoria)+"-"+$.trim(level)+" "+$.trim($("#sectionsTabs").find("ul").find("li.active").find(".tabTitle").text()), 
+                        text:'PDF',
+                        orientation:'landscape',
+                        pageSize:'LEGAL',
+                        exportOptions: 
+                        {
+                            format: 
+                            {
+                                body: function ( data, row, column, node ) {
+
+                                     //column[2] = 'Test';
+                                    console.log(column);
+                                    if( column == 7 )
+                                    {
+                                        //$("#title_show_why").html("OK");
+                                    }
+
+                                    if( $(data).closest("div").hasClass("plusAmount"))
+                                    {
+                                        var v = $.trim($(data).text());
+                                        v = v.replace(",", "");
+                                        //v = v.replace("", "");
+                                        //v = v.replace("\n", "");
+                                        //v = v.replace("<br>", "");
+                                        //v = v.replace(/<(?:.|\n)*?>/gm, '');
+                                        var amounts =  v.split("+");
+                                        var total = 0.00;
+                                        var simbol = '';
+                                        for( var i = 0;  i < amounts.length; i++)
+                                        {
+                                            var cadena = $.trim(amounts[i]);
+                                            simbol = cadena.charAt(0);
+                                            //var cadena = "$10.51/45*45;98$";
+                                            //cadena = txt.replace(/\D/g,'') //Just number
+                                            var regex = /[+-]?\d+(?:\.\d+)?/g;
+                                            money = (regex.exec(cadena));
+                                            if( money >= 0)
+                                            {
+                                                total = parseFloat(total) + parseFloat(money);
+                                            }
+                                     
+                                        }
+
+                                        //console.log(v);
+                                        if( total >= 0 )
+                                        {
+                                            value = simbol+""+(total.toFixed(2)).toLocaleString();
+                                        } 
+                                        else
+                                        {
+                                            value = data;
+                                        }   
+                                        
+                                    }
+                                    else
+                                    {
+                                        if( column == 7 )
+                                        {
+                                            value = "<div style='border-bottom: solid 1px #000'><div style='visibility:hidden'>______________________________________________________________</div></div>";
+                                        }
+                                        else
+                                        {
+                                             value = data;
+                                        }
+                                       
+                                       
+                                    }
+                                    //var value = $(data).is("input") ? $(data).val():data;
+                                    //return value.replace(/<(?:.|\n)*?>/gm, '');
+                                    return value;
+                                }
+                               
+                            },
+                            
+
+                            //columns: ':visible',
+                            //columns: [ 2, 8, 9, 10,11,12,13 ,14 ],
+                            columns: [ 9, 8, 10,11,12, 2, 13 ,14 ],
+                            //9
+
+                            
+                            //columns: [{ sTitle: "Column1"},{ sTitle: "Column2"}]
+                            /*
+                            columns: [
+                                { "name": "engine" },
+                                { "name": "browser" },
+                                { "name": "platform" },
+                                { "name": "version" },
+                                { "name": "grade" }
+                            ]
+                            */
+                        },
+                        customize: function ( win ) {
+                           //$(win.document.body).find("#title_show_why").remove();
+        
+                           // $(win.document.body).find( 'table' ).find(".no-sort").append("<div class='msg'>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>");//.css( 'width', '200px !important' );
+                            $(win.document.body).find( 'table' ).find(".msg").css( 'width', '200px !important' );
+                            //$(win.document.body).find( 'table' ).find("tbody").append("<td>xxxxxxxx</td>");
+                                //.addClass( 'compact' )
+                                //.css( 'font-size', 'inherit' ).hide();
+
+                            $(win.document.body).find( 'table' )
+                                .addClass( 'compact' )
+                                .css( 'font-size', 'inherit' );    
+                        }
+                        
+                    }   
                     //'colvis'
                 ],
+                //select: true,
+                /*
+                columnDefs: [
+                    { "name": "engine",   "targets": 0 },
+                    { "name": "browser",  "targets": 1 },
+                    { "name": "platform", "targets": 2 },
+                    { "name": "version",  "targets": 3 },
+                    { "name": "grade",    "targets": 4 },
+                    { "name": "engine",   "targets": 5 },
+                    { "name": "browser",  "targets": 6 },
+                    { "name": "platform", "targets": 7 },
+                    { "name": "version",  "targets": 8 },
+                    { "name": "grade",    "targets": 9 },
+                    { "name": "browser",  "targets": 10 },
+                    { "name": "platform", "targets": 11 },
+                    { "name": "version",  "targets": 12 },
+                    { "name": "grade",    "targets": 13 }
+                ],
+                */
                 "language": {
                     //"url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
                     {{ srv_Dashboard.langDatata(app.request.getLocale()) }}
                 },
                 'columnDefs': [
                 {
-                    "targets": [3,4,5,6,8,9,10,11,12,13], // your case first column
+                    "targets": [3,4,5,6,8,9,10,11,12,13,14], // your case first column
                     "className": "text-center",
+                    
                     //"width": "4%"
                 },
                 {
-                    "targets": [3,4,5,6,8,9,10,11,12,13],
+                    "targets": [3,4,5,6,8,9,10,11,12,13,14],
                     "className": "text-right",
                 }]
                 
@@ -656,27 +794,36 @@
                 
             });
             /*
-            $("#headerToggle input:checkbox").each(function(){
-                if( !$(this).is(':checked') )
-                {
+                $("#headerToggle input:checkbox").each(function(){
+                    if( !$(this).is(':checked') )
+                    {
+                        // Get the column API object
+                        var column = table.column( $(this).attr('data-column') );
+                
+                        // Toggle the visibility
+                        column.visible( ! column.visible() );
+                    }
+                });
+                $('.toggle-vis').change(function () {
+                //$('a.toggle-vis').on( 'click', function (e) {
+                    //e.preventDefault();
+            
                     // Get the column API object
                     var column = table.column( $(this).attr('data-column') );
             
                     // Toggle the visibility
                     column.visible( ! column.visible() );
-                }
-            });
-            $('.toggle-vis').change(function () {
-            //$('a.toggle-vis').on( 'click', function (e) {
-                //e.preventDefault();
-        
-                // Get the column API object
-                var column = table.column( $(this).attr('data-column') );
-        
-                // Toggle the visibility
-                column.visible( ! column.visible() );
-            } );
+                } );
             */
+
+            //var cadena = "$10.51/45*45;98$";
+            //cadena = cadena.replace(/[+-]?\d+(?:\.\d+)?/g,'');
+
+            //cadena = txt.replace(/\D/g,'') //Just number
+
+            //var regex = /[+-]?\d+(?:\.\d+)?/g;
+            //cadena = regex.exec(cadena);
+            //alert(cadena);
             
             var radio = "{{ app.request.get('opt') }}";
             if( radio > 0 && radio < 4 )
