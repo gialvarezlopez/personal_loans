@@ -104,7 +104,7 @@ reports_table_title_paid_capital: Capital pagado
 reports_table_title_pending_to_pay : Pendiente a pagar 
 reports_table_title_note: Comentario
 reports_table_title_pending_and_current_quotas: Cuotas pendientes + Cuota actual
-reports_table_title_deadline_to_pay: Fecha límite para pagar
+reports_table_title_deadline_to_pay: Fecha límite de pago
 reports_table_title_next_interest: Próximo interes
 reports_table_title_next_interest_amount : Próximo monto de interes
 reports_table_title_next_capital_amount: Próximo monto de capital

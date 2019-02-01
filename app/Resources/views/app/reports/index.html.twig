@@ -50,6 +50,11 @@
     font-weight: 700;
     color: #34825F;
 }
+
+@media print
+{
+
+}
 </style>
 
 {#  Check the notifications #}
@@ -110,7 +115,7 @@
                         </div><!-- /input-group -->
                     </div>
                     <div class="col-lg-6">
-                        <div class="text-muted wellx well-smx no-shadowx">
+                        <div class="text-muted wellx well-smx no-shadowx" id="dateInLetters">
                             {% trans %}reports_period{% endtrans %}
                             <b>{% trans %}reports_btn_filter_info_from{% endtrans %}</b> 
                                 {# {{ periodDate['startDate']|date('l d, F Y') }} #}
@@ -156,7 +161,7 @@
                             <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
                                 <thead>
                                     <tr>
-                                        
+                                        <th></th>
                                         <th colspan="4" class="text-center"></th>
 
                                         <th colspan="5" style="background-color: #D2D6DE; color: #34825F" class="text-center">{% trans %}reports_table_title_previous_payments{% endtrans %}</th>
@@ -167,6 +172,7 @@
                                         <td>#</td>
                                         <td>{% trans %} reports_table_title_code {% endtrans %}</td>
                                         <td>{% trans %}reports_table_title_loan_type {% endtrans %}</td>
+                                        <td>Estatus</td>
                                         <td>{% trans %}reports_table_title_name{% endtrans %}</td>
 
                                         
@@ -207,7 +213,27 @@
                                                 {{ item.loc_type }}
                                             {% endif %}
                                         </td>
+                                        <td> 
+                                             {% if item.loc_key == "active_rate" %}    
+                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {% if pending.quotas > 0 %}
+                                                    <span style='color:red'>En mora</span>
+                                                {% else %}
+                                                    <span style='color:green'>Al dia</span>
+                                                {% endif %}
+                                             {% else %}
+                                                {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
+                                                {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}   
+
+                                                {% if noPaid|length %}
+                                                    <span style='color:red'>En mora</span>
+                                                {% else %}
+                                                    <span style='color:green'>Al dia</span>
+                                                {% endif %}
+                                             {% endif %}
+                                        </td>
                                         <td>{{ item.name }} </td>
+                                        
                                         <td>
                                             {#
                                                 {% if  item.loc_key == "active_rate" %}
@@ -302,9 +328,9 @@
 
                                             
                                             {#
-                                            {% if  item.loc_key == "active_rate" %}
-                                                ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
-                                            {% endif %}
+                                                {% if  item.loc_key == "active_rate" %}
+                                                    ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
+                                                {% endif %}
                                             #}
                                            </div>
                                         </td>
@@ -314,7 +340,7 @@
                                             {% set noapply = "" %}
                                             {% set deadlineLastQuota = "" %}
                                             {% if item.loc_key == "inactive_rate" %} 
-                                                {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
+                                                {# {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %} #}
                                                 {% if noPaid %}
                                                     {% set lastPending = 0 %}
                                                     {% for n in noPaid %}
@@ -345,7 +371,7 @@
                                         <td>
                                             <div>
                                                 {% if item.loc_key == "inactive_rate" %}
-                                                    {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
+                                                    {# {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %} #}
                                                     {{ noPaid|length }}  {# CUOTAS A PAGAR #}
                                                     {% if detailPending["numQuotas"] != '' %}
                                                        = ( {{ detailPending["numQuotas"]  }} )
@@ -382,7 +408,7 @@
                                             {% if item.loc_key == "active_rate" %}
                                                 {# next Interest #}
 
-                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {# {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
                                                 {% if pending %}
                                                 
                                                     {% set rate = pending.rate %}   
@@ -456,8 +482,9 @@
                                                 {% endif %}
 
                                                 {# N/A   -------------------- #} 
+                                                N/A
                                                 
-                                                ${{ nextInt|number_format(2, '.', ',') }}  
+                                                {# ${{ nextInt|number_format(2, '.', ',') }}  #}
                                             {% endif %}
                                             </div>
                                         </td>
@@ -467,7 +494,7 @@
                                                 {# Next Capita Capital amount #}
                                                 ${{ (pendingPayment)|number_format(2, '.', ',')  }}
                                             {% else %}
-                                                {# N/A  ---------------#} ${{ nextCap|number_format(2, '.', ',') }}  
+                                                {# N/A  ---------------#} N/A {# ${{ nextCap|number_format(2, '.', ',') }}  #}
                                             {% endif %}
                                             </div>
                                         </td>
@@ -676,7 +703,7 @@
                     //'pdfHtml5',
                     {
                         extend: 'print', 
-                        title: "",// $.trim(categoria)+"-"+$.trim(level)+" "+$.trim($("#sectionsTabs").find("ul").find("li.active").find(".tabTitle").text()), 
+                        title: $.trim($("#dateInLetters").text()), 
                         text:'PDF',
                         orientation:'landscape',
                         pageSize:'LEGAL',
@@ -729,7 +756,7 @@
                                     }
                                     else
                                     {
-                                        if( column == 9 )
+                                        if( column == 11 )
                                         {
                                             value = "<div style='border-bottom: solid 1px #000'><div style='visibility:hidden'>______________________________________________________________</div></div>";
                                         }
@@ -745,6 +772,11 @@
                                     {
                                         value = row + 1;
                                     }
+
+                                    if( column == 3 )
+                                    {
+                                        value = "<div style='text-align:center'>"+data+"</div>";
+                                    }
                                     //var value = $(data).is("input") ? $(data).val():data;
                                     //return value.replace(/<(?:.|\n)*?>/gm, '');
                                     return value;
@@ -752,10 +784,11 @@
                                
                             },
                             
+                            
 
                             //columns: ':visible',
                             //columns: [ 2, 8, 9, 10,11,12,13 ,14 ],
-                            columns: [ 0, 12,13,14,  3, 10, 11, 15 ,16, 17 ],
+                            columns: [ 0, 13, 3,  14,15, 16 , 4, 10, 11, 12, 17, 18 ],
                             //9
 
                             
@@ -782,7 +815,15 @@
                             $(win.document.body).find( 'table' )
                                 .addClass( 'compact' )
                                 .css( 'font-size', 'inherit' );    
-                        }
+
+                            $(win.document.body).find('h1').hide();//.css('font-size', '15pt');
+                            $(win.document.body).find('th').eq(3).css('text-align', 'center');  
+                            $(win.document.body).find("th").eq(7).text("Monto (Cuotas)"); 
+                            $(win.document.body).find("th").eq(3).text("Interes(%)"); 
+                            $(win.document.body).find("th").eq(4).text("Interes($)");
+                            $(win.document.body).find("th").eq(5).text("Capital($)");   
+                        },
+                         
                         
                     }   
                     //'colvis'
@@ -812,14 +853,14 @@
                 },
                 'columnDefs': [
                 {
-                    "targets": [3,4,5,6,8,9,10,11,12,13,14], // your case first column
+                    "targets": [4,5,7,8,9,10,11,12,13,14, 15, 16, 17], // your case first column
                     "className": "text-center",
                     
                     //"width": "4%"
                 },
                 {
-                    "targets": [3,4,5,6,8,9,10,11,12,13,14],
-                    "className": "text-right",
+                    //"targets": [ 4,5,6,8,9,10,11,12,13,14],
+                    //"className": "text-center",
                 }]
                 
                 /*
