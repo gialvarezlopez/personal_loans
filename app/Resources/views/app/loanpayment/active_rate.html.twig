@@ -668,6 +668,8 @@
                 var pay = ( pendingAmount + justRate ).toFixed(2);
                 $(".htmlTotalAmount").html(pay);
                 //console.log(pendingAmount);
+
+                $("#overDueDateRate").val(rate);
             });
 
             $("#appbundle_loanpayment_lpaTotalAmountPaid").focus();

@@ -184,7 +184,7 @@ loan_edit_comment_item: Si elimina o agrega registros haga click en el boton gua
 loan_form_loan_created_at: Prestamo creado
 loan_form_loan_created_at_help: Fecha de cuando fue entregado el prestamo
 loan_form_requested_amount: Monto solicitado
-loan_form_default_interest_rate : Tasa de interes por defecto
+loan_form_default_interest_rate : Interes por defecto
 loan_form_default_interest_rate_disabled : Los pagos seran por cuotas establecidas
 loan_form_default_current_interest_rate : Tasa de interes actual
 loan_form_recurring_day_payment: Dias recurrentes a pagar

@@ -194,7 +194,7 @@ class Loans
         //echo $zone;
         date_default_timezone_set($zone);
         $dias = array('domingo','lunes','martes','miercoles','jueves','viernes','sabado');
-        $fecha = $dias[date('N', strtotime($checkDate))];
+        $fecha = @$dias[date('N', strtotime($checkDate))];
         return $fecha;
     }
         // ejecutamos la función pasándole la fecha que queremos
@@ -309,7 +309,7 @@ class Loans
                             AND lpa_max_payment_date >= '".$initDate."' AND lpa_max_payment_date <= '".$endDate."'
                             ";
             */
-            $RAW_QUERY = "SELECT lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
+            $RAW_QUERY = "SELECT lpa_id, lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
             AND lpa_total_amount_paid IS NULL
             AND lpa_max_payment_date <= '".$endDate."'
             ";                
@@ -318,6 +318,78 @@ class Loans
             $statement->execute();
             $result = $statement->fetchAll();
             return $result;                
+        }
+    }
+
+    function showNumPendingQuotas( $loanId, $initDate, $endDate )
+    {
+        if( $loanId >0 && $initDate !="" && $endDate != "" )
+        {
+            $data = $this->getPendingQuotasNoPaid($loanId, $initDate, $endDate);
+
+           //var_dump($data);
+           //return true;
+            $arrDates = array();
+            //echo count($data);
+            if( count($data) > 0 )
+            {
+                for($i = 0; $i < count($data); $i++)
+                {
+                    if( $data[$i]["lpa_max_payment_date"] != "" )
+                    {
+                        //$d = $data[$i]["lpa_max_payment_date"];
+                        $d = $data[$i]["lpa_id"];
+                       //echo $d." | ";
+                       //echo $data[$i]["lpa_id"]." >> ";
+                        //array_push($arrDates, $data[$i]["lpa_id"] );
+                        $arrDates[$d] = $d;
+                        //$arrDates[] = $d;
+                    }
+                }
+            }
+
+           //echo implode(",",$arrDates);
+            /*
+            $RAW_QUERY = "SELECT lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
+                            AND lpa_total_amount_paid IN NULL
+                            AND lpa_max_payment_date >= '".$initDate."' AND lpa_max_payment_date <= '".$endDate."'
+                            ";
+            */
+            $RAW_QUERY = "SELECT lpa_id, lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId ";               
+
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+
+            $arrNumQuotas = array();
+
+            $pending = count($result);
+            if( $pending > 0 && count($arrDates) > 0)
+            {
+                $order = 1;
+                for($i = 0; $i < $pending; $i++)
+                {
+                     //   echo $i." - ";
+                    $id = @$result[$i]["lpa_id"];
+                        
+                    if( $id > 0 )
+                    {
+                        if ( array_key_exists($result[$i]["lpa_id"], $arrDates) )
+                        {
+                            //$arrNumQuotasecho "Match found";
+                            //echo $result[$i]["lpa_id"]." | ";
+                            //echo " o ";
+                           array_push($arrNumQuotas, $order );
+                        }else{
+
+                        }
+                    }
+                    
+                    $order++;
+                }
+            }
+            $arrNumQuotas = ( count($arrNumQuotas) > 0 )? implode(",",$arrNumQuotas):"";
+            return array("totalQuotas"=>$pending, "numQuotas"=>$arrNumQuotas, "dates"=>$arrDates);                
         }
     }
 }

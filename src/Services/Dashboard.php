@@ -34,59 +34,59 @@ class Dashboard
     function getClientLoans($clientId)
     {
         /*
-        if( !empty($clientId) )
-        {
-            //$em = $this->getDoctrine()->getManager();
-            $loans = $this->em->getRepository('AppBundle:Loan')->findBy( array("cli"=>$clientId,"loaCompleted"=>0, "loaActive"=>1)  );
-            return $loans;
-        }
+            if( !empty($clientId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                $loans = $this->em->getRepository('AppBundle:Loan')->findBy( array("cli"=>$clientId,"loaCompleted"=>0, "loaActive"=>1)  );
+                return $loans;
+            }
         */
         
     }
     /*
-    function getDetailLoanPayments($loanId)
-    {
-        if( !empty($loanId) )
+        function getDetailLoanPayments($loanId)
         {
-            //$em = $this->getDoctrine()->getManager();
-            $payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
-            return $payments;
-        }
-        
-    }
-    */
-    /*
-    function getCountLoanPaymentsDone($loanId)
-    {
-        if( !empty($loanId) )
-        {
-            //$em = $this->getDoctrine()->getManager();
-            //$payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
-            //return $payments;
-            $RAW_QUERY  = "SELECT COUNT(*) as total FROM loan_payment WHERE loa_id = $loanId AND lpa_paid_date !='' ";
-            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
-            $statement->execute();
-            $result = $statement->fetchAll();
-            return ($result[0]["total"]);
+            if( !empty($loanId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                $payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
+                return $payments;
+            }
             
         }
-        
-    }
     */
     /*
-    //Get all detail about the loan
-    function getAllDetailLoan($loanId)
-    {
-        if( !empty($loanId) )
+        function getCountLoanPaymentsDone($loanId)
         {
-            $RAW_QUERY  = "SELECT * FROM loan_payment lp
-                            LEFT JOIN loan_payment_type lpt ON lp.lpt_id=lpt.lpt_id WHERE lp.loa_id = $loanId ";
-            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
-            $statement->execute();
-            $result = $statement->fetchAll();
-            return $result;   
+            if( !empty($loanId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                //$payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
+                //return $payments;
+                $RAW_QUERY  = "SELECT COUNT(*) as total FROM loan_payment WHERE loa_id = $loanId AND lpa_paid_date !='' ";
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();
+                return ($result[0]["total"]);
+                
+            }
+            
         }
-    }
+    */
+    /*
+        //Get all detail about the loan
+        function getAllDetailLoan($loanId)
+        {
+            if( !empty($loanId) )
+            {
+                $RAW_QUERY  = "SELECT * FROM loan_payment lp
+                                LEFT JOIN loan_payment_type lpt ON lp.lpt_id=lpt.lpt_id WHERE lp.loa_id = $loanId ";
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();
+                return $result;   
+            }
+        }
     */
 
     public function getLoans($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false, $periodCompletedDate=false)
@@ -145,6 +145,18 @@ class Dashboard
 
     public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false, $optOption = false)
     {
+
+        $hasPending = $this->getLoansWithPendingPayments();
+
+        $or = "";
+        if( count($hasPending) > 0 )
+        {
+            $list =  implode(",",$hasPending) ;
+            $or  = " OR (l.loa_id IN (".$list.") )";
+        }
+        
+
+
         $itemLoans = array();
         $arrIdLoans = array();
         if( is_array($periodDays) )
@@ -165,6 +177,7 @@ class Dashboard
                             AND lp.lpa_max_payment_date <= '".$periodDays['endDate']."' 
                             AND lp.lpa_total_amount_paid IS NULL
                         )
+                        $or
                     ";
                 }
                 else
@@ -181,15 +194,16 @@ class Dashboard
                                                     l.loa_deadline >= '".$periodDays["startDate"]."' AND l.loa_deadline <= '".$periodDays['endDate']."' 
                                                    
                                                 )
+                                                $or
                                             ) ";
                     }
                     else if( $optOption == 2 )
                     {
-                        $RAW_QUERY .=  " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."'";
+                        $RAW_QUERY .=  " AND lp.lpa_paid_date >= '".$periodDays["startDate"]."' and  lp.lpa_paid_date <= '".$periodDays['endDate']."' $or ";
                     }
                 }
             }
-            //echo $RAW_QUERY;
+            $RAW_QUERY .= " ORDER BY c.cli_first_name ASC ";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -255,7 +269,7 @@ class Dashboard
             }
 
             $arr = array();
-            //echo $RAW_QUERY;
+            $RAW_QUERY .= " ORDER BY name ASC ";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -288,6 +302,45 @@ class Dashboard
             }
             return $arr;
         }
+    }
+
+
+    public function getLoansWithPendingPayments()
+    {
+        $aDataLoans = array();
+        //$res = $srvLoan->getAllDetailLoan($loanId);
+        $srvLoan = $this->container->get('srv_Loans');
+        $srvTimeZone = $this->container->get('srv_TimeZone');
+
+        $RAW_QUERY  = "SELECT * FROM loan WHERE loa_completed = 0 AND loa_active = 1 ";
+        $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+        $statement->execute();
+        $result = $statement->fetchAll();
+        if( count($result) > 0 )
+        {
+            for($i = 0; $i < count($result); $i++)
+            {
+                $rate = $result[$i]["loa_rate_interest"];
+                $recurringDays = $result[$i]["loa_recurring_day_payment"];
+                $maxPayDate = $result[$i]["loa_deadline"];
+                $zone = $srvTimeZone->getNameTimeZone();
+
+                $data = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);
+                if( $data )
+                {
+                    $hasPending = ($data["quotas"]) - 1;
+                    if( $hasPending > 0 )
+                    {
+                        //echo $result[$i]["loa_id"]." - ";
+                        array_push($aDataLoans, $result[$i]["loa_id"] );
+                        //array_push($aDataLoans,  $result[$i] );
+                    }
+                }
+            }
+        }
+
+        return $aDataLoans;
+        
     }
 
     public function getLoansDetail($userId, $periodCompletedDate=false, $statusCompleted)

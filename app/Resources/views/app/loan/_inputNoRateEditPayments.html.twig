@@ -80,6 +80,9 @@
                                 <thead>
                                     <tr>
                                         {# <th>#</th> #}
+                                        {% if  action is defined and (action != "edit" ) %}
+                                            <th></th>
+                                        {% endif %}
                                         <th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th>
                                         <th>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</th>
                                         <th>{% trans %}loan_table_payments_action{% endtrans %}</th>
@@ -135,6 +138,9 @@
                                                 {% endif %}
                                         <tr id="tr_{{ counter }}" class="{{done}} {{ item.lpt_key }} {{ markerToday }}" data-paymentid="{{ item.lpa_id }}" data-paymenttypeid="{{ item.lpt_id }}">
                                             {# <td>{{ counter }}</td> #}
+                                            {% if  action is defined and (action != "edit" ) %}
+                                                <td> {{ counter }}</td>
+                                            {% endif %}
                                             <td>
                                                 {% if initDate and (initDate) != "N/A" %} 
                                                     <span class='initDate'>{{ initDate }}</span>
