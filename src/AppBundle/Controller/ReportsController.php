@@ -166,6 +166,8 @@ class ReportsController extends Controller
         $dompdf->stream("mypdf.pdf", [
             "Attachment" => false
         ]);
+
+        exit();
     }
 
     public function inicio_fin_semana()
