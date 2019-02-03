@@ -51,9 +51,7 @@
     color: #34825F;
 }
 
-.tablex td, .tablex th{
- padding: 8px;
-}
+
 
 @media print {
     table td {
@@ -170,7 +168,7 @@
                                     <hr>
                                 </div>
                             #}
-                            <table id="clientslist" class="tablex table-striped display nowrap" style="width:100%">
+                            <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -381,7 +379,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div style="float:left; width: 60px; overflow-wrap: break-word;">
+                                            <div>
                                                 {% if item.loc_key == "inactive_rate" %}
                                                     {# {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %} #}
                                                     {{ noPaid|length }}  {# CUOTAS A PAGAR #}
