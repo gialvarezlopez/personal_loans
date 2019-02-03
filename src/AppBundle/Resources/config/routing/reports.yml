@@ -2,3 +2,9 @@ report_index:
     path:     /
     defaults: { _controller: "AppBundle:Reports:index" }
     methods:  GET
+
+
+report_print_loans:
+    path:     /printLoans
+    defaults: { _controller: "AppBundle:Reports:printLoans" }
+    methods:  GET    

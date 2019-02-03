@@ -51,10 +51,22 @@
     color: #34825F;
 }
 
-@media print
-{
-
+.tablex td, .tablex th{
+ padding: 8px;
 }
+
+@media print {
+    table td {
+        /*    
+        border-top: #000 solid 1px;
+        border-bottom: #000 solid 1px;
+        border-left: #000 solid 1px;
+        border-right: #000 solid 1px;
+        */
+        
+        border-bottom: #000 solid 1px;
+    }
+} 
 </style>
 
 {#  Check the notifications #}
@@ -158,7 +170,7 @@
                                     <hr>
                                 </div>
                             #}
-                            <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
+                            <table id="clientslist" class="tablex table-striped display nowrap" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -200,7 +212,7 @@
                                 {% set itemNumber = 1 %}
                                 {% for item in lastLoan %}
                                     <tr>
-                                        <td>{{itemNumber}}</td>
+                                        <td >{{itemNumber}}</td>
                                         <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
                                         <td>
                                             
@@ -225,7 +237,7 @@
                                                 {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
                                                 {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}   
 
-                                                {% if noPaid|length %}
+                                                {% if noPaid|length > 1 %}
                                                     <span style='color:red'>En mora</span>
                                                 {% else %}
                                                     <span style='color:green'>Al dia</span>
@@ -369,7 +381,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div>
+                                            <div style="float:left; width: 60px; overflow-wrap: break-word;">
                                                 {% if item.loc_key == "inactive_rate" %}
                                                     {# {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %} #}
                                                     {{ noPaid|length }}  {# CUOTAS A PAGAR #}
@@ -701,6 +713,7 @@
                     'excelHtml5',
                     'csvHtml5',
                     //'pdfHtml5',
+                    /*
                     {
                         extend: 'print', 
                         title: $.trim($("#dateInLetters").text()), 
@@ -756,9 +769,9 @@
                                     }
                                     else
                                     {
-                                        if( column == 11 )
+                                        if( column == 9 )
                                         {
-                                            value = "<div style='border-bottom: solid 1px #000'><div style='visibility:hidden'>______________________________________________________________</div></div>";
+                                            value =  "<div style=''><div style='visibility:hidden'>______________________________________________________________</div></div>";
                                         }
                                         else
                                         {
@@ -773,7 +786,7 @@
                                         value = row + 1;
                                     }
 
-                                    if( column == 3 )
+                                    if( column == 2 )
                                     {
                                         value = "<div style='text-align:center'>"+data+"</div>";
                                     }
@@ -787,46 +800,44 @@
                             
 
                             //columns: ':visible',
-                            //columns: [ 2, 8, 9, 10,11,12,13 ,14 ],
-                            columns: [ 0, 13, 3,  14,15, 16 , 4, 10, 11, 12, 17, 18 ],
+                            //columns: [ 0, 13, 3,  14,15,  4, 10, 11, 12, 16 , 18 ],
+                            columns: [ 0, 3,  14, 15,  4, 10, 11, 12, 16 , 18 ],
                             //9
 
                             
                             //columns: [{ sTitle: "Column1"},{ sTitle: "Column2"}]
-                            /*
-                            columns: [
-                                { "name": "engine" },
-                                { "name": "browser" },
-                                { "name": "platform" },
-                                { "name": "version" },
-                                { "name": "grade" }
-                            ]
-                            */
                         },
                         customize: function ( win ) {
                            //$(win.document.body).find("#title_show_why").remove();
         
                            // $(win.document.body).find( 'table' ).find(".no-sort").append("<div class='msg'>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>");//.css( 'width', '200px !important' );
-                            $(win.document.body).find( 'table' ).find(".msg").css( 'width', '200px !important' );
+                            //$(win.document.body).find( 'table' ).find(".msg").css( 'width', '200px !important' );
+                            $(win.document.body).css( 'width', '200px !important' );
                             //$(win.document.body).find( 'table' ).find("tbody").append("<td>xxxxxxxx</td>");
                                 //.addClass( 'compact' )
                                 //.css( 'font-size', 'inherit' ).hide();
 
-                            $(win.document.body).find( 'table' )
+                            $(win.document.body).find( 'table ' )
                                 .addClass( 'compact' )
-                                .css( 'font-size', 'inherit' );    
+                                .css( 'font-size', 'inherit' );  
+
+                            //$(win.document.body).find( 'table td' )
+                                //.addClass( 'compact' )
+                                //.css( 'border-bottom', '1pt solid black' );        
 
                             $(win.document.body).find('h1').hide();//.css('font-size', '15pt');
-                            $(win.document.body).find('th').eq(3).css('text-align', 'center');  
-                            $(win.document.body).find("th").eq(7).text("Monto (Cuotas)"); 
-                            $(win.document.body).find("th").eq(3).text("Interes(%)"); 
-                            $(win.document.body).find("th").eq(4).text("Interes($)");
-                            $(win.document.body).find("th").eq(5).text("Capital($)");   
+                            $(win.document.body).find('th').eq(2).css('text-align', 'center');  
+                            $(win.document.body).find("th").eq(5).text("Monto (Cuotas)"); 
+                            $(win.document.body).find("th").eq(2).text("Interes(%)"); 
+                            $(win.document.body).find("th").eq(3).text("Interes($)");
+                            $(win.document.body).find("th").eq(8).text("Capital($)");
+                           // $(win.document.body).find("th").eq(9).text("Capital");   
                         },
                          
                         
                     }   
                     //'colvis'
+                    */
                 ],
                 //select: true,
                 /*
@@ -919,7 +930,21 @@
                 var from = $.trim(txt[0]);
                 var to = $.trim(txt[1]);
                 window.location.href = "{{ path('report_index') }}?from="+from+"&to="+to+"&opt="+opt;
-            })
+            });
+
+            $(".dt-buttons").append("<button class='custom-print' tabindex='0' aria-controls='clientslist' type='button'><span>PDF</span></button>");
+
+            $("body").on("click",".custom-print", function(){
+                //$("#holder_loading").show();
+                var opt = $("input[name='optFilter']:checked").val();
+                //alert(opt);
+                var txt = $.trim($('#rangeDate').val());
+                txt = txt.split("-");
+                var from = $.trim(txt[0]);
+                var to = $.trim(txt[1]);
+                var url = "{{ path('report_print_loans') }}?from="+from+"&to="+to+"&opt="+opt;
+                window.open(url, '_blank');
+            });
         });    
     </script>
 {% endblock %}

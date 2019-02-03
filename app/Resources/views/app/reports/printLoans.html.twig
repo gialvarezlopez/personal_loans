@@ -1,0 +1,531 @@
+{#
+{% block title_page %}
+    {% trans %}reports_title{% endtrans %} - {% trans %} app_name {% endtrans %} 
+{% endblock %}
+#}
+
+{% block breadcrumb %}
+    {# {{ include('EmrBundle:consulta:_breadcrumb.html.twig' )  }} #}
+{% endblock %}
+
+{% block submenutop %}
+    {# {{ include('EmrBundle:consulta:_submenu.html.twig' )  }} #}
+{% endblock %}
+
+
+{#
+{% block header %}
+        <h1>Clients list</h1><hr>
+{% endblock %}
+#}
+
+{% block content %}
+
+<style>
+body{
+    font-size: 12px !important;
+    margin: 3em 1em 3em 1em;
+}
+.titleTypeColumn{
+    display:inline-block;
+    width:170px;
+}
+#prevP, .prevP{
+    background:#D2D6DE;
+}
+#nextP, .nextP{
+    background: #00C0EF;
+}
+
+#prevP, #nextP{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.bgred{
+    color:#9b1111;
+}
+.amounts{
+    font-size:12px;
+    font-weight: 700;
+    color: #34825F;
+}
+
+.table td, .table th{
+ padding: 8px;
+ border:none; 
+}
+.table td{
+   font-size:11px !important;
+}
+/*
+@page { margin: 100px 25px; }
+    header { position: fixed; top: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
+    footer { position: fixed; bottom: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
+    p { page-break-after: always; }
+    p:last-child { page-break-after: never; }
+    */
+
+.table td {
+        /*    
+        border-top: #000 solid 1px;
+        border-bottom: #000 solid 1px;
+        border-left: #000 solid 1px;
+        border-right: #000 solid 1px;
+        */
+        
+        border-bottom: #000 solid 1px !important;
+}
+
+</style>
+<link rel="stylesheet" href="{{ asset('bundles/app/font/font-source-sans-pro.css') }}">
+    <!-- Bootstrap 3.3.7 -->
+<link rel="stylesheet" href="{{ asset('bundles/app/template/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+{#  Check the notifications #}
+{% set created = 0 %}
+{% for message in app.session.flashbag().get("success") %}
+    <div class="alert alert-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> {{message}}</div>
+{% endfor %}
+{% for message in app.session.flashbag().get("error") %}
+    <div class="alert alert-danger"><i class="fa fa-times" aria-hidden="true"></i> {{message}} </div>
+{% endfor %}
+{# End notifications #}
+
+
+{# {{ app.user.usrId }} #}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box">
+            
+            <div class="box-body">
+                {#
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio1" value="1" checked>{% trans %}reports_opt_next_payment{% endtrans %}
+                        </label>
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio2" value="2">{% trans %}reports_opt_payments_done{% endtrans %}
+                        </label>
+                        <label class="radio-inline">
+                        <input type="radio" name="optFilter" id="inlineRadio3" value="3">{% trans %}reports_opt_show_both{% endtrans %}
+                        </label>
+                    </div>
+                    <br><br>
+                </div>
+                #}
+                
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate, opt) %}
+                        {% if lastLoan|length > 0 %}
+
+                            <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
+                                <thead>
+                                    <tr >
+                                        <td>#</td>
+                                        {#
+                                            <td>{% trans %} reports_table_title_code {% endtrans %}</td>
+                                            <td>{% trans %}reports_table_title_loan_type {% endtrans %}</td>
+                                        #}
+                                        <td>Estatus</td>
+                                        <td>{# {% trans %} reports_table_title_next_interest {% endtrans %} #} Interes(%)</td>
+                                        <td>{# {% trans %}reports_table_title_next_interest_amount{% endtrans %} #} Interes($)</td>
+                                        <td>{% trans %}reports_table_title_name{% endtrans %}</td>
+
+                                        
+                                        {#
+                                            <td>{% trans %}reports_table_title_previous_interest{% endtrans %}</td>
+                                            <td>{% trans %} reports_table_title_paid_interest {% endtrans %}</td>
+                                            <td>{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
+                                            <td>{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
+                                            <td>{% trans %}reports_table_title_note{% endtrans %}</td>
+                                        #}
+                                        <td id='title_show_why'>
+                                            <div>{# {% trans %}reports_table_title_pending_and_current_quotas{% endtrans %} #} Monto(Cuotas)</div>
+                                            {# <div>( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )</div> #}
+                                        </td>
+                                        {# <td>Cuotas a pagar</td> #}
+                                        <td>Cuotas totales</td>
+                                        {# <td>{% trans %}reports_table_title_deadline_to_pay{% endtrans %}</td> #}
+                                        
+                                        <td>{# {% trans %}reports_table_title_next_capital_amount{% endtrans %} #} Capital/Cuotas</td>
+                                        {# <td>{% trans %}reports_table_title_total_payment{% endtrans %}</td> #}
+                                        <td>Comentario</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% set itemNumber = 1 %}
+                                {% for item in lastLoan %}
+                                    <tr>
+                                        <td >{{itemNumber}}</td>
+                                        {#
+                                            <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
+                                            <td>
+                                                
+                                                {% if item.loc_key == "active_rate" %}
+                                                    <span class="label label-primary">{% trans %}general_loan_with_percentage{% endtrans %}</span>
+                                                    
+                                                {% elseif item.loc_key == "inactive_rate"  %}
+                                                    <span class="label label-warning">{% trans %} general_loan_per_quotas {% endtrans %}</span>
+                                                {% else %}
+                                                    {{ item.loc_type }}
+                                                {% endif %}
+                                            </td>
+                                        #}
+                                        <td> 
+                                             {% if item.loc_key == "active_rate" %}    
+                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {% if pending.quotas > 0 %}
+                                                    {% set color = "color: #9b1111; font-weight: 700;" %}
+                                                    <span style="{{color}}">En mora</span>
+                                                {% else %}
+                                                    {% set color = "color: #34825F; font-weight: 700;" %}
+                                                    <span style="{{color}}">Al dia</span>
+                                                {% endif %}
+                                             {% else %}
+                                                {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
+                                                {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}   
+
+                                                {% if noPaid|length > 1 %}
+                                                    {% set color = "color: #9b1111; font-weight: 700;" %}
+                                                    <span style="{{color}}">En mora</span>
+                                                {% else %}
+                                                     {% set color = "color: #34825F; font-weight: 700;" %}
+                                                    <span style="{{color}}">Al dia</span>
+                                                {% endif %}
+                                             {% endif %}
+                                        </td>
+                                        
+                                        
+                                        <td style="display:none">
+                                            <div>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {% set rate =  item.lpa_current_rate_interest %}
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                        <span class="amounts">{{ item.lpa_current_rate_interest }}%</span>
+                                                {% else %}
+                                                        N/A      
+                                                {% endif %}
+                                            {% else %}
+                                                -   
+                                                <!-- No Interesrt Rate -->
+                                                {% set prevData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "prev") %}
+                                                {% set nextData = srv_Dashboard.getPrevAndNextPaymentNoRate(item.loa_id, "next") %}
+                                                {% set returnAmount = srv_Loans.getTotalReturnAmountRequested(item.loa_id) %} 
+                                                {% set totalReturnAmountPaid = srv_Loans.getTotalAmountPaid(item.loa_id) %}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        <td style="display:none">
+                                            <div>
+                                           
+                                            {% if item.loc_key == "active_rate" %}
+   
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                    ${{ item.lpa_paid_rate_interest|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}
+                                            {% else %}
+                                                
+                                               {% if prevData %}
+                                                    ${{ prevData[0].lpa_paid_rate_interest|number_format(2, '.', ',')  }} 
+                                               {% else %}
+                                                    N/A
+                                               {% endif %}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        <td style="display:none">
+                                            <div>
+                                            {% if item.loc_key == "active_rate" %}
+                                                
+                                                {% if item.lpa_total_amount_paid > 0 %}    
+                                                    ${{ item.lpa_paid_capital|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}
+                                            {% else %}
+                                                {% if prevData %}
+                                                    ${{ prevData[0].lpa_paid_capital|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A
+                                               {% endif %}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        <td style="display:none">
+                                            <div>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {% set pendingPayment = (item.loa_amount - item.lpa_paid_capital)  %}
+
+                                                {% set sumCapital = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+                                                {% set pendingPayment =  item.loa_amount - sumCapital[0]["paidCapital"] %}
+
+                                                {% set arrPendingAmount = srv_Loans.getPendingAmount(item.loa_id) %}
+                                                {% set pendingPayment =  arrPendingAmount[0]["pending"] %}
+                                                
+                                                
+
+                                                {% if item.lpa_total_amount_paid > 0 or pendingPayment > 0 %}    
+                                                    ${{ pendingPayment|number_format(2, '.', ',')  }}
+                                                {% else %}
+                                                    N/A      
+                                                {% endif %}
+                                            {% else %} 
+                                                ${{ (returnAmount - totalReturnAmountPaid)|number_format(2, '.', ',') }}
+                                            {% endif %}
+
+       
+                                           </div>
+                                        </td>
+                                        <td style="display:none">{{ item.note }}</td>
+                                            {% set totalPendingAmountQuotas = 0 %}
+                                            {% set currentQuota = 0 %}
+                                            {% set noapply = "" %}
+                                            {% set deadlineLastQuota = "" %}
+                                            {% if item.loc_key == "inactive_rate" %} 
+                                                
+                                                {% if noPaid %}
+                                                    {% set lastPending = 0 %}
+                                                    {% for n in noPaid %}
+                                                        {% set lastPending =  lastPending + 1 %}
+                                                        {% set totalPendingAmountQuotas = totalPendingAmountQuotas + n['lpa_current_amount'] %}
+                                                        {% if noPaid|length == lastPending %}
+                                                            {% set currentQuota = n['lpa_current_amount'] %}
+                                                            {% set deadlineLastQuota = n['lpa_max_payment_date']|date("Y-m-d") %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    
+                                                {% else %}
+                                                    {% set noapply = "-" %}
+                                                {% endif %}
+                                            {% else %}
+                                                
+                                                {% set noapply = "N/A" %}   
+                                            {% endif %}
+                                        
+                                        <td>
+                                            <div >
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# next Interest #}
+
+                                                {# {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
+                                                {% if pending %}
+                                                
+                                                    {% set rate = pending.rate %}   
+                                                    <span class="amounts" style="{{color}}">{{ rate }}%</span> 
+                                                        
+                                                {% else %}
+                                                    
+                                                    {% set rate = item.loa_rate_interest %}
+                                                    <span class="amounts" style="{{color}}">{{ item.loa_rate_interest }}%</span>
+                                                         
+                                                {% endif %}
+
+                                                {# {{ item.lpa_next_rate_interest }}% #}
+                                            {% else %}
+                                                -    
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# Next Interest amont #}
+                                                ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
+                                            {% else %}
+
+                                                {# ----------- calculates the interest amount  if the payment has it, per quotas----------- #} 
+                                                {% if totalPendingAmountQuotas == 0 %}
+                                                    {% set amount = nextData[0].lpa_current_amount %}
+                                                {% else %}
+                                                    {% set amount = totalPendingAmountQuotas %}
+                                                {% endif %}
+                                                
+                                                {% set amountRequested = item.loa_amount %}
+                                                {% set checkPayments = srv_Loans.checkPaymentsPerLoan(item.loa_id) %}
+
+                                                {% set nextInt = 0 %}
+                                                {% set nextCap = 0 %}
+                                                {# {{ checkPayments[0]['paidTotal'] }}---------------{{ amountRequested }} *********** #}
+                                                {% if ( (checkPayments[0]['paidTotal'] < amountRequested) or  ( amount < amountRequested) ) %}
+                                                
+                                                    {% set t = checkPayments[0]['paidCapital'] +  amount %}
+
+                                                    {% if (t < amountRequested) %}
+                                                    
+                                                        {# $oPayment->setLpaPaidCapital($amount); #}
+                                                        {# hay capital #}
+                                                        {% set nextCap = amount %} 
+                                                    {% else %}
+                                                    
+                                                        {% set payInterest = (t - amountRequested) %}
+                                                        {% set payCapital = (amount - payInterest) %}
+                                                        {% if ( payCapital > 0 ) %}
+                                                            {# $oPayment->setLpaPaidCapital($payCapital); #}
+                                                            {# hay capital #}
+                                                            {% set nextCap = payCapital %} 
+                                                        {% endif %}
+
+                                                        {% if (payInterest > 0 ) %} 
+                                                            {# hay interes #}
+                                                            {# $oPayment->setLpaPaidRateInterest( ($amount-$payCapital)/*$payInterest*/); #}
+                                                            {% set nextInt = ( amount - payCapital) %}
+                                                        {% endif %}
+                                                        
+                                                   
+                                                    {% endif %}
+                                                    
+                                                {% else %}
+                                                    {# hay interes #}
+                                                    {# $oPayment->setLpaPaidRateInterest($amount); #}
+                                                    {% set nextInt = ( amount ) %} 
+                                                {% endif %}
+
+                                                {# N/A   -------------------- #} 
+                                                N/A
+                                                
+                                                {# ${{ nextInt|number_format(2, '.', ',') }}  #}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+
+                                        <td>{{ item.name }} </td>
+
+                                        <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">
+                                            <div class='plusAmount' >    
+                                                {% if item.loc_key == "inactive_rate" %}    
+                                                    ${{ (((totalPendingAmountQuotas  - currentQuota )|abs) + currentQuota) |number_format(2, '.', ',')}}
+                                                     {# CUOTAS A PAGAR #}
+                                                    {% if detailPending["numQuotas"] != '' %}
+                                                       <span style="{{color}}">({{ noPaid|length }})</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ noapply }}   
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        {#
+                                        <td>
+                                            <div style="">
+                                                {% if item.loc_key == "inactive_rate" %}
+                                                   
+                                                  
+                                                    {% if detailPending["numQuotas"] != '' %}
+                                                       = ( {{ detailPending["numQuotas"]  }} )
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        #}
+                                        <td>
+                                            <div>
+                                                {% if item.loc_key == "inactive_rate" %}
+                                                    
+                                                    {% if detailPending %}
+                                                         {{ detailPending["totalQuotas"] }} 
+                                                    {% endif %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        {#
+                                        <td>
+                                            <div>
+                                            {% if item.loc_key == "inactive_rate" %}
+                                                {{ deadlineLastQuota }}
+                                            {% else %}
+                                                {{ item.loa_deadline|date("Y-m-d") }}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        #}
+                                        
+                                        <td>
+                                            <div>
+                                            {% if item.loc_key == "active_rate" %}
+                                                {# Next Capita Capital amount #}
+                                                ${{ (pendingPayment)|number_format(2, '.', ',')  }}
+                                            {% else %}
+                                                {# N/A  ---------------#}  {# ${{ nextCap|number_format(2, '.', ',') }}  #}
+                                                {% if detailPending["numQuotas"] != '' %}
+                                                        <span style="{{color}}" ># {{ detailPending["numQuotas"]  }} </span>
+                                                {% else %}  
+                                                        N/A      
+                                                {% endif %}
+                                            {% endif %}
+                                            </div>
+                                        </td>
+                                        {#
+                                        <td>
+                                            <span class="amounts">
+                                                {% if item.loc_key == "active_rate" %}
+                                                    <!-- Next Capita Capital amount -->
+                                                    ${{  ((pendingPayment) * (rate/100) + (pendingPayment))|number_format(2, '.', ',') }}
+                                                {% else %}
+                                                    
+                                                    ${{ (nextInt + nextCap)|number_format(2, '.', ',')}}
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        #}
+                                        <td  class="no-sort">
+                                            <div style=''><div style='visibility:hidden'>___________________________________________</div></div>
+                                        </td>
+                                    </tr>  
+                                    {% set itemNumber = itemNumber + 1 %}  
+                                {% endfor %}
+                                </tbody>    
+                            </table>
+                        {% else %}
+                            <div class="alert alert-warning text-center">{% trans %}reports_table_no_data_found{% endtrans %}</div>    
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {#
+    <div class="col-lg-4">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Loans History</h3>
+            </div>
+            <div class="box-body">
+                {{ include('app/dashboard/_tableLoansDetails.html.twig' )  }}        
+            </div>
+            <div class="box-footer text-center"></div>
+        </div>
+          
+        <div class="info-box">
+            <span class="info-box-icon bg-blue"><i class="ion ion-ios-people-outline"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Created Clients</span>
+                {% set clients = srv_Dashboard.getClients(app.user.usrId) %}
+                <span class="info-box-number">{{ clients }}</span>
+                <div><a href="{{ path('client_index') }}">View all clients</a></div>
+             </div>
+        <!-- /.info-box-content -->
+         </div> 
+    </div>
+    #}
+</div>    
+{% endblock %}
+
+{% block codejs %}
+    <script>
+        //$(document).on("ready", function(){
+        $(function () {
+
+            
+        });    
+    </script>
+{% endblock %}
+
