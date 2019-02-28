@@ -61,7 +61,7 @@
 
                     {% if item_number == 0  %}
                     
-                        {% set max = (payment.lpaCurrentAmount ) - payment.lpaPaidCapital %}
+                        {% set max = (payment.lpaCurrentAmount + additionalAmounts) - payment.lpaPaidCapital %}
                         {% set iniAmount = payment.lpaCurrentAmount %}
                        
                     {% else %}
@@ -187,6 +187,7 @@
                                     0
                                 {% endif %}
                                  %
+                                 
                             </span>
                         </td>
                         <td> 

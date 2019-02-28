@@ -57,12 +57,29 @@
     /*cursor:not-allowed;*/
 } 
 
-#holderPaymentDetail{
+#holderPaymentDetail, #holderPaymentDetail_additional{
     display:none;
 }
 
 .control-label{
     font-weight: 550!important
+}
+
+.tab-pane {
+
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0px 0px 5px 5px;
+    padding: 10px;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+.tab-content{
+    background: #fff;
 }
 </style>
 
@@ -137,7 +154,15 @@
                     <i class="fa fa-barcode" aria-hidden="true"></i> {% trans %}loan_edit_code{% endtrans %}: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
                 </div>
                 <div class="col-lg-4">    
-                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: 
+                        <b class="amounts">
+                            <i class="fa fa-usd" aria-hidden="true"></i> 
+                            {{ loan.loaAmount|number_format(2, '.', ',') }}
+                            {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
+                            {% if additionalAmounts > 0 %}
+                                +  {{ additionalAmounts|number_format(2, '.', ',') }}
+                            {% endif %}
+                        </b>
                 </div>
             </div>
         </div>
@@ -166,9 +191,7 @@
                         {% set quotas = "" %}
                         
                     {% endif %}
-                    <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
-                    <input type="hidden" value="{{ rate }}" id="overDueDateRate">
-                    <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
+                    
                         
                     <div class="well">
                         <div class="row">
@@ -199,193 +222,139 @@
                                 </div>
                             </div>
                             
+                            {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(loan.loaId) %}
+
                             <div class="col-md-12 col-lg-12 col-sm-12">
                                 <hr>
                                 {% set payments = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
                                 <div class="row">
-                                    <div class="col-lg-6">
-                                        
+                                    <div class="col-lg-12">
                                         <span>{% trans %}payment_rata_already_paid{% endtrans %} :<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
                                     </div>
-                                    <div class="col-lg-6">
-                                        {#
-                                        {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
-                                       
-                                        {% if changedAmount == 1 %}
-                                            {% set pendingPaid = (loan.loaAmount)%}
-                                        {% else %} 
-                                            {% set pendingPaid = (loan.loaAmount - payments[0].paidCapital )%}
+                                </div>    
+                                <div class="row" style="margin-top:10px">    
+                                    
+                                    <div class="col-lg-12">
+                                        
+                                        
+                                        {# {% set pendingPaid = (loan.loaAmount) %} #}
+                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, false) %}
+                                        {% set pendingPaid = arrPendingAmount[0]["pending"] %}
+
+
+                                        {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
+                                        {% if loan.loaResetRateToInterestByDefault %}
+
+                                            {#
+                                                {% set quotas = "" %}
+                                                {% set IsOverDueDate = 0 %}
+
+                                                {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, false) %}
+                                                {% set pendingPaid = arrPendingAmount[0]["pending"] %}
+
+                                                {% set pendingPaid = (((rate/100)*pendingPaid) +  pendingPaid ) + additionalAmounts %}
+                                                {% set rate = loan.loaRateInterestByDefault %} 
+                                            #}
+                                            
+                                        {% else %}
+                                            {# {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, false) %} #}
+                                            {# {% set pendingPaid = arrPendingAmount[0]["pending"] %} #}
+                                            {# {% set pendingPaid = ((rate/100)*pendingPaid) +  pendingPaid %} #}
                                         {% endif %}
 
-                                        #}
-
-                                        {# {% set pendingPaid = (loan.loaAmount) %} #}
-
-                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
-                                        {% set pendingPaid = arrPendingAmount[0]["pending"] %}
-                                        
-                                        
-                                        {# {% set pendingPaid = (loan.loaAmount)%} #}
-
-                                        
-                                        
+                                        {# Init amounts ===========================================================================================  #}
                                         <input type="hidden" value="{{ pendingPaid }}" id="pendingAmountWithoutRate">
                                         <input type="hidden" value="{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}" id="justRate">
-                                        {#
-                                        <span>
-                                            Current Balance:<br> 
-                                            <span class="amounts">
-                                                <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
-                                            </span>
-                                            x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span>
-                                            = <span class="amounts">
-                                                <i class="fa fa-usd" aria-hidden="true"></i><span id="htmlTotalAmount" class="htmlTotalAmount">{{ (pendingPaid + (rate/100)*pendingPaid)|number_format(2, '.', ',') }}
-                                                </span>
-                                            </span>
-                                        </span>
-                                        #}
-                                         {% trans %}payment_rata_current_balance{% endtrans %}:<br>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <span class="amounts">
-                                                        <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span>
-                                                        x <span class="amounts"><span id="htmlRate">{{rate}}</span>% </span> 
-                                                           
-                                                        = 
-                                                    </span>
-                                                </td>
-                                                <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate">{{ ((rate/100)*pendingPaid)|number_format(2, '.', ',') }}</span> </div></td>        
-                                            </tr>
-                                            <tr>
-                                                <td><div class="text-right amounts"> + </div></td>
-                                                <td><span class="amounts">&#160; <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid|number_format(2, '.', ',') }}</span></span></td>        
-                                            </tr>
-                                            <tr>
-                                                <td><div class="text-right amounts">Total = </div></td>
-                                                <td>
-                                                    <span class="amounts">
-                                                        &#160; <i class="fa fa-usd" aria-hidden="true"></i><span id="" class="htmlTotalAmount">{{ (pendingPaid + (rate/100)*pendingPaid)|number_format(2, '.', ',') }}
-                                                        </span>
-                                                    </span>
-                                                </td>        
-                                            </tr>    
-                                        </table>
-                                    </div>
-                                </div>
-                                <hr>
-                            </div>
-                            <div class="col-md-12 col-lg-6 col-sm-12">
-                                <div class="form-group">
-                                    <div class="form_error">{{ form_errors(form.lpaCurrentRateInterest)}}</div>
-                                    <label for="" class=" control-label">{% trans %}payment_rata_current_rate{% endtrans %}: <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-percent"></i>
-                                        </div>
-                                        <div class="">
-                                            
-                                            {{ form_widget(form.lpaCurrentRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value": rate, min:0  }} ) }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="col-md-12 col-lg-6 col-sm-12">
-                                <div class="form-group">
-                                    <div class="form_error">{{ form_errors(form.lpaTotalAmountPaid)}}</div>
-                                    <label for="" class=" control-label">{% trans %}payment_rate_label_total_to_pay{% endtrans %}: <span class="text-danger">*</span></label>
-                                    {#
-                                    <div class="input-group">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-usd" aria-hidden="true"></i>
-                                        </div>
-                                        <div class=""></div>
-                                    </div>
-                                    #}
-                                    <div class="input-group">
-                                        <div class="input-group-addon">
-                                            <i class="fa fa-usd" aria-hidden="true"></i>
-                                        </div>
-                                        {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }}
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-info" id="btnCalculateAmounts" type="button" data-toggle="tooltip" data-placement="top" title="{% trans %}payment_rate_btn_tooltip_calculator{% endtrans %}"><i class="fa fa-calculator" aria-hidden="true"></i></button>
-                                        </span>
-                                    </div><!-- /input-group -->
-                                    <span id="helpBlock2" class="help-block">{% trans %}payment_rata_press_calculator{% endtrans %}</span>
+                                        <input type="hidden" value="{{ quotas }}" id="overDueDateQuotas">
+                                        <input type="hidden" value="{{ rate }}" id="overDueDateRate">
+                                        <input type="hidden" value="{{ IsOverDueDate  }}" id="IsOverDueDate">
 
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-lg-12 col-sm-12" id="holderPaymentDetail">
-                                <hr>
-                                    <h4 class="text-center">{% trans %}payment_rate_subtitle{% endtrans %}</h4>
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-12">
-                                            <div class="row">
-                                                <div class="col-lg-12 col-md-12">
-                                                    <div class="row">
-                                                        <h5 class="text-center"><i class="fa fa-money"></i> {% trans %}payment_rate_amounts{% endtrans %}</h5>
-                                                        <div class="col-lg-6 col-md-12">
-                                                            <div class="form-group">
-                                                                <label class="control-label"> {% trans %}payment_rate_label_interest_rate{% endtrans %}</label>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="fa fa-usd" aria-hidden="true"></i>
-                                                                    </div>
-                                                                    <input type="text" id="inputPaidInterest" name="inputPaidInterest" class="form-control" readonly="readonly">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-6 col-md-12">
-                                                            <div class="form-group">
-                                                                <label class="control-label">{% trans %}payment_rate_label_capital_to_pay{% endtrans %}</label>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="fa fa-usd" aria-hidden="true"></i>
-                                                                    </div>
-                                                                    <input type="text" id="inputPaidCapital" name="inputPaidCapital" class="form-control" readonly="readonly">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12">
-                                                    <div class="row">
-                                                        <h5 class="text-center"><i class="fa fa-percent"></i> Interest Rate {% trans %}payment_rate_label_interest_rate{% endtrans %}</h5>
-                                                        <div class="col-lg-6">
-                                                            <div class="form-group">
-                                                                <label class="control-label">{% trans %}payment_rate_label_rate_reached{% endtrans %}</label>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="fa fa-percent" aria-hidden="true"></i>
-                                                                    </div>
-                                                                    <input type="text" id="inputCompletedRate" name="inputCompletedRate" class="form-control" readonly="readonly">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-6">
-                                                            <div class="form-group">
-                                                                <label class="control-label">{% trans %}payment_rate_label_pending_rate{% endtrans %}</label>
-                                                                <div class="input-group">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="fa fa-percent" aria-hidden="true"></i>
-                                                                    </div>
-                                                                    <input type="text" id="inputPendingRate" name="inputPendingRate" class="form-control" readonly="readonly">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-12">
-                                            <h5 class="text-center">{% trans %}payment_rate_new_balance{% endtrans %}</h5>
-                                            <div class="text-center"><span class="amounts" id="newBalance">$0.00</span></div>
-                                        </div>
+
+                                        {# additional amounts ===================================================================================== #}
+                                        {% if hasBalance %}
+
+                                            {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
+                                            {% set loanAdd_loaRateInterest = hasBalance[0]["laa_rate_interest"] %}
+                                            {% set loandAdd_laaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
+                                            {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
+                                            {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
+
+                                            {% set IsOverDueDate_add = 0 %}
+                                            {% if loandAdd_completed == 0 %}
+                                                {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+                                                {# {{ dump(pending_add) }} #}
+                                                {% if pending_add %}
+                                                    {% set rate_add = pending_add.rate  %}
+                                                    {% set quotas_add = pending_add.quotas %}
+                                                    {% set IsOverDueDate_add = 1 %}
+                                                {% else %}
+                                                    {% set rate_add = loanAdd_loaRateInterest  %}
+                                                    {% set quotas_add = "" %}
+                                                {% endif %}
+                                            {% else %}
+                                                {% set rate_add = loandAdd_laaRateInterestByDefault  %}
+                                                {% set quotas_add = "" %}
+                                                
+                                            {% endif %}
+
+                                            {% set arrPendingAmount_add = srv_Loans.getPendingAmount(loanAdd_Id, true) %}
+                                            {% set pendingPaid_add = arrPendingAmount_add[0]["pending"] %}
+
+
+                                            <input type="hidden" value="{{ pendingPaid_add }}" id="pendingAmountWithoutRate_additional">
+                                            <input type="hidden" value="{{ ((rate_add/100)*pendingPaid_add)|number_format(2, '.', ',') }}" id="justRate_additional">
+
+                                            <input type="hidden" value="{{ quotas_add }}" id="overDueDateQuotas_additional">
+                                            <input type="hidden" value="{{ rate_add }}" id="overDueDateRate_additional">
+                                            <input type="hidden" value="{{ IsOverDueDate_add  }}" id="IsOverDueDate_additional">
+                                        {% endif %}
+
+                                        
+
+                                        {{ include("app/loanpayment/_table_balances.html.twig",{"foo":""}) }}
+
                                         
                                     </div>
-                              
+                                </div>
+                                <hr>
                             </div>
+                            
+
+                            
+                            
+
+                            
+                            <div class="col-md-12 col-lg-12 col-sm-12">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#tabInitBalance" aria-controls="" role="tab" data-toggle="tab">Balance 1 (Inicial)</a></li>
+
+                                   
+                                    {% if hasBalance %}
+                                        <li role="presentation"><a href="#tabAdditional" aria-controls="tabAdditional" role="tab" data-toggle="tab">Balance 2 (Adicional)</a></li>
+                                    {% endif %}
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="tabInitBalance" style="padding-top:15px">
+
+                                        {{ include("app/loanpayment/_form_init_amount.html.twig",{"foo":""}) }}
+
+                                    </div>
+                                    {% if hasBalance %}
+                                        <div role="tabpanel" class="tab-pane" id="tabAdditional" style="padding-top:15px">
+
+                                            {{ include("app/loanpayment/_form_additional_amount.html.twig",{"foo":""}) }}
+
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                            
                             
                             <div id="holderCloseLoanAndNextPayment">
                                 <div class="col-md-12 col-lg-12 col-sm-12">
@@ -400,24 +369,13 @@
                                     <hr>
                                 {# {{ form_widget(form.lpaOptionComplete,  { 'attr': {'class': 'radio-inline',"required":"required"} } ) }} #}
                                 </div>
-                                <div class="col-md-12 col-lg-12 col-sm-12" id="holderNextPayment">
+                                
+                                <div class="col-md-12 col-lg-12 col-sm-12 holderNextPayment" id="holderNextPayment" >
                                     <div class="panel panel-danger">
                                         <div class="panel-heading"> {% trans %}payment_rate_next_payment_title{% endtrans %}</div>
                                         <div class="panel-body">
                                             <div class="row">
-                                                <div class="col-md-12 col-lg-6 col-sm-12">
-                                                    <div class="form-group has-danger">
-                                                        <div class="form_error">{{ form_errors(form.loaNextInterestRate)}}</div>
-                                                        <label for="" class=" control-label">{% trans %}payment_rate_next_interest{% endtrans %}: <span class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon">
-                                                                <i class="fa fa-percent" aria-hidden="true"></i>
-                                                            </div>
-                                        
-                                                            <div class="">{{ form_widget(form.loaNextInterestRate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":"",  "required":"required",  "readonly":"true"} } ) }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
                                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                                     <div class="form-group has-danger">
                                                         <div class="form_error">{{ form_errors(form.loaNextPaymentDate)}}</div>
@@ -439,6 +397,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="col-md-12 col-lg-12 col-sm-12">
                                 <div class="form-group">
                                     <div class="form_error">{{ form_errors(form.lpaNote)}}</div>
@@ -495,6 +454,8 @@
 {% block codejs %}
     <script>
         //$(document).on("ready", function(){
+        var newCalc1 = true;
+        var newCalc2 = true;    
         $(function (){
 
             {% if loan.loaCompleted == 1 %}
@@ -520,24 +481,24 @@
             });
            //Date picker
             /*
-            $('.datepicker').datepicker({
-                autoclose: true,
-                format: 'yyyy-mm-dd'
-            });
+                $('.datepicker').datepicker({
+                    autoclose: true,
+                    format: 'yyyy-mm-dd'
+                });
             */
             /*
-            $('.datepicker').daterangepicker({
-                singleDatePicker: true,
-                showDropdowns: true,
-                locale: {
-                    format: 'YYYY-MM-DD'
-                },
-                //minYear: 1901,
-                //maxYear: parseInt(moment().format('YYYY'),10)
-            }, function(start, end, label) {
-                //var years = moment().diff(start, 'years');
-                //alert("You are " + years + " years old!");
-            });
+                $('.datepicker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    //minYear: 1901,
+                    //maxYear: parseInt(moment().format('YYYY'),10)
+                }, function(start, end, label) {
+                    //var years = moment().diff(start, 'years');
+                    //alert("You are " + years + " years old!");
+                });
             */
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
@@ -641,8 +602,6 @@
             }, function(start, end, label) {
                 //var years = moment().diff(start, 'years');
                 //alert("You are " + years + " years old!");
-                
-                
             });
 
             
@@ -650,32 +609,73 @@
             $("#appbundle_loanpayment_loaNextPaymentDate").val("");
 
             /*
-            startdate = "2018-10-10";
-            var new_date = moment(startdate, "YYYY-mm-dd");
-            new_date.add(5, 'days');
-            alert(new_date);
+                startdate = "2018-10-10";
+                var new_date = moment(startdate, "YYYY-mm-dd");
+                new_date.add(5, 'days');
+                alert(new_date);
             */
             
-            $("#appbundle_loanpayment_lpaCurrentRateInterest").keyup(function(){
+            $("#appbundle_loanpayment_lpaCurrentRateInterest, #lpaCurrentRateInterest_additional").keyup(function(){
+
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    var typePendingAmount = "pendingAmount";
+                    var typeHtmlRate = "htmlRate";
+                    var typeHtmlJustRate = "htmlJustRate";
+                    var typeJustRate     = "justRate";
+
+                    var typeBoxHtmlTotalAmount     = "boxHtmlTotalAmount";
+
+                    var typeOverDueDateRate        = "overDueDateRate";
+
+                    console.log("1");
+                }
+                else
+                {
+                    var typePendingAmount = "pendingAmount_additional";
+                    var typeHtmlRate = "htmlRate_additional";
+                    var typeHtmlJustRate = "htmlJustRate_additional";
+                    var typeJustRate     = "justRate";
+
+                    var typeBoxHtmlTotalAmount     = "boxHtmlTotalAmount_additional";
+
+                    var typeOverDueDateRate        = "overDueDateRate_additional";
+
+                    console.log("2");
+                }
+
                 var rate = $(this).val();
-                var pendingAmount = $("#pendingAmount").text();
+                var pendingAmount = $("#"+typePendingAmount).text();
                 pendingAmount = parseFloat(pendingAmount.replace(",",""));
                 rate = ( $.trim(rate) == "" )?0:rate;
-                $("#htmlRate").html(rate);
+                $("#"+typeHtmlRate).html(rate);
                 var justRate = ((rate/100)*pendingAmount);
-                $("#justRate").val(justRate);
-                $("#htmlJustRate").html(justRate);
+                $("#"+typeJustRate).val(justRate);
+                $("#"+typeHtmlJustRate).html(justRate);
                 var pay = ( pendingAmount + justRate ).toFixed(2);
-                $(".htmlTotalAmount").html(pay);
-                //console.log(pendingAmount);
+                $("#"+typeBoxHtmlTotalAmount).html(pay);
 
-                $("#overDueDateRate").val(rate);
+                var balance1 = $("#boxHtmlTotalAmount").text();
+                var balance2 = $("#boxHtmlTotalAmount_additional").text();
+
+                var balanceTotal = ( parseFloat(balance1.replace(",","")) + parseFloat(balance2.replace(",",""))).toFixed(2);
+                
+                $(".htmlTotalAmount").html(balanceTotal);
+                
+
+                $("#"+typeOverDueDateRate).val(rate);
             });
 
             $("#appbundle_loanpayment_lpaTotalAmountPaid").focus();
 
-            $("#btnCalculateAmounts").on("click", function(){
+            $(".btnCalculateAmounts").on("click", function(){
                 $(this).blur();
+                var d = $.trim($("#appbundle_loanpayment_lpaPaidDate").val());
+                if( d == "")
+                {
+                    alert("{% trans %} payment_rate_msg_fill_when_was_it_paid {% endtrans %}");
+                    return false;
+                }
                 calculateAmounts();
             });
 
@@ -686,29 +686,72 @@
             //$("#appbundle_loanpayment_lpaTotalAmountPaid").focusout(function(){
             function calculateAmounts()
             {    
+
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail"; 
+                    var typeLpaTotalAmountPaid = "appbundle_loanpayment_lpaTotalAmountPaid"; 
+
+                    var inputPaidInterest   = "inputPaidInterest";
+                    var inputPaidCapital    = "inputPaidCapital";
+                    var inputCompletedRate  = "inputCompletedRate";
+                    var inputPendingRate    = "inputPendingRate";
+
+                    var typePendingAmountWithoutRate    = "pendingAmountWithoutRate";
+                    var typeJustRate                    = "justRate";
+                    var typeOverDueDateQuotas           = "overDueDateQuotas";
+                    var typeOverDueDateRate             = "overDueDateRate";
+                    var typeIsOverDueDate               = "IsOverDueDate";
+
+                    var typeNewBalance = "newBalance";
+
+                    var balanceActive = "balance1";
+                    //console.log("aqui");
+                }
+                else
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail_additional"; 
+                    var typeLpaTotalAmountPaid = "lpaTotalAmountPaid_additional";
+
+                    var inputPaidInterest   = "inputPaidInterest_additional";
+                    var inputPaidCapital    = "inputPaidCapital_additional";
+                    var inputCompletedRate  = "inputCompletedRate_additional";
+                    var inputPendingRate    = "inputPendingRate_additional";
+
+                    var typePendingAmountWithoutRate    = "pendingAmountWithoutRate_additional";
+                    var typeJustRate                    = "justRate_additional";
+                    var typeOverDueDateQuotas           = "overDueDateQuotas_additional";
+                    var typeOverDueDateRate             = "overDueDateRate_additional";
+                    var typeIsOverDueDate               = "IsOverDueDate_additional";
+
+                    var typeNewBalance = "newBalance_additional";
+
+                    var balanceActive = "balance2";
+                    //console.log("2");
+                }
+
                 //Amount to pay ioncluden the interest rate
                 var htmlTotalAmount = $("#htmlTotalAmount").text();
                 htmlTotalAmount = parseFloat(htmlTotalAmount.replace(",",""));
 
-                //Pending to pay
-                //var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
-                //pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate);
 
-                var pendingAmountWithoutRate = $("#pendingAmountWithoutRate").val();
+                var pendingAmountWithoutRate = $("#"+typePendingAmountWithoutRate).val();
                 pendingAmountWithoutRate = parseFloat(pendingAmountWithoutRate.replace(",",""));
 
 
-                var justRate = $("#justRate").val();
+                var justRate = $("#"+typeJustRate).val();
                 justRate = parseFloat(justRate.replace(",",""));
-                //var justRate = parseFloat($("#justRate").val());
+               
 
-                var amountToPay = parseFloat($("#appbundle_loanpayment_lpaTotalAmountPaid").val());
+                var amountToPay = parseFloat($("#"+typeLpaTotalAmountPaid).val());
                 //alert(amountToPay);
                 if( !$.isNumeric(amountToPay) || $.trim(amountToPay) <= 0 )
                 {
-                    $("#holderPaymentDetail").hide();
-                    $("#appbundle_loanpayment_lpaTotalAmountPaid").val("");
-                    $("#appbundle_loanpayment_lpaTotalAmountPaid").focus();
+                     
+
+                    $("#"+typeHolderPaymentDetail).hide();
+                    $("#"+typeLpaTotalAmountPaid).val("");
+                    $("#"+typeLpaTotalAmountPaid).focus();
 
                     $.alert({
 							icon: 'glyphicon glyphicon-exclamation-sign',
@@ -720,7 +763,7 @@
                     
                     return false;
                 }
-                //alert(" pendingAmountWithoutRate + justRate "+ pendingAmountWithoutRate +" + - + " +justRate);
+
                 if( amountToPay > ( pendingAmountWithoutRate + justRate) )
                 {
                     $.alert({
@@ -733,9 +776,9 @@
                     return false;
                 }
 
-                var IsOverDueDate = $("#IsOverDueDate").val();
-                var overDueDateQuotas = $("#overDueDateQuotas").val();
-                var overDueDateRate = $("#overDueDateRate").val();
+                var IsOverDueDate = $("#"+typeIsOverDueDate).val();
+                var overDueDateQuotas = $("#"+typeOverDueDateQuotas).val();
+                var overDueDateRate = $("#"+typeOverDueDateRate).val();
                 var resultRatePayment = 0;
                 //if( IsOverDueDate == 1 )
                 //{
@@ -744,7 +787,7 @@
                     var c = 0;
                     var pr = 0;
                     var numQuotanumQuotaPaid = 0;
-                    //var resultRatePayment = pendingAmountWithoutRate*(currentRate/100);
+         
                     
                     //var paidRate = (amountToPay/overDueDateRate);
                     var paidRate = ( (amountToPay/justRate)*( (overDueDateRate/100)*100));
@@ -763,7 +806,6 @@
                     }
                     else
                     {
-                        //var overDueDateRate = parseFloat( $("#overDueDateRate").val() );
                         
                         pendingNextRate = (Number.isInteger(pendingRate))?pendingRate + {{loan.loaRateInterestByDefault}}: ((parseFloat(pendingRate))+({{loan.loaRateInterestByDefault}})).toFixed(2);
                         $("#appbundle_loanpayment_loaNextInterestRate").val( pendingNextRate );
@@ -793,15 +835,15 @@
                     setNextPaymentDate(pendingRate);
                     paidRate = (Number.isInteger(paidRate))?paidRate: parseFloat(paidRate).toFixed(2);
                     pendingRate = (Number.isInteger(pendingRate))?pendingRate: parseFloat(pendingRate).toFixed(2);
-                    $("#inputPaidInterest").val(pr.toFixed(2));
-                    $("#inputPaidCapital").val(c.toFixed(2));
-                    $("#inputCompletedRate").val(paidRate);
-                    $("#inputPendingRate").val(pendingRate);
+                    $("#"+inputPaidInterest).val(pr.toFixed(2));
+                    $("#"+inputPaidCapital).val(c.toFixed(2));
+                    $("#"+inputCompletedRate).val(paidRate);
+                    $("#"+inputPendingRate).val(pendingRate);
 
                     //show the new balance
                     //if( c > 0 )
                     //{
-                        var a = $("#pendingAmountWithoutRate").val();
+                        var a = $("#"+typePendingAmountWithoutRate).val();
                         var DnewAmount = (a - c).toFixed(2);
                         var Dnewrate = htmlRate; //$("#appbundle_loanpayment_lpaCurrentRateInterest").val();
                         var calculate = parseFloat(DnewAmount) + parseFloat(DnewAmount * (Dnewrate/100)) ;
@@ -824,8 +866,6 @@
                             }
                         }
 
-                        
-
                         //loan.loaRateInterestByDefault
                         $nextPayment = $("#pendingNextDeadlineToPaid").text();
 
@@ -837,19 +877,34 @@
                             Dnewrate = (Dnewrate-n);
                             $("#appbundle_loanpayment_loaNextInterestRate").val(Dnewrate);
                         }
-                        //alert(x+" | "+$nextPayment);
 
-                        //var result = iconMoney+DnewAmount+" x "+Dnewrate+"% = "+iconMoney+calculate.toFixed(2);
-
-                        //var cad1 = money+DnewAmount+" x "+Dnewrate+"% =
                         var table = "<table style=''>";
                         table += "<tr><td>"+iconMoney+DnewAmount+"x"+Dnewrate+"% =</td><td>"+iconMoney+(parseFloat(DnewAmount * (Dnewrate/100)).toFixed(2))+"</td></tr>";
                         table += "<tr><td ><div class='text-right amounts'> + </div></td><td> &#160;"+iconMoney+DnewAmount+"</td></tr>";
                         table += "<tr><td ><div class='text-right amounts'>Total = </div></td><td>&#160;"+iconMoney+calculate.toFixed(2)+"</td></tr>";
-                        table += "</table>"
+                        table += "</table>";
+
+                         if( $("#btnCalculateAmounts").is(":visible") )
+                         {
+                             if( calculate == 0 )
+                             {
+                                newCalc1 = false;
+                             }else{
+                                newCalc1 = true;
+                             }
+                             
+                         }else{
+                             if( calculate == 0 )
+                             {
+                                newCalc2 = false;
+                             }else{
+                                newCalc2 = true;
+                             }
+                         }
                         
 
-                        if( calculate == 0 )
+                        //if( calculate == 0 )
+                        if( newCalc1 == false && newCalc2 == false )
                         {
                             $( "#otpYes" ).prop( "checked", true );
                             //$("#holderNextPayment").hide();
@@ -861,7 +916,9 @@
                         checkRadioEndLoan();
 
                    // }
-                    $("#newBalance").html(table);
+                    $("#"+typeNewBalance).html(table);
+
+                    $("#"+balanceActive).val(1);
                 //}
 
                 
@@ -877,9 +934,9 @@
                     var radioValue = $('input[name="endLoan"]:checked').val();   
                     if( radioValue == 1 )
                     {
-                        $("#holderNextPayment").hide();
+                        $(".holderNextPayment").hide();
                     }else{
-                        $("#holderNextPayment").show();
+                        $(".holderNextPayment").show();
                     }    
                     //alert(radioValue); 
                 // });
@@ -891,6 +948,22 @@
             });
             function setNextPaymentDate(pendingRate)
             {
+
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail"; 
+                    var typeLpaTotalAmountPaid = "appbundle_loanpayment_lpaTotalAmountPaid"; 
+                    var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextInterestRate"; 
+                    //console.log("aqui");
+                }
+                else
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail_additional"; 
+                    var typeLpaTotalAmountPaid = "lpaTotalAmountPaid_additional";
+                    var typeLoaNextInterestRate = "loaNextInterestRate_additional"; 
+                    //console.log("2");
+                }
+
                 if( $("#pendingNextDeadlineToPaid").length == 1 ||  pendingRate > 0)
                 {
                     if ( $("#pendingNextDeadlineToPaid").length == 1 )
@@ -920,7 +993,7 @@
                             //Next period
                             var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
                             var rate = parseFloat("{{ loan.loaRateInterest }}");
-                            $("#appbundle_loanpayment_loaNextInterestRate").val( (pendingRate + rate) );
+                            $("#"+typeLoaNextInterestRate).val( (pendingRate + rate) );
                             //console.log("--------"+pendingRate);
                         }
                     }
@@ -928,7 +1001,7 @@
                 }
                 else
                 {
-                    $("#appbundle_loanpayment_loaNextInterestRate").val( {{ loan.loaRateInterestByDefault }} );
+                    $("#"+typeLoaNextInterestRate).val( {{ loan.loaRateInterestByDefault }} );
                     nextDate = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
                     //console.log("else");
                     var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
@@ -939,9 +1012,9 @@
                 //console.log("nextDate: "+nextDate+" - {{ loan.loaRecurringDayPayment }}");
                 $("#appbundle_loanpayment_loaNextPaymentDate").val(per);
 
-                $("#appbundle_loanpayment_loaNextInterestRate").attr("readonly", false);
+                $("#"+typeLoaNextInterestRate).attr("readonly", false);
                 $("#appbundle_loanpayment_loaNextPaymentDate").attr("disabled", false);
-                $("#holderPaymentDetail").show();
+                $("#"+typeHolderPaymentDetail).show();
 
             }
             /*
@@ -974,22 +1047,69 @@
                     
                 });
             */
-            $("#appbundle_loanpayment_lpaTotalAmountPaid").keyup(function(){
+            $("#appbundle_loanpayment_lpaTotalAmountPaid, #lpaTotalAmountPaid_additional").keyup(function(){
+
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail"; 
+                    //var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextPaymentDate"; 
+                    var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextInterestRate";
+                    
+                    //console.log("aqui");
+                }
+                else
+                {
+                    var typeHolderPaymentDetail = "holderPaymentDetail_additional"; 
+                    var typeLoaNextInterestRate = "loaNextInterestRate_additional"; 
+
+                    //var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextPaymentDate";
+                    //console.log("2");
+                } 
+
                 if( $.trim($(this).val()) <= 0 )
                 {
-                    $("#holderPaymentDetail").hide();
-                    $("#appbundle_loanpayment_loaNextInterestRate").val("");
-                    $("#appbundle_loanpayment_loaNextInterestRate").attr("readonly",true);
-                    $("#appbundle_loanpayment_loaNextPaymentDate").val("");
-                    $("#appbundle_loanpayment_loaNextPaymentDate").attr("disabled",true);
+                    $("#"+typeHolderPaymentDetail).hide();
+                    $("#"+typeHolderPaymentDetail).find("input").val("");
+                    $("#"+typeHolderPaymentDetail).find("#newBalance").empty();
+                    $("#"+typeLoaNextInterestRate).val("");
+                    $("#"+typeLoaNextInterestRate).attr("readonly",true);
+                    
+                    var b1 = $("#balance1").val();
+                    var b2 = $("#balance2").val();
+                    if( b1 != 1 && b2 != 1)
+                    {
+                        $("#appbundle_loanpayment_loaNextPaymentDate").val("");
+                        $("#appbundle_loanpayment_loaNextPaymentDate").attr("disabled",true);
+                    }
                 }
             });
+
+            function clearData()
+            {
+
+            }
+
             $("form[name='appbundle_loanpayment']").submit(function(){
-                 var amount = $("#appbundle_loanpayment_lpaTotalAmountPaid").val();
+
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    //var typeHolderPaymentDetail = "holderPaymentDetail"; 
+                    var typeLpaTotalAmountPaid = "appbundle_loanpayment_lpaTotalAmountPaid"; 
+                    //var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextPaymentDate"; 
+                    //console.log("aqui");
+                }
+                else
+                {
+                    //var typeHolderPaymentDetail = "holderPaymentDetail_additional"; 
+                    var typeLpaTotalAmountPaid = "lpaTotalAmountPaid_additional";
+                    //var typeLoaNextInterestRate = "loaNextInterestRate_additional"; 
+                    //console.log("2");
+                }    
+
+                 var amount = $("#"+typeLpaTotalAmountPaid).val();
                  //alert(amount);
                 if( $("#appbundle_loanpayment_loaNextPaymentDate").prop('disabled') || $.trim(amount) <= 0 )
                 {
-                    $("#btnCalculateAmounts").focus();
                     
                     $.alert({
 							icon: 'glyphicon glyphicon-exclamation-sign',

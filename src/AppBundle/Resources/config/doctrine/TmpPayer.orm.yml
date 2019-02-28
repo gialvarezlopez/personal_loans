@@ -24,9 +24,7 @@ AppBundle\Entity\TmpPayer:
             nullable: true
             column: tmp_created
         tmpCompleted:
-            type: smallint
+            type: boolean
             nullable: true
-            options:
-                unsigned: false
             column: tmp_completed
     lifecycleCallbacks: {  }

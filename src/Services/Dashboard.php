@@ -203,7 +203,7 @@ class Dashboard
                     }
                 }
             }
-            $RAW_QUERY .= " ORDER BY c.cli_first_name ASC ";
+            $RAW_QUERY .= "  AND l.loa_completed = 0 ORDER BY c.cli_first_name ASC ";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -222,6 +222,8 @@ class Dashboard
                                                         "lpa_current_amount"=>$value["lpa_current_amount"], // just no rate
                                                         "lpa_next_rate_interest"=>$value["lpa_next_rate_interest"]
                                                     );
+
+                                                    //break;
                 }
             }
         }

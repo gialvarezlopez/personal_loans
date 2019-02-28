@@ -4,6 +4,28 @@
 {% else %}
     {% set pending = false %}
 {% endif %}
+
+{#
+{% if loan.loaResetRateToInterestByDefault  %}
+    <div class="panel panel-info">
+        <div class="panel-heading"><i class="fa fa-fw fa-plus" aria-hidden="true"></i> <i class="fa fa-fw fa-money" aria-hidden="true"></i> Nuevo monto adicional </div>
+        <div class="panel-body">
+        <div class="">Se ha creado un nuevo monto adicional a este prestamo, La tasa de interes ha sido reseteda al <strong>{{ loan.loaRateInterestByDefault }}%</strong>
+            para el proximo pago.<br>
+            {% if pending|length %}
+                <strong>Nota:</strong> Las cuotas pendintes han sido sumadas + el nuevo monto adicional en una sola cuota para el próximo pago
+            {% else %}
+                <strong>Nota:</strong> El monto de la cuota anterior ha sido sumada + el nuevo monto adicional en una sola cuota para el próximo pago
+            {% endif %}
+
+        </div>
+    </div>
+    </div>
+{% endif %}
+#}
+
+{% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
+
 {% if pending|length %}
     <style>
     .bc{
@@ -11,8 +33,9 @@
         color: red !important;
     }
     </style>
+
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %}</div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial)</div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-lg-6 text-justify">
@@ -36,16 +59,18 @@
                     {% set maxDate = loan.loaDeadline|date('Y-m-d') %}
                     {% set recurringDay = loan.loaRecurringDayPayment %}
                     {% set counter = 0 %}
-
+                    {% set row = 0 %}
                     <table class="table table-striped widthAuto">
                         <thead>
+                            <th>#</th>
                             <th><i class="fa fa-calendar"></i> {% trans %}loan_table_rate_payments_dates{% endtrans %}</th>
                             <th></th>
                         </thead>
                         <tbody>
                             {% for i in range(0, (pending.quotas -1 )) %}
-                            
+                                {% set row = row + 1 %}
                                 <tr>
+                                    <td>{{ row }}</td>
                                     <td>
                                         {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") %}
 
@@ -79,13 +104,110 @@
                     </table> 
                 </div> 
             </div>       
-           
-            
+        </div>
+    </div>              
+{% endif %}  
 
+{# ===============================================================================================================================================  #}
+
+{% set pending_add = false %}
+{% if loan.loaCompleted == 0 %}
+    {# {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaQuotas, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
+    {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(loan.loaId) %}
+    {% if hasBalance %}
+
+        {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
+        {% set loanAdd_loaRateInterest = hasBalance[0]["laa_rate_interest"] %}
+        {% set loandAdd_laaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
+        {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
+        {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
+        {% set loandAdd_loaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
+      
+        {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+
+    {% endif %}                                        
+
+{% endif %}
+
+{% if pending_add|length %}
+    <style>
+    .bc{
+        background-color:none !important;
+        color: red !important;
+    }
+    </style>
+
+    <div class="panel panel-danger">
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional)</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-6 text-justify">
+                    {#
+                    This loan has <span class='bc'>{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
+                    <span class='bc'>{{ pending.days }}  day(s) of delay</span>. 
+                    The interest has been increased to <span class='bc'>{{ pending.rate }}%</span>.
+                    #}
+                    
+                    {{ ('loan_table_rate_payments_msg_pay_cuotas'|trans({'%pending_quotas%': (pending_add.quotas - 1), '%pending_days%':pending_add.days, '%pending_rate%': pending_add.rate }))|raw }}
+                    <br><br>
+                    <P>{{ ('loan_table_rate_payments_note'|trans())|raw }}<p>
+
+                    <p>{% trans %}loan_table_rate_payments_loan_origiinal_rate{% endtrans %}<b> {{ loandAdd_loaRateInterestByDefault }}%</b></p> 
+
+                    <p></p>
+                </div>
+                <div class="col-lg-6">
+                    {% set period = loan.loaRecurringDayPayment %}
+                    {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
+                    {% set maxDate = loandAdd_nextPaymentDate %}
+                    {% set recurringDay = loan.loaRecurringDayPayment %}
+                    {% set counter = 0 %}
+                    {% set row = 0 %}
+                    <table class="table table-striped widthAuto">
+                        <thead>
+                            <th>#</th>
+                            <th><i class="fa fa-calendar"></i> {% trans %}loan_table_rate_payments_dates{% endtrans %}</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {% for i in range(0, (pending_add.quotas -1 )) %}
+                                {% set row = row + 1 %}
+                                <tr>
+                                    <td>{{ row }}</td>
+                                    <td>
+                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") %}
+
+                                        {% if counter > 0 %}
+                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date("Y-m-d") }}
+                                        {% else %}
+                                            {{ createdAt }}
+                                        {% endif %}
+                                        -
+                                        {% if (pending_add.quotas - 1) == i %}
+                                            <span id="pendingNextDeadlineToPaid">{{ endMaxDate }}</span>
+                                        {% else %}
+                                            {{ endMaxDate }}
+                                        {% endif %}
+                                        
+                                        {# {{ maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") }} #}
+                                    </td>
+                                    
+                                    <td>
+                                        {% if (pending_add.quotas - 1) == i %}
+                                            <span class="badgex bc">{% trans %}loan_table_rate_payments_current_period{% endtrans %}</span>
+                                        {% elseif (pending_add.quotas) == i %}  
+                                            <span class="badgex bc">{% trans %}loan_table_rate_payments_next_payment{% endtrans %}</span>  
+                                        {%  endif %}
+                                    </td>
+                                    
+                                </tr>
+                                {% set counter =  counter + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    </table> 
+                </div> 
+            </div>       
         </div>
     </div>
-   
-
-                       
-{% endif %}  
+{% endif %}
 

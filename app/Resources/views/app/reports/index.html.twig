@@ -226,7 +226,8 @@
                                         <td> 
                                              {% if item.loc_key == "active_rate" %}    
                                                 {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
-                                                {% if pending.quotas > 0 %}
+                                               
+                                                {% if pending.quotas is defined and pending.quotas > 0 %}
                                                     <span style='color:red'>En mora</span>
                                                 {% else %}
                                                     <span style='color:green'>Al dia</span>
@@ -238,7 +239,11 @@
                                                 {% if noPaid|length > 1 %}
                                                     <span style='color:red'>En mora</span>
                                                 {% else %}
-                                                    <span style='color:green'>Al dia</span>
+                                                    {% if item.loa_deadline|date("Y-m-d") >= date("now") %}
+                                                        <span style='color:green'>Al dia</span>
+                                                    {% else %}
+                                                        <span style='color:red'>En mora</span>
+                                                    {% endif %}
                                                 {% endif %}
                                              {% endif %}
                                         </td>
@@ -386,6 +391,8 @@
                                                     {% if detailPending["numQuotas"] != '' %}
                                                        = ( {{ detailPending["numQuotas"]  }} )
                                                     {% endif %}
+
+                                                    
                                                 {% else %}
                                                     N/A
                                                 {% endif %}
@@ -445,7 +452,7 @@
                                             {% else %}
 
                                                 {# ----------- calculates the interest amount  if the payment has it, per quotas----------- #} 
-                                                {% if totalPendingAmountQuotas == 0 %}
+                                                {% if totalPendingAmountQuotas == 0 and nextData|length %}
                                                     {% set amount = nextData[0].lpa_current_amount %}
                                                 {% else %}
                                                     {% set amount = totalPendingAmountQuotas %}

@@ -131,7 +131,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
                 
                 <div class="well">
                     
@@ -167,6 +167,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="col-md-12 col-lg-6 col-sm-12">
                                         <div class="form-group" id="holderRate">
                                             <div class="form_error">{{ form_errors(edit_form.loaRateInterestByDefault)}}</div>
@@ -182,11 +183,61 @@
                                         </div>
                                     </div>
                                     {% if loan.loc.locKey  != "inactive_rate" %}
-                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
                                             <span id="helpBlock2" class="help-block">{% trans %}loan_form_general_help{% endtrans %}</span>
                                         </div>
+                                    {% endif %}    
+                                </div>   
+                                 {% if loan.loc.locKey  != "inactive_rate" %}    
+                                        
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                     {% set additionalAmounts = srv_Loans.getAdditionalAmounts(loanId) %}
+                                                     {% if additionalAmounts|length > 0 %}
+                                                        
+                                                        <div class="box box-primary">
+                                                            <div class="box-header with-border">
+                                                                <h5 class="box-titleX" style="margin-bottom: 5px; margin-top: 5px;">Montos adicionales creados</h5>
+                                                                <div class="box-tools pull-right">
+                                                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="box-body" style=""> 
+                                                                <table id="tableAdditionalAmouns" class="table table-striped display nowrap" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>#</th>
+                                                                            <th>Cantidad($)</th>
+                                                                            <th>Interes(%)</th>
+                                                                            <th>Fecha</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% set tr = 0 %}   
+                                                                        {% for aa in additionalAmounts %}
+                                                                            {% set tr = tr + 1 %}
+                                                                           <tr>
+                                                                                <td>{{ tr }}</td>
+                                                                                <td>${{ aa.laa_amount }}</td>
+                                                                                <td>{{ aa.laa_rate_interest }}%</td>
+                                                                                <td>{{ aa.laa_delivered_date|date(app.user.usrDateFormat) }}</td> 
+                                                                           </tr> 
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div> 
+                                                           
+                                                     {% endif %}
+                                                    {% if loan.loaCompleted == 0 %}
+                                                        <div class="text-right"><button type="button" class="btn bg-purple btn-xs" id="btnAddAmounts" style="margin-bottom: 10px;"><i class="fa fa-fw fa-plus-circle"></i> Adicionar monto</button></div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                         
                                     {% endif %}
-                                </div>
+                                
 
                                 <div class="row">
                                     <div class="col-md-12 col-lg-6 col-sm-12">
@@ -353,7 +404,7 @@
                     <hr>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
 
                 {% if loan.loc.locKey == "active_rate" %}
                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
@@ -384,7 +435,7 @@
                                 {% if changedAmount > 0 %}
                                     <div>
                                         <div>Este prestamo tiene actualizaciones en el monto inicial. <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}loan_table_rate_payments_full_history{% endtrans %}</a></div>
-                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId) %}
+                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, true) %}
                                         {# {{ dump(arrPendingAmount[0]["pending"]) }} #}
                                         <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
                                         {% if loan.loaCompleted != 1 %}
@@ -1094,9 +1145,220 @@
 					});
             }    
 
+            
+            //$("#tablePayments").DataTable();
+            
+            $('#tablePayments').DataTable({
+                //"scrollX": true,
+                'paging'      : false,
+                'lengthChange': false,
+                'searching'   : true,
+                "scrollCollapse": true,
+                "scrollY": 400,
+                "scrollX": true
+                //'ordering'    : true,
+                //'info'        : true,
+                //'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                //'dom': 'Blfrtip',
+                /*
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                */
+            });
 
+            $('#tableAdditionalAmouns').DataTable({
+                //"scrollX": true,
+                'paging'      : false,
+                'lengthChange': false,
+                'searching'   : false,
+                "scrollCollapse": true,
+                "scrollY": 400,
+                "scrollX": true
+                //'ordering'    : true,
+                //'info'        : true,
+                //'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                //'dom': 'Blfrtip',
+                /*
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                */
+            });
             
 
+            $("#btnAddAmounts").on("click", function(){
+                $("#inputAADeliveredDate").val("");
+                var interest = "{{ loan.loaRateInterestByDefault }}";
+
+                var nextPayment = "";
+                if( $("#pendingNextDeadlineToPaid").length == 1 )
+                {
+                    nextPayment = $("#pendingNextDeadlineToPaid").text();
+                }
+                else
+                {
+                    nextPayment = $("#appbundle_loan_loaDeadline").val();
+                }
+
+                $("#inputAANextPaymentDate").val(nextPayment);
+                $("#inputAAInteres").val(interest);
+                $('#modalAddAmounts').modal({backdrop: 'static', keyboard: false});
+            });
+
+            $("#btnCreateAddAmounts").on("click", function(){
+                
+                var loanId = "{{ app.request.get('loaId') }}";
+                
+                createAdditionalAmount(loanId);
+             });        
+            function createAdditionalAmount(loanId) {    
+                
+                if( loanId > 0 )
+                {
+                    //routeShow = routeShow.replace("PLACEHOLDER", id);
+                    var amount = $.trim($("#inputAAAmount").val());
+                    var interest = $.trim($("#inputAAInteres").val());
+                    var deliveredDate = $.trim($("#inputAADeliveredDate").val());
+                    var comment = $.trim($("#inputAAComment").val());  
+                    var nextPaymentDate = $.trim($("#inputAANextPaymentDate").val());  
+
+                    if( deliveredDate == "" ){
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: "La fecha del monto entregado no puede ser nulo",
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+                    if( nextPaymentDate == "" ){
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: "La fecha del proximo pago no puede estar vacio",
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+                    if( amount == "" ){
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: "El monto adicional no puede ser nulo",
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+                    if( interest == "" ){
+                        $.alert({
+						    icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							content: "El interes por defecto no puede ser nulo",
+							type: 'red',
+							typeAnimated: true,
+						});
+                        return false;   
+                    }
+
+
+                    var routeShow = "{{ path('loan_additionalAmounts') }}";
+                    $("#holder_loading").show();
+                    $.ajax({
+						type: "POST",
+						url: routeShow,
+						data: { loanId:loanId, amount: amount, interest: interest, deliveredDate: deliveredDate, nextPaymentDate: nextPaymentDate, comment: comment},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: "{{ ('general_msg_send_data'|trans())|raw }}",
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											createAdditionalAmount(loanId);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+
+						},
+						success: function (data){
+
+                            if( data.res == 1 )
+                            {
+                                var routeShow = "{{ path('loan_edit', { 'loaId': 'PLACEHOLDER'}) }}";
+                                routeShow = routeShow.replace("PLACEHOLDER", loanId);
+                                window.location.assign(routeShow);
+                            }
+                            else
+                            {
+                                $("#holder_loading").hide();
+                                $.alert({
+                                        icon: 'glyphicon glyphicon-exclamation-sign',
+                                        title: 'Error',
+                                        content: "{{ ('general_msg_send_data'|trans())|raw }}" + data.msg,
+                                        type: 'red',
+                                        typeAnimated: true,
+                                });
+                            }
+                                
+                            /*
+                                if (data != "")
+                                {
+
+                                    //$('form[name$=appbundle_paciente]')[0].reset();
+                                    //var routeShow = " {# {{ path('perfil_show') }} #}" //routeShow.replace("PLACEHOLDER", data);
+                                    //window.location.assign(routeShow);
+                                    //$('#modalShowClient').modal({backdrop: 'static', keyboard: false});
+                                    $("#holderBodyModal").html(data);
+
+                                    var href = "{{ path('client_edit', { 'cliId': 'PLACEHOLDER' }) }}";
+                                    href = href.replace("PLACEHOLDER", id);    
+                                    $("body").find("#btnModalEditClient").attr("href", href);
+                                    $("body").find("#btnModalLoanClient").val(id);
+            
+
+                                    $("#holder_loading").hide();
+                                } else
+                                {
+                                    $("#holder_loading").hide();
+                                    var infoError = (data);
+                                    $.alert({
+                                        icon: 'glyphicon glyphicon-exclamation-sign',
+                                        title: 'Info!',
+                                        content: "{{ ('general_msg_send_data'|trans())|raw }}" + infoError,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                    });
+                                }
+                            */
+						}
+					});
+                }  
+            }  
+        
         });
     </script>    
 {% endblock %}

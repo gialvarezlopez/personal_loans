@@ -486,4 +486,62 @@ class LoanPayment
     {
         return $this->lpaNextPaymentDate;
     }
+    /**
+     * @var string
+     */
+    private $lpaHash;
+
+    /**
+     * @var \AppBundle\Entity\LoanAdditionalAmounts
+     */
+    private $laa;
+
+
+    /**
+     * Set lpaHash
+     *
+     * @param string $lpaHash
+     *
+     * @return LoanPayment
+     */
+    public function setLpaHash($lpaHash)
+    {
+        $this->lpaHash = $lpaHash;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaHash
+     *
+     * @return string
+     */
+    public function getLpaHash()
+    {
+        return $this->lpaHash;
+    }
+
+    /**
+     * Set laa
+     *
+     * @param \AppBundle\Entity\LoanAdditionalAmounts $laa
+     *
+     * @return LoanPayment
+     */
+    public function setLaa(\AppBundle\Entity\LoanAdditionalAmounts $laa = null)
+    {
+        $this->laa = $laa;
+
+        return $this;
+    }
+
+    /**
+     * Get laa
+     *
+     * @return \AppBundle\Entity\LoanAdditionalAmounts
+     */
+    public function getLaa()
+    {
+        return $this->laa;
+    }
 }

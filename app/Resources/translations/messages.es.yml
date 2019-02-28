@@ -183,7 +183,7 @@ loan_edit_comment_item: Si elimina o agrega registros haga click en el boton gua
 
 loan_form_loan_created_at: Prestamo creado
 loan_form_loan_created_at_help: Fecha de cuando fue entregado el prestamo
-loan_form_requested_amount: Monto solicitado
+loan_form_requested_amount: Monto inicial solicitado
 loan_form_default_interest_rate : Interes por defecto
 loan_form_default_interest_rate_disabled : Los pagos seran por cuotas establecidas
 loan_form_default_current_interest_rate : Tasa de interes actual
@@ -234,7 +234,7 @@ loan_table_rate_payments_node: Hecho
 loan_table_rate_payments_node_total: Pagos hechos
 loan_table_rate_payments_history: Historial de pagos
 loan_table_rate_payments_full_history: Ver historial completo
-loan_table_rate_payments_pending_quotas: Cuotas pendientes
+loan_table_rate_payments_pending_quotas: Detalle de cuotas pendientes
 loan_table_rate_payments_current_period: Periodo actual
 loan_table_rate_payments_next_payment: Siguiente pago
 loan_table_rate_payments_dates: Fechas de pago
@@ -334,11 +334,11 @@ merbership_table_td_trans: transacciones
 payment_rata_title: Creación de pago
 payment_rata_payment_deadline: Fecha maxima de pago
 payment_rata_when_was_it_paid: Cuando fue pagada la cuota?
-payment_rata_already_paid: Ya pagado
+payment_rata_already_paid: Capital pagado
 payment_rata_current_balance: Balance actual
 payment_rata_current_rate: Tasa de interes actual
 payment_rata_press_calculator: Click <i class='fa fa-calculator' aria-hidden='true'></i> para obtener los meses.
-payment_rate_date_end_loan: Este pago finaliza el prestamo?
+payment_rate_date_end_loan: Se finaliza el prestamo?
 payment_rate_next_payment_title: Información para el siguiente pago
 payment_rate_next_interest: Próxima tasa de interes
 payment_rate_next_paymente_date: Próxima fecha de pago

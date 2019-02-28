@@ -1,7 +1,7 @@
 <style>
 .amounts{
     font-size:14px;
-    font-weight: 600;
+    font-weight: 700;
     color: #34825F;
 }
 
@@ -30,11 +30,7 @@
     background:#00A65A;
     color: #fff !important;
 }
-.amounts{
-    font-size:16px;
-    font-weight: 700;
-    color: #34825F;
-}
+
 .labelCurrency{
     display:inline-block;
     width: 150px;
@@ -72,11 +68,12 @@
                                         <th>#</th>
                                         <th>{% trans %}loan_table_payments_payment_date{% endtrans %}</th>
                                         <th>{% trans %}loan_table_payments_paid_date{% endtrans %}</th>
-                                        <th>{% trans %}loan_table_rate_payments_paid_amount{% endtrans %}</th>
+                                        <th>{# {% trans %}loan_table_rate_payments_paid_amount{% endtrans %}#} Monto pagado</th>
                                         <th>{% trans %}loan_table_rate_payments_rate{% endtrans %}</th>
                                         <th>{% trans %}loan_msg_paid_capital{% endtrans %}</th>
                                         <th>{% trans %}loan_msg_paid_interest{% endtrans %}</th>
                                         <th>{% trans %}loan_table_rate_payments_status{% endtrans %}</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,6 +104,7 @@
                                                 -
                                                 <span class="maxDate">{{ item.lpa_max_payment_date }}</span>
                                             </td>
+                                            
                                             
                                             <td>{% if item.lpa_paid_date  %} {{  item.lpa_paid_date }} {% else %} {% trans %}general_msg_pending{% endtrans %} {% endif %}</td>
                                             <td>
@@ -147,20 +145,25 @@
                                         </tr>
                                        
                                     {% endfor %}
-                                    <tfood>
+                                    </tbody>
+                                    {#
+                                    <tfoot>
                                         <tr>
-                                            <td colspan="3" class="text-center">Total</td>
-                                            <td><span class="label label-default amounts">${{ totalAmount|number_format(2, '.', ',') }}</span></td>
-                                            <td></td>
-                                            <td><span class="label label-success amounts">${{ totalPaid|number_format(2, '.', ',') }}</span></td>
-                                            <td><span class="label label-success amounts">${{ totalInterest|number_format(2, '.', ',') }}</span></td>
-                                            <td></td>
+                                            <th colspan="3" class="text-center">Total</th>
+                                            <th><span class="label label-default amounts">${{ totalAmount|number_format(2, '.', ',') }}</span></th>
+                                            <th></th>
+                                            <th><span class="label label-success amounts">${{ totalPaid|number_format(2, '.', ',') }}</span></th>
+                                            <th><span class="label label-success amounts">${{ totalInterest|number_format(2, '.', ',') }}</span></th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
-                                    </tfood>
-                                </tbody>
+                                    </tfoot>
+                                    #}
+                                
                         </table>
 
                         <div>
+                                {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
 
                                 {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                                 {% if pending %}
@@ -172,9 +175,9 @@
 
                                 {% set paidAmount = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
                                 {% if paidAmount %}
-                                    {% set money = (loan.loaAmount - paidAmount[0]['paidCapital']) %}
+                                    {% set money = ((loan.loaAmount + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %}
                                 {% else %}
-                                    {% set money = loan.loaAmount %}
+                                    {% set money = (loan.loaAmount + additionalAmounts)|abs %}
                                 {% endif %}
                                 
                                 <hr>

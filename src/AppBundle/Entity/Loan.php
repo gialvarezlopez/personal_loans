@@ -515,4 +515,33 @@ class Loan
     {
         return $this->loaCompletedDate;
     }
+    /**
+     * @var boolean
+     */
+    private $loaResetRateToInterestByDefault = '0';
+
+
+    /**
+     * Set loaResetRateToInterestByDefault
+     *
+     * @param boolean $loaResetRateToInterestByDefault
+     *
+     * @return Loan
+     */
+    public function setLoaResetRateToInterestByDefault($loaResetRateToInterestByDefault)
+    {
+        $this->loaResetRateToInterestByDefault = $loaResetRateToInterestByDefault;
+
+        return $this;
+    }
+
+    /**
+     * Get loaResetRateToInterestByDefault
+     *
+     * @return boolean
+     */
+    public function getLoaResetRateToInterestByDefault()
+    {
+        return $this->loaResetRateToInterestByDefault;
+    }
 }

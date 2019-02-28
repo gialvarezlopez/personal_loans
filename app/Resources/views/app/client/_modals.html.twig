@@ -48,3 +48,95 @@
     </div>
   </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalAddAmounts" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Adicionar monto</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 col-lg-6 col-sm-12">
+              <div class="form-group">
+                <label for="" class=" control-label">Cuando se entregó el nuevo monto?: <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                  </div>
+                  <div class="">
+                    <input type="text" id="inputAADeliveredDate" name="inputAADeliveredDate" required="required" class="form-control datepicker" placeholder="yyyy-mm-dd" autocomplete="off" value="">
+                  </div>
+                </div>
+                <span id="helpBlock2" class="help-block"></span>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-sm-12">
+              <div class="form-group">
+                <label for="" class=" control-label">Fecha proximo pago: <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                  </div>
+                  <div class="">
+                    <input type="text" id="inputAANextPaymentDate" name="inputAANextPaymentDate" required="required" readonly="readonly" class="form-control datepickerXXXXXXX" placeholder="yyyy-mm-dd" autocomplete="off" value="">
+                  </div>
+                </div>
+                <span id="helpBlock2" class="help-block"></span>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-sm-12">
+              <div class="form-group">
+                <label for="" class=" control-label">{# {% trans %}loan_form_requested_amount{% endtrans %} #}Monto adicional: <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-usd" aria-hidden="true"></i>
+                  </div>
+                  <div class="">
+                    <input type="text" id="inputAAAmount" name="inputAAAmount" required="required" class="form-control" placeholder="" autocomplete="off" value="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-sm-12">
+              <div class="form-group" id="holderRate">
+                <label for="" class=" control-label">{% trans %}loan_form_default_interest_rate{% endtrans %}: <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-percent" aria-hidden="true"></i>
+                  </div>
+                  <div class="">
+                    <input type="text" id="inputAAInteres" name="inputAAInteres" required="required" class="form-control" placeholder="" autocomplete="off" value="">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12 col-lg-12 col-sm-12">
+              <div class="form-group" id="holderRate">
+                <label for="" class=" control-label">Comentario (Opcional): </label>
+                <div class="">
+                  
+                  <div class="">
+                    <textarea id="inputAAComment" name="inputAAComment" class="form-control"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> 
+          <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+              <div class="alert alert-warning">La suma de la siguiente cuota sera <b>el monto adicional + el monto inicial</b></div>
+            </div>
+          </div>  
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans %}general_btn_close{% endtrans %}</button>
+        <button type="button" class="btn btn-primary" id="btnCreateAddAmounts"><i class="fa fa-check-circle" aria-hidden="true"></i> {% trans %}general_btn_create{% endtrans %}</button>
+      </div>
+    </div>
+  </div>
+</div>

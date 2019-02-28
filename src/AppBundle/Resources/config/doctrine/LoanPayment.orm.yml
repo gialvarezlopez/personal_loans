@@ -14,6 +14,9 @@ AppBundle\Entity\LoanPayment:
         FK_loan_payment_loan_payment_type:
             columns:
                 - lpt_id
+        FK_loan_payment_loan_additional_amounts:
+            columns:
+                - laa_id
     id:
         lpaId:
             type: integer
@@ -108,6 +111,13 @@ AppBundle\Entity\LoanPayment:
             options:
                 default: '0'
             column: lpa_changed_amount
+        lpaHash:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+            column: lpa_hash
     manyToOne:
         loa:
             targetEntity: Loan
@@ -118,6 +128,16 @@ AppBundle\Entity\LoanPayment:
             joinColumns:
                 loa_id:
                     referencedColumnName: loa_id
+            orphanRemoval: false
+        laa:
+            targetEntity: LoanAdditionalAmounts
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                laa_id:
+                    referencedColumnName: laa_id
             orphanRemoval: false
         lpt:
             targetEntity: LoanPaymentType

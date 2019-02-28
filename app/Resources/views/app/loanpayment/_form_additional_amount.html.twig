@@ -1,0 +1,128 @@
+{% if hasBalance is defined and hasBalance|length > 0 %}
+
+
+<div class="row">
+    <div class="col-md-12 col-lg-6 col-sm-12">
+        <div class="form-group">
+            <div class="form_error">{{ form_errors(form.lpaCurrentRateInterest)}}</div>
+            <label for="" class=" control-label">{% trans %}payment_rata_current_rate{% endtrans %}: <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-percent"></i>
+                </div>
+                <div class="">
+                    {# {{ form_widget(form.lpaCurrentRateInterest,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value": rate, min:0  }} ) }} #}
+                    <input type="text" id="lpaCurrentRateInterest_additional" name="lpaCurrentRateInterest_additional" class="form-control" autocomplete="off" value="{{ rate_add }}" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-6 col-sm-12">
+        <div class="form-group">
+            <div class="form_error">{{ form_errors(form.lpaTotalAmountPaid)}}</div>
+            <label for="" class=" control-label">{% trans %}payment_rate_label_total_to_pay{% endtrans %}: <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-usd" aria-hidden="true"></i>
+                </div>
+                {# {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }} #}
+                <input type="text" id="lpaTotalAmountPaid_additional" name="lpaTotalAmountPaid_additional" class="form-control" autocomplete="off" >
+                <span class="input-group-btn">
+                    <button class="btn btn-info btnCalculateAmounts" id="btnCalculateAmounts_additional" type="button" data-toggle="tooltip" data-placement="top" title="{% trans %}payment_rate_btn_tooltip_calculator{% endtrans %}"><i class="fa fa-calculator" aria-hidden="true"></i></button>
+                </span>
+            </div><!-- /input-group -->
+            <span id="helpBlock2" class="help-block">{% trans %}payment_rata_press_calculator{% endtrans %}</span>
+        </div>
+    </div>
+</div>
+<div class="" id="holderPaymentDetail_additional">
+    <hr>
+    <input type="hidden" id="balance2" name="balance2" class="balance" value="">
+    <h4 class="text-center">{% trans %}payment_rate_subtitle{% endtrans %}</h4>
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="row">
+                        <h5 class="text-center"><i class="fa fa-money"></i> {% trans %}payment_rate_amounts{% endtrans %}</h5>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                                <label class="control-label"> {% trans %}payment_rate_label_interest_rate{% endtrans %}</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="text" id="inputPaidInterest_additional" name="inputPaidInterest_additional" class="form-control" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans %}payment_rate_label_capital_to_pay{% endtrans %}</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-usd" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="text" id="inputPaidCapital_additional" name="inputPaidCapital_additional" class="form-control" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="row">
+                        <h5 class="text-center"><i class="fa fa-percent"></i> Interest Rate {% trans %}payment_rate_label_interest_rate{% endtrans %}</h5>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">{% trans %}payment_rate_label_rate_reached{% endtrans %}</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-percent" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="text" id="inputCompletedRate_additional" name="inputCompletedRate_additional" class="form-control" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label">{% trans %}payment_rate_label_pending_rate{% endtrans %}</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-percent" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="text" id="inputPendingRate_additional" name="inputPendingRate_additional" class="form-control" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <h5 class="text-center">{% trans %}payment_rate_new_balance{% endtrans %}</h5>
+            <div class="text-center"><span class="amounts" id="newBalance_additional">$0.00</span></div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+<div class="row holderNextPayment">
+    <div class="col-md-12 col-lg-12 col-sm-12"><hr></div>
+    <div class="col-md-12 col-lg-6 col-sm-12">
+        <div class="form-group has-danger">
+            <div class="form_error">{{ form_errors(form.loaNextInterestRate)}}</div>
+            <label for="" class=" control-label">{% trans %}payment_rate_next_interest{% endtrans %}: <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <i class="fa fa-percent" aria-hidden="true"></i>
+                </div>
+                <div class="">
+                    {# {{ form_widget(form.loaNextInterestRate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":"",  "required":"required",  "readonly":"true"} } ) }} #}
+                    <input type="text" id="loaNextInterestRate_additional" name="loaNextInterestRate_additional" required="required" class="form-control" autocomplete="off" value="" readonly="true">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

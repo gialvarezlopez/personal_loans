@@ -33,7 +33,7 @@
 
 .amounts{
     font-size:14px;
-    font-weight: 600;
+    font-weight: 700;
     color: #34825F;
 }
 
@@ -125,7 +125,14 @@
                     <i class="fa fa-barcode" aria-hidden="true"></i> {% trans %}loan_edit_code{% endtrans %}: <a href="{{ path('loan_show', { 'loaId': loan.loaId }) }}"> {{ loan.loaCode }} </a> 
                 </div>
                 <div class="col-lg-4">    
-                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> {{ loan.loaAmount|number_format(2, '.', ',') }}</b>
+                    <i class="fa fa-money" aria-hidden="true"></i> {% trans %}loan_form_requested_amount{% endtrans %}: 
+                        <b class="amounts"><i class="fa fa-usd" aria-hidden="true"></i> 
+                        {{ loan.loaAmount|number_format(2, '.', ',') }}
+                        {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
+                        {% if additionalAmounts > 0 %}
+                            +  {{ additionalAmounts|number_format(2, '.', ',') }}
+                        {% endif %}
+                    </b>
                 </div>
             </div>
         </div>
@@ -133,6 +140,7 @@
             <div class="col-lg-12"><i class="fa fa-sticky-note-o" aria-hidden="true"></i> {% trans %}reports_table_title_note{% endtrans %}: {% if loan.loaDescription %}{{loan.loaDescription}}{% else %}N/A{% endif %}</div>
         </div>
         <hr>
+        {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
         {% if loan.loc.locKey == "inactive_rate" %}
             {% set arr =  srv_Loans.getAllDetailLoan(loan.loaId) %}
             {{ include('app/loan/_inputNoRateEditPayments.html.twig',{"action":"history"} )  }} 
@@ -149,10 +157,12 @@
                                 {% endif %}
 
                                 {% set paidAmount = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
+
+                                
                                 {% if paidAmount %}
-                                    {% set money = (loan.loaAmount - paidAmount[0]['paidCapital']) %}
+                                    {% set money = ( (loan.loaAmount + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %}
                                 {% else %}
-                                    {% set money = loan.loaAmount %}
+                                    {% set money = (loan.loaAmount + additionalAmounts)|abs %}
                                 {% endif %}
                                 <div>
                                     <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>

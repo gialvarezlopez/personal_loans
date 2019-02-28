@@ -214,7 +214,7 @@ loan_msg_new_confirm_submit: Are you sure to continue?
 
 loan_msg_payments_click_here: Click <a href="%link%">here</a> to see the complete history
 loan_msg_total_to_pay: Total to pay
-loan_msg_paid_capital: Paid capital
+loan_msg_paid_capital: Total paid capital
 loan_msg_paid_interest: Paid interest
 loan_msg_total_paid: Total paid
 loan_msg_pending_to_pay: Pending to pay
@@ -234,7 +234,7 @@ loan_table_rate_payments_node: Done
 loan_table_rate_payments_node_total: Payments done
 loan_table_rate_payments_history: Payments history
 loan_table_rate_payments_full_history: Full History Here 
-loan_table_rate_payments_pending_quotas: Pending Quotas
+loan_table_rate_payments_pending_quotas: Detail of pending quotas
 loan_table_rate_payments_current_period: Current period
 loan_table_rate_payments_next_payment: Next payment
 loan_table_rate_payments_dates: Payments date
@@ -338,7 +338,7 @@ payment_rata_already_paid: Already paid
 payment_rata_current_balance: Current Balance
 payment_rata_current_rate: Current interest rate
 payment_rata_press_calculator: Press <i class='fa fa-calculator' aria-hidden='true'></i> to get the amounts.
-payment_rate_date_end_loan: Does this payment end the loan?
+payment_rate_date_end_loan: Is end the loan?
 payment_rate_next_payment_title: This is the information to the next payment
 payment_rate_next_interest: Next interest rate
 payment_rate_next_paymente_date: Next payment date

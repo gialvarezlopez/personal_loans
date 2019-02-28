@@ -127,7 +127,7 @@ class Loans
         if( !empty($loanId) )
         {
             $RAW_QUERY  = "SELECT * FROM loan_payment lp
-                            LEFT JOIN loan_payment_type lpt ON lp.lpt_id=lpt.lpt_id WHERE lp.loa_id = $loanId ";
+                            LEFT JOIN loan_payment_type lpt ON lp.lpt_id=lpt.lpt_id WHERE lp.loa_id = $loanId order by lp.lpa_id ASC";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -236,13 +236,16 @@ class Loans
 
 
 
-    function getPendingAmount($loanId)
+    function getPendingAmount($loanId, $addtionalAmounts=false)
     {
         //select * from loan_payment where loa_id = 117 order by lpa_id desc
         $aResult = array();
         if( isset($loanId) && !empty($loanId) )
         {
-            $RAW_QUERY  = "SELECT *  FROM loan_payment where loa_id = $loanId";
+            
+            $fieldId = ($addtionalAmounts == true )?"laa_id":"loa_id";
+
+            $RAW_QUERY  = "SELECT *  FROM loan_payment where $fieldId = $loanId";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -253,9 +256,12 @@ class Loans
 
             $amount = 0.00;
             $max = 0;
+
+            //$addtionalAmounts = ($addtionalAmounts == true )?$this->getTotalAdditionalAmounts($loanId):0;
             foreach($result as $item)
             {
-                $current_amount = $item["lpa_current_amount"]."-";
+                //$current_amount = $item["lpa_current_amount"]."-";
+                $current_amount = $item["lpa_current_amount"];// + $addtionalAmounts;
                 $plus_amount = ($item["lpa_next_amount"] != "" )?$item["lpa_next_amount"]:0;
                 $paid_capital =  $item["lpa_paid_capital"];
 
@@ -275,6 +281,17 @@ class Loans
                    
                 $pros++;
                
+            }
+
+            if( $total_items == 0 && $addtionalAmounts == true )
+            {
+                //echo $loanId;
+                $res = $this->getAdditionalAmountById($loanId);
+                //echo count($res);
+                if( count($res) > 0 )
+                {
+                    $amount = $res[0]["laa_amount"];
+                }
             }
 
             //echo $amount."-";
@@ -391,5 +408,71 @@ class Loans
             $arrNumQuotas = ( count($arrNumQuotas) > 0 )? implode(",",$arrNumQuotas):"";
             return array("totalQuotas"=>$pending, "numQuotas"=>$arrNumQuotas, "dates"=>$arrDates);                
         }
+    }
+
+    function getAdditionalAmounts($loanId)
+    {
+        $result = array();
+        if( $loanId >0 )
+        {
+            $RAW_QUERY = "SELECT * FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_active = 1";                
+
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();          
+        }
+        return $result;  
+    }
+
+    function getTotalAdditionalAmounts($loanId)
+    {
+        $result = 0;
+        if( $loanId >0 )
+        {
+            $oAdditionals = $this->em->getRepository('AppBundle:LoanAdditionalAmounts')->findBy( array("loa"=>$loanId,"laaActive"=>1)  );
+            if( $oAdditionals )
+            {
+                //$RAW_QUERY = "SELECT SUM(laa_amount + (laa_amount *  (laa_rate_interest/100))) AS total FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_active = 1";
+                $RAW_QUERY = "SELECT SUM(laa_amount) AS total FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_active = 1";                
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();  
+                $total = $result[0]["total"]; 
+                if( $total > 0)
+                {
+                    $result = $total;
+                } 
+            }     
+        }
+        return $result;  
+    }
+
+
+    //New balance
+    //Get return amount paid at the moment (no interest rate)
+    function hasCurrentAdditionalAmount($loanId)
+    {
+        $result = array();
+        if( !empty($loanId) && $loanId > 1 )
+        {
+            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_completed = 0 AND laa_active = 1 order by laa_id DESC LIMIT 1";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+        }
+        return $result; 
+    }
+
+    function getAdditionalAmountById($id)
+    {
+        $result = array();
+        if( !empty($id) && $id > 1 )
+        {
+            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE laa_id = $id AND laa_active = 1";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+        }
+        return $result; 
     }
 }

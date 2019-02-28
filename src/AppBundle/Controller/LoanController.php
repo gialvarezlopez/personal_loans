@@ -8,9 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 use AppBundle\Entity\LoanPayment;
 use AppBundle\Entity\LoanHistoricalAmounts;
+use AppBundle\Entity\LoanAdditionalAmounts;
 
 /**
  * Loan controller.
@@ -449,9 +451,9 @@ class LoanController extends Controller
                 {
                     
                     /*
-                    $itemsLoan = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "lpaPaidDate" => null, "loa"=>$loanId ) ) ;
-                    $em->remove($itemsLoan);
-                    $res = $em->flush(); 
+                        $itemsLoan = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "lpaPaidDate" => null, "loa"=>$loanId ) ) ;
+                        $em->remove($itemsLoan);
+                        $res = $em->flush(); 
                     */
                     
                     $q = $em->createQuery("DELETE FROM AppBundle\Entity\LoanPayment tb WHERE tb.loa=".$loanId." AND tb.lpaPaidDate IS NULL ");
@@ -463,7 +465,7 @@ class LoanController extends Controller
                         //exit();
                         if( isset($paymentDates) && !empty($paymentDates) )
                         {
-                            var_dump($paymentDates);
+                            //var_dump($paymentDates);
                             $arr = explode(",", $paymentDates);
                             for ($i = 0; $i < count($arr); $i++) {
                                 $item = explode("=", $arr[$i]);
@@ -538,14 +540,14 @@ class LoanController extends Controller
                 {  
                     $deadline = $editForm->get("loaDeadline")->getData();
 
-                    //Verifico el monto;
-                    //echo $editForm->get("loaAmount")->getData();
-                    //die();
-                
-                    //$rate = $editForm->get("loaRateInterestByDefault")->getData();
+                            //Verifico el monto;
+                            //echo $editForm->get("loaAmount")->getData();
+                            //die();
+                        
+                            //$rate = $editForm->get("loaRateInterestByDefault")->getData();
 
-                    //$rate = $editForm->get("loaRateInterest")->getData();
-                    //$pays = $em->getRepository('AppBundle:Payer')->findBy( array("usr"=> $userId,"payActive"=>1), array('payId' => 'DESC'), "LIMIT" );
+                            //$rate = $editForm->get("loaRateInterest")->getData();
+                            //$pays = $em->getRepository('AppBundle:Payer')->findBy( array("usr"=> $userId,"payActive"=>1), array('payId' => 'DESC'), "LIMIT" );
                         
                             //$deadline = $editForm->get("loaDeadline")->getData();
 
@@ -640,14 +642,9 @@ class LoanController extends Controller
                                 $oLoanPayment->setLpaNextRateInterest( ($editForm->get("loaRateInterestByDefault")->getData() ) ); 
                             }
 
-                            
-                            
-
                             $em->persist($oLoanPayment);
                             $em->flush();
 
-                            
-                    
                 }
 
                 $em->getConnection()->commit();
@@ -718,6 +715,126 @@ class LoanController extends Controller
             return 1;
         }
         //var_dump($arr);
+    }
+
+    public function additionalAmountsAction( Request $request )
+    {
+        $loadId = $request->get("loanId");
+        $amount = trim($request->get("amount"));
+        $interest = trim($request->get("interest"));
+        $comment = trim($request->get("comment"));
+        $deliveredDate = trim($request->get("deliveredDate"));
+        $nextPaymentDate = trim($request->get("nextPaymentDate"));
+
+        
+        //exit();
+        $res = 0;
+        $msg = "";
+        if( $loadId > 0 && $amount > 0 && $interest != "" && $deliveredDate != "")
+        {
+            $em = $this->getDoctrine()->getManager();
+            $userId = $this->getUser()->getUsrId();
+            $oLoan = $em->getRepository('AppBundle:Loan')->findOneBy(array( "loaId"=>$loadId ) );
+            if( $oLoan )
+            {
+                $em->getConnection()->beginTransaction(); // suspend auto-commit
+                try 
+                {
+                    if( $oLoan->getCli()->getUsr()->getUsrId() == $userId )
+                    {
+                        date_default_timezone_set("UTC");
+
+                        $oLAAmounts = new LoanAdditionalAmounts();
+                        //$oLoan = $em->getRepository('AppBundle:Loan')->find( $item->getLoaId() );
+                        $oLAAmounts->setLoa( $oLoan );
+                        $oLAAmounts->setLaaAmount( $amount );
+                        $oLAAmounts->setLaaRateInterestByDefault( $interest );
+                        $oLAAmounts->setLaaComment( $comment );
+                        $oLAAmounts->setLaaDeliveredDate( new \datetime($deliveredDate) );
+                        $oLAAmounts->setLaaNextPaymentDate( new \datetime($nextPaymentDate) );
+                        $oLAAmounts->setLaaCreated( new \datetime("now") );
+                        $em->persist($oLAAmounts);			
+                        $flush = $em->flush();
+                        if( $flush == null )
+                        {
+                            $oLoan->setLoaResetRateToInterestByDefault(1);
+                            $em->persist($oLoan);			
+                            $flush2 = $em->flush();
+
+                            if( $flush2 == null )
+                            {
+                                //$oLoanPayment = $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId, "lpaPaidDate"=>NULL) );
+
+                                $pros = "ok";
+                                /*
+                                    if( $oLoanPayment )
+                                    {
+                                        $oLoanPayment->setLpaCurrentRateInterest();
+                                        $oLoanPayment->setLpaMultipliedInterestBy();
+                                        $oLoanPayment->setLpaNextRateInterest();
+                                        $em->persist($oLoanPayment);			
+                                        $flush3 = $em->flush();
+                                        if( !$flush3 == null )
+                                        {
+                                            $pros = "error";
+                                        }
+
+                                    }
+                                */
+
+                                if( $pros == "ok" )
+                                {
+                                    $res = 1;
+                                    $msg = "Monto adicional creado correctamente";
+                                    $this->session->getFlashBag()->add("success", $msg);
+                                    $em->getConnection()->commit();
+                                }
+                                else
+                                {
+                                    $res = 0;
+                                    $msg = "No se actualizar el detalle del pago";
+                                    $em->getConnection()->rollBack();
+
+                                }
+                                
+                            }
+                            else
+                            {
+                                $res = 0;
+                                $msg = "No se ha podido crear el monto adicional";
+                                $em->getConnection()->rollBack();
+                            }
+                            //return $this->redirectToRoute('loan_edit', array('loaId' => $loadId));
+                        }
+                        else
+                        {
+                            $res = 1;
+                            $msg = "Error al tratar de guardar los datos";
+                        }
+                    }
+                    else
+                    {
+                        $res = 0;
+                        $msg = "El prestamo no corresponde a tu usuario";
+                    }
+                }
+                catch (Exception $e) {
+                    $em->getConnection()->rollBack();
+                    throw $e;
+                }    
+            }
+            else
+            {
+                $res = 0;
+                $msg = "No existe el prestamo";
+            }
+        }else{
+            $res = 0;
+            $msg = "Falta algun parametro";
+        }
+
+        return  new JsonResponse(array("res"=>$res, "msg"=>$msg));
+        
     }
 
     /**

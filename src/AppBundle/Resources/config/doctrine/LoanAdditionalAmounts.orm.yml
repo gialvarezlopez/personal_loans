@@ -1,0 +1,86 @@
+AppBundle\Entity\LoanAdditionalAmounts:
+    type: entity
+    table: loan_additional_amounts
+    indexes:
+        FK_loan_additional_amounts_loan:
+            columns:
+                - loa_id
+    id:
+        laaId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: laa_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        laaAmount:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: laa_amount
+        laaRateInterest:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: laa_rate_interest
+        laaRateInterestByDefault:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: laa_rate_interest_by_default
+        laaDeliveredDate:
+            type: date
+            nullable: true
+            column: laa_delivered_date
+        laaNextPaymentDate:
+            type: date
+            nullable: true
+            column: laa_next_payment_date
+        laaComment:
+            type: string
+            nullable: true
+            length: 300
+            options:
+                fixed: false
+            column: laa_comment
+        laaCreated:
+            type: datetime
+            nullable: true
+            column: laa_created
+        laaCompleted:
+            type: boolean
+            nullable: true
+            options:
+                comment: 'To see the additional amount is paid'
+                default: '0'
+            column: laa_completed
+        laaSplittedBalance:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: laa_splitted_balance
+        laaActive:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+            column: laa_active
+    manyToOne:
+        loa:
+            targetEntity: Loan
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                loa_id:
+                    referencedColumnName: loa_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

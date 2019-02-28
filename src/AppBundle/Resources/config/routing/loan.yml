@@ -18,6 +18,11 @@ loan_edit:
     defaults: { _controller: "AppBundle:Loan:edit" }
     methods:  [GET, POST]
 
+loan_additionalAmounts:
+    path:     /additional-amount
+    defaults: { _controller: "AppBundle:Loan:additionalAmounts" }
+    #methods:  GET    
+
 loan_delete:
     path:     /{loaId}/delete
     defaults: { _controller: "AppBundle:Loan:delete" }
