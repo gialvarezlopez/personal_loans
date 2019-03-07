@@ -126,15 +126,7 @@
                                 <td>{% trans %}loan_form_requested_amount{% endtrans %}:</td>
                                 <td><span class="amounts">${{ loan.loaAmount|number_format(2, '.', ',') }}</span></td>
                             </tr>
-                            {% if loan.loc.locKey == "active_rate" %}
-                                {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
-                                {% if additionalAmounts > 0 %}
-                                    <tr>
-                                        <td>Monto adicional agregado:</td>
-                                        <td><span class="amounts">${{ additionalAmounts|number_format(2, '.', ',') }}</span></td>
-                                    </tr> 
-                                {% endif %}
-                            {% endif %}  
+                             
 
                             {% if loan.loc.locKey == "inactive_rate" %}
                                 <tr>
@@ -175,13 +167,17 @@
                                         <td>{% set rate = pending.rate %}  
                                             {% set oldRate =  rate %} 
                                             <span class="amounts">
+                                                {#
                                                {% if loan.loaResetRateToInterestByDefault %}
                                                     
                                                     {% set rate = loan.loaRateInterestByDefault %}
-                                                    {{ rate }} {# aqui ====================================================================== #}
+                                                    {{ rate }} x
                                                {% else %}
-                                                    {{ rate }}
+                                                    {{ rate }} c
                                                {% endif %}
+                                               #}
+
+                                                {{ rate }}
                                             %</span> 
                                         </td>
                                     </tr>
@@ -191,12 +187,15 @@
                                         <td>{% set rate = loan.loaRateInterest %}
                                             {% set oldRate =  rate %} 
                                             <span class="amounts">
-                                                {% if loan.loaResetRateToInterestByDefault %}
-                                                    {% set rate = loan.loaRateInterestByDefault %}
-                                                    {{ rate }}
-                                                {% else %}
-                                                    {{ loan.loaRateInterest }}
-                                                {% endif %}
+                                                {#
+                                                    {% if loan.loaResetRateToInterestByDefault %}
+                                                        {% set rate = loan.loaRateInterestByDefault %}
+                                                        {{ rate }}
+                                                    {% else %}
+                                                        {{ loan.loaRateInterest }}
+                                                    {% endif %}
+                                                #}
+                                                {{ loan.loaRateInterest }}
                                                 
                                             %</span>
                                         </td>
@@ -207,22 +206,30 @@
 
                                 {% set paidAmount = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
                                 {% if paidAmount %}
+                                    {#
                                     {% if loan.loaResetRateToInterestByDefault %}
 
-                                        {% set money = (( ((loan.loaAmount * (oldRate/100)) + loan.loaAmount) + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %}
+                                        {% set money = (( ((loan.loaAmount * (oldRate/100)) + loan.loaAmount) ) - paidAmount[0]['paidCapital'])|abs %}
 
                                     {% else %}
-                                        {% set money = ((loan.loaAmount + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %}
+                                        {% set money = ((loan.loaAmount ) - paidAmount[0]['paidCapital'])|abs %}
                                     {% endif %}
+
+                                    #}
+
+                                    {% set money = ((loan.loaAmount ) - paidAmount[0]['paidCapital'])|abs %}
 
 
                                     {# {% set money = ((loan.loaAmount + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %} #}
                                 {% else %}
+                                    {#
                                     {% if loan.loaResetRateToInterestByDefault %}   
-                                        {% set money = (( ((loan.loaAmount * (oldRate/100)) + loan.loaAmount) + additionalAmounts) - paidAmount[0]['paidCapital'])|abs %}
+                                        {% set money = (( ((loan.loaAmount * (oldRate/100)) + loan.loaAmount) ) - paidAmount[0]['paidCapital'])|abs %}
                                     {% else %}
-                                        {% set money = (loan.loaAmount + additionalAmounts)|abs %}
+                                        {% set money = (loan.loaAmount)|abs %}
                                     {% endif %}
+                                    #}
+                                    {% set money = (loan.loaAmount)|abs %}
 
 
                                     {# {% set money = (loan.loaAmount + additionalAmounts)|abs %} #}
@@ -231,7 +238,7 @@
                                     <td>{% trans %}loan_label_pending_amount_rate{% endtrans %}</td>
                                     <td>
                                         <span class="amounts">
-                                        ${{ (money)|number_format(2, '.', ',') }} x {{rate}}% <br>= 
+                                        ${{ (money)|number_format(2, '.', ',') }} x {{rate}}% = 
                                         ${{  ((money) * (rate/100))|number_format(2, '.', ',') }}
                                         </span>
                                     </td>
@@ -240,11 +247,23 @@
                                     <th>{% trans %}loan_msg_pending_to_pay{% endtrans %}</th>
                                     <td>
                                         <span class="amounts">
-                                        ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} <br>= 
+                                        ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }}  = 
                                         ${{  ((money) * (rate/100) + (money))|number_format(2, '.', ',') }}
                                         </span>
                                     </td>
                                 </tr>
+                                {% if loan.loc.locKey == "active_rate" %}
+                                    {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
+                                    {% if additionalAmounts > 0 %}
+                                        <tr>
+                                            <td>Montos adicionales agregados:</td>
+                                            <td>
+                                                {# <span class="amounts">${{ additionalAmounts|number_format(2, '.', ',') }}</span> #}
+                                                <button class="btn bg-purple btn-xs" id="btnShowAddAmounts" data-target="#modalShowAdditionalAmounts" data-toggle="modal" data-backdrop="static" data-keyboard="false">Ver detalle</button>
+                                            </td>
+                                        </tr> 
+                                    {% endif %}
+                                {% endif %} 
                             {% endif %}
                             <tr>
                                 <td>{% trans %}loan_form_recurring_day_payment{% endtrans %}</td>
@@ -330,7 +349,7 @@
 
                     {# loan.loaRateInterest, loan.loaQuotas, loan.loaDeadline|date('Y-m-d') #}
                     {% if loan.loc.locKey == "active_rate" %}
-                        {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
+                        {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                     {% endif %}
                     {#
                     <h4>
@@ -401,7 +420,9 @@
             </div>
         </div>
     </div>
-</div>            
+</div>
+
+{{ include('app/loan/_getAdditionalAmounts.html.twig', {"loanId":loan.loaId}  )  }}
 
 {{ include('app/client/_modals.html.twig' )  }}     
 {% endblock %}

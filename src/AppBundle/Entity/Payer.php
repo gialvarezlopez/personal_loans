@@ -55,6 +55,11 @@ class Payer
     /**
      * @var \DateTime
      */
+    private $payStartdate;
+
+    /**
+     * @var \DateTime
+     */
     private $payCreated = 'CURRENT_TIMESTAMP';
 
     /**
@@ -273,6 +278,30 @@ class Payer
     public function getPayDeadline()
     {
         return $this->payDeadline;
+    }
+
+    /**
+     * Set payStartdate
+     *
+     * @param \DateTime $payStartdate
+     *
+     * @return Payer
+     */
+    public function setPayStartdate($payStartdate)
+    {
+        $this->payStartdate = $payStartdate;
+
+        return $this;
+    }
+
+    /**
+     * Get payStartdate
+     *
+     * @return \DateTime
+     */
+    public function getPayStartdate()
+    {
+        return $this->payStartdate;
     }
 
     /**

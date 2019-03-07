@@ -176,7 +176,7 @@
                 <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
                     {% set IsOverDueDate = 0 %}
                     {% if loan.loaCompleted == 0 %}
-                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaNextPaymentDate|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                         {# {% set rate = pending.rate  %} #}
                         {% if pending %}
                             {% set rate = pending.rate  %}
@@ -229,7 +229,7 @@
                                 {% set payments = srv_Loans.checkPaymentsPerLoan(loan.loaId) %}
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <span>{% trans %}payment_rata_already_paid{% endtrans %} :<br> <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
+                                        <span>{% trans %}payment_rata_already_paid{% endtrans %} : <span class="amounts" id="alreadyPaidAmount"><i class="fa fa-usd" aria-hidden="true"></i>{{ payments[0].paidCapital|number_format(2, '.', ',') }}</span></span>
                                     </div>
                                 </div>    
                                 <div class="row" style="margin-top:10px">    
@@ -439,7 +439,7 @@
                     </div>
                 </div>
                 <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
-                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
+                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                 </div>
 
             </div>

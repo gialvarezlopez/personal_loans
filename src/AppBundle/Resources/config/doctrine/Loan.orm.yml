@@ -26,6 +26,13 @@ AppBundle\Entity\Loan:
             options:
                 fixed: false
             column: loa_code
+        loaTotalAmountCompleted:
+            type: boolean
+            nullable: true
+            options:
+                comment: 'describe si el monto total ha sido cancelado por el usuario'
+                default: '0'
+            column: loa_total_amount_completed
         loaAmount:
             type: float
             nullable: false
@@ -70,7 +77,15 @@ AppBundle\Entity\Loan:
         loaDeadline:
             type: date
             nullable: true
+            options:
+                comment: 'Siguiente fecha de pago para el prestamo en general(cuotas adicionales)'
             column: loa_deadline
+        loaNextPaymentDate:
+            type: date
+            nullable: true
+            options:
+                comment: 'siguiente fecha de pago para el monto inicial'
+            column: loa_next_payment_date
         loaLoanMade:
             type: date
             nullable: true

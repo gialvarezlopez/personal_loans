@@ -23,7 +23,7 @@
                 <div class="input-group-addon">
                     <i class="fa fa-usd" aria-hidden="true"></i>
                 </div>
-                {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }}
+                {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off"}} ) }}
                 <span class="input-group-btn">
                     <button class="btn btn-info btnCalculateAmounts" id="btnCalculateAmounts" type="button" data-toggle="tooltip" data-placement="top" title="{% trans %}payment_rate_btn_tooltip_calculator{% endtrans %}"><i class="fa fa-calculator" aria-hidden="true"></i></button>
                 </span>

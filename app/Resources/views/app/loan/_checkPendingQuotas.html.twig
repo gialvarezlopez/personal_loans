@@ -24,6 +24,9 @@
 {% endif %}
 #}
 
+{% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loan.loaId) %}
+
+
 {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
 
 {% if pending|length %}
@@ -35,8 +38,24 @@
     </style>
 
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial)</div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial) - <strong>Fecha maxima de pago: {{ deadline }}</strong></div>
         <div class="panel-body">
+            <div class="row">
+               <div class="col-lg-12 text-justify">
+                    <div class='alert alert-warning'>
+                        Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
+                            <strong>
+                                {% if hasPayments == 0 %} 
+                                    {% trans %}loan_form_msg_first_payment_date{% endtrans %}:
+                                {% else %} 
+                                    {% trans %}loan_form_msg_next_payment_date{% endtrans %}               
+                                {% endif %}
+                            </strong>
+                            (Ver en el detalle del prestamo), 
+                        quiere decir que solo se hizo un pago de un monto y no de dos
+                    </div>
+               </div>     
+            </div>
             <div class="row">
                 <div class="col-lg-6 text-justify">
                     {#
@@ -138,8 +157,24 @@
     </style>
 
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional)</div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional) - <strong>Fecha maxima de pago: {{ loandAdd_nextPaymentDate }}</strong></div>
         <div class="panel-body">
+            <div class="row">
+               <div class="col-lg-12 text-justify">
+                    <div class='alert alert-warning'>
+                        Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
+                            <strong>
+                                {% if  hasPayments  == 0 %} 
+                                    {% trans %}loan_form_msg_first_payment_date{% endtrans %}:
+                                {% else %} 
+                                    {% trans %}loan_form_msg_next_payment_date{% endtrans %}               
+                                {% endif %}
+                            </strong>
+                            (Ver en el detalle del prestamo), 
+                        quiere decir que solo se hizo un pago de un monto y no de dos
+                    </div>
+               </div>     
+            </div>
             <div class="row">
                 <div class="col-lg-6 text-justify">
                     {#

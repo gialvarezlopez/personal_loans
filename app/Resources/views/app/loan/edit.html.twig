@@ -209,20 +209,39 @@
                                                                         <tr>
                                                                             <th>#</th>
                                                                             <th>Cantidad($)</th>
-                                                                            <th>Interes(%)</th>
-                                                                            <th>Fecha</th>
+                                                                            <th>Interes por defecto(%)</th>
+                                                                            <th>Interes actual(%)</th>
+                                                                            <th>Fecha solicitado</th>
+                                                                            <th>Comentario</th>
                                                                         </tr>
                                                                     </thead>
-                                                                    <tbody>
+                                                                     <tbody>
                                                                         {% set tr = 0 %}   
                                                                         {% for aa in additionalAmounts %}
                                                                             {% set tr = tr + 1 %}
-                                                                           <tr>
+                                                                            <tr>
                                                                                 <td>{{ tr }}</td>
                                                                                 <td>${{ aa.laa_amount }}</td>
-                                                                                <td>{{ aa.laa_rate_interest }}%</td>
-                                                                                <td>{{ aa.laa_delivered_date|date(app.user.usrDateFormat) }}</td> 
-                                                                           </tr> 
+                                                                                <td>{{ aa.laa_rate_interest_by_default }}%</td>
+                                                                                <td>
+                                                                                    {% if aa.laa_splitted_balance %}
+                                                                                        {% set loan = srv_Loans.getLoanById(loanId) %}
+                                                                                        {{ loan.loaQuotas }}
+                                                                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
+
+                                                                                        {% if pending|length %}
+                                                                                            {{ pending.rate }}
+                                                                                        {% else %}
+                                                                                            {{ aa.laa_rate_interest }} x
+                                                                                        {% endif %}
+                                                                                    {% else %}
+                                                                                        {{ aa.laa_rate_interest }} z
+                                                                                    {% endif %}
+                                                                                    %
+                                                                                </td>
+                                                                                <td>{{ aa.laa_delivered_date|date(app.user.usrDateFormat) }}</td>
+                                                                                <td>{{ aa.laa_comment }}</td> 
+                                                                            </tr> 
                                                                         {% endfor %}
                                                                     </tbody>
                                                                 </table>
@@ -407,7 +426,7 @@
             <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
 
                 {% if loan.loc.locKey == "active_rate" %}
-                    {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaDeadline|date('Y-m-d')}  )  }}
+                    {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                 {% endif %}
                 
                         {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
@@ -1155,7 +1174,8 @@
                 'searching'   : true,
                 "scrollCollapse": true,
                 "scrollY": 400,
-                "scrollX": true
+                "scrollX": true,
+                 bSort: false,
                 //'ordering'    : true,
                 //'info'        : true,
                 //'autoWidth'   : false,

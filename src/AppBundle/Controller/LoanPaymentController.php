@@ -126,7 +126,8 @@ class LoanPaymentController extends Controller
                     */
                     if(isset($nextRate) || isset($nextPayment) )
                     {
-                        $oLoan->setLoaDeadline($nextPayment);
+                        //$oLoan->setLoaDeadline($nextPayment);
+                        $oLoan->setLoaNextPaymentDate($nextPayment);
                         $oLoan->setLoaRateInterest($nextRate);
                         $oLoan->setLoaResetRateToInterestByDefault(0);
                         $em->persist($oLoan);
@@ -229,7 +230,7 @@ class LoanPaymentController extends Controller
                         }
 
                         $loanPayment->setLoa($oLoan);
-                        $loanPayment->setLoa(NULL);
+                        //$loanPayment->setLoa(NULL);
                         $em->persist($loanPayment);
                         $em->flush();
 
@@ -266,6 +267,12 @@ class LoanPaymentController extends Controller
                     }
                         
                 }
+
+                $oLoan->setLoaDeadline($nextPayment);    
+                $em->persist($oLoan);
+                $em->flush();
+
+                //Updating the next payment
 
                 //$amountRequested = $oLoan->getLoaAmount();
 
@@ -454,6 +461,8 @@ class LoanPaymentController extends Controller
 
         if( isset($loanId) && $loanId > 0 )
         {
+            $srvLoan = $this->get('srv_Loans'); 
+
             $oLoan= $em->getRepository('AppBundle:Loan')->findOneBy( array( "loaId"=> $loanId, "loaActive"=>1) );
             if( $oLoan )
             {
@@ -463,7 +472,10 @@ class LoanPaymentController extends Controller
                 }
                 else
                 {
-                    $oPayments= $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId, "laa"=>NULL) );
+                    //$oPayments= $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId, "laa"=>NULL) );
+                    $oPayments= $em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId) );
+
+                    $arrData = $srvLoan->getPaymentsByLoandId($loanId);
                 }
             }
         }
@@ -471,13 +483,14 @@ class LoanPaymentController extends Controller
         {
             throw new NotFoundHttpException("Bad parameters, select a loan to see the details");
         }
-        
+        //var_dump( $arrData );
         //exit();
         return $this->render('app/loanpayment/quotasHistory.html.twig', array(
             //'loanPayment' => $loanPayment,
             //'form' => $form->createView(),
             'payments' => $oPayments,
-            "loan"=>$oLoan
+            "loan"=>$oLoan,
+            "arrData"=>$arrData
         ));
     }
 

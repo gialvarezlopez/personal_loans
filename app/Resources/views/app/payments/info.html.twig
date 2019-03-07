@@ -88,20 +88,23 @@
                                     {% endif %}
 
                                 </td>
-                                <td>{# {{ pay.payCreated|date("\n l jS F Y")  }} #}
-                                    {{ srv_TimeZone.getTimeZone(pay.payCreated|date('Y-m-d H:i:s'))|date("\n l jS F Y") }} 
+                                <td>{# {{ pay.payStartdate|date("\n l jS F Y")  }} #}
+                                    {# {{ srv_TimeZone.getTimeZone(pay.payStartdate|date('Y-m-d H:i:s')) |date("\n l jS F Y") }} #}
+
+                                    {{ (pay.payStartdate|date('Y-m-d'))|localizeddate('full', 'none', app.request.getLocale())  }} 
+                                    {# {{ periodDate['startDate']|localizeddate('full', 'none', app.request.getLocale()) }} #}
                                 </td>
                                 <td>{# {{ pay.payDeadLine|date("\n l jS F Y")  }} #}
-                                    {{ srv_TimeZone.getTimeZone(pay.payDeadLine|date('Y-m-d H:i:s'))|date("\n l jS F Y") }}
+                                    {{ (pay.payDeadLine|date('Y-m-d'))|localizeddate('full', 'none', app.request.getLocale()) }}
                                 </td>
                                 <td>
 
                                     {#
-                                    {% set diferencia = date( pay.payCreated|date("Y-m-d") ).diff( date('now') ) %}
+                                    {% set diferencia = date( pay.payStartdate|date("Y-m-d") ).diff( date('now') ) %}
                                     {% set diasRestantes = diferencia.days %}
 
                                     {% if diasRestantes != 0 %}
-                                        {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payCreated|date("Y-m-d") )) %}
+                                        {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payStartdate|date("Y-m-d") )) %}
                                         {% set diasRestantes = diferencia.days %}
                                     {% else %}
                                         {% set diasRestantes = 0 %}
@@ -109,28 +112,42 @@
                                     #}
 
                                     {% if "now"|date('Y-m-d') > pay.payDeadLine|date('Y-m-d') %}
-                                        {% set diasRestantes =  0 %}
+                                        {% set diasRestantes =  0 %} 
                                     {% elseif "now"|date('Y-m-d') == pay.payDeadLine|date('Y-m-d') %}
                                         {# ya paso #}
                                         {# {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff( date('now') ) %} #}
-                                        {% set diasRestantes = 1 %}
+                                        {% set diasRestantes = 1 %} 
 
                                     {% else %}
-                                        {# {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payCreated|date("Y-m-d") )) %} #}
-                                        {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff( date('now') ) %}
-                                        {% set diasRestantes = diferencia.days + 1 %}
+                                        {# {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payStartdate|date("Y-m-d") )) %} #}
+
+                                        {% if  (pay.payStartdate|date('Y-m-d')) > "now"|date('Y-m-d')   %}
+                                            
+                                            {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff( date(pay.payStartdate|date('Y-m-d')) ) %}
+                                            {% set diasRestantes = diferencia.days  %} 
+
+                                        {% else %}
+                                            {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff( date('now') ) %}
+                                            {% set diasRestantes = diferencia.days + 1 %} 
+                                        {% endif %}
+
+                                        
+
+
+                                       
                                     {% endif %}
 
 
-                                    {# {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payCreated|date("Y-m-d") )) %} #}
+
+                                    {# {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payStartdate|date("Y-m-d") )) %} #}
                                     {#
-                                    {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payCreated|date("Y-m-d") )) %}
+                                    {% set diferencia = date( pay.payDeadLine|date("Y-m-d") ).diff(date( pay.payStartdate|date("Y-m-d") )) %}
                                     {% set diasRestantes = diferencia.days %}
                                     #}
                                     {% if diasRestantes == 1 %}
                                         1 Day
                                     {% else %}
-                                    {{ diasRestantes }} Days
+                                    {{ diasRestantes }} Days 
                                     {% endif %}
                                 </td>
                                 <td>

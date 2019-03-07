@@ -62,7 +62,8 @@ class PayerTransactions
     {
         //$em = $this->getDoctrine()->getManager();
         $userId = $user_id; // $this->getUser()->getUsrId();
-		$RAW_QUERY = "SELECT pay_deadline, pay_created FROM payer p WHERE p.usr_id =:userId AND pay_deadline >= NOW() ORDER BY pay_id ";
+        //SELECT DATE_FORMAT(pay_created,'%Y-%m-%d')  as pay_created
+		$RAW_QUERY = "SELECT pay_deadline, pay_startdate, pay_created FROM payer p WHERE p.usr_id =:userId AND pay_deadline >= NOW() ORDER BY pay_id ";
 		$statement = $this->em->getConnection()->prepare($RAW_QUERY);
 		$statement->bindValue("userId", $userId);
         $statement->execute();
@@ -70,9 +71,9 @@ class PayerTransactions
         $restingDays = 0;
         for($i =0; $i < count($result); $i++)
         {
-            $created =  $result[$i]['pay_created'];
+            $startdate =  $result[$i]['pay_startdate'];
             $deadline =  $result[$i]['pay_deadline'];
-            $res = $this->restingDays($created, $deadline);
+            $res = $this->restingDays($startdate, $deadline);
             $restingDays = $restingDays + $res;
         }
 
@@ -80,12 +81,27 @@ class PayerTransactions
         return array("licences"=>count($result), "days"=> $restingDays ); // Descomentar esta liena despues del demo
     }
 
-    private function restingDays($created, $deadline){
-        if( !empty($created) && !empty($deadline ) )
+    private function restingDays($startdate, $deadline){
+        if( !empty($startdate) && !empty($deadline ) )
         {
             $deadline = $deadline; //$result[0]['pay_deadline'];
             //$created = date('Y-m-d',strtotime($created));
+
+            date_default_timezone_set("UTC");
+
+            //$srv = $this->container->get('srv_TimeZone');
+            //$timezone =  $srv->getNameTimeZone();
+            //date_default_timezone_set($timezone);
+
             $current = date('Y-m-d'); 
+
+
+            if( $startdate > $current )
+            {
+                $current = $startdate;
+            }
+
+
             //$s = strtotime($deadline)-strtotime($created); 
             $s = strtotime($deadline)-strtotime($current);  
             $d = intval($s/86400);  
@@ -97,10 +113,11 @@ class PayerTransactions
 
     public function freePaymentAccount( $userId )
     {
-        //date_default_timezone_set("UTC");
-        $srv = $this->container->get('srv_TimeZone');
-        $timezone =  $srv->getNameTimeZone();
-        date_default_timezone_set($timezone);
+        date_default_timezone_set("UTC");
+        
+        //$srv = $this->container->get('srv_TimeZone');
+        //$timezone =  $srv->getNameTimeZone();
+        //date_default_timezone_set($timezone);
         
         //$em = $this->getDoctrine()->getManager();
         $payer = new \AppBundle\Entity\Payer();
@@ -116,13 +133,41 @@ class PayerTransactions
 
             $payer->setPayMoneyPaid($oPricing->getPrPrice());
 
-            $date = date('Y-m-d H:i:s');
+            $now = date('Y-m-d H:i:s');
+            
+            $payer->setPayCreated( new \DateTime($now) );
+
+            //Check if the user has available days    
+            $hasDays = $this->getRestingDays( $userId );
+            if( $hasDays["days"] == 0 )
+            {
+                $payer->setPayStartdate( new \DateTime($now) );
+            }
+            else
+            {
+                $start = $now;
+                $oLastPayment = $this->lastPaymentByUser( $userId );
+                if( $oLastPayment )
+                {
+                    if( $oLastPayment->getPayDeadline() )
+                    {
+                        $startDate = $oLastPayment->getPayDeadline()->format('Y-m-d');
+                        $limitDate = date($startDate);
+                        $newStartdate = date("Y-m-d",strtotime($limitDate."+ 1 days")); 
+                        $start = $newStartdate;
+                    }
+                    
+                }
+                $payer->setPayStartdate( new \DateTime($start) );
+            }
+
             $months = $oPricing->getPrMonths();// $months;
-            $newDate = strtotime ( "+".$months." month" , strtotime ( $date ) ) ;
+            $newDate = strtotime ( "+".$months." month" , strtotime ( $start ) ) ;
             $deadLine = date ( 'Y-m-d H:i:s' , $newDate );
             
             $payer->setPayDeadLine( new \DateTime($deadLine) );
-            $payer->setPayCreated( new \DateTime($date) );
+            
+            
             $payer->setPayActive(1);
             $payer->setPayIsPaid(1);
 
@@ -138,6 +183,17 @@ class PayerTransactions
             }
         }
         //return $this->redirectToRoute('payments_info');
+    }
+
+    public function lastPaymentByUser( $userId )
+    {
+        $result = $this->em->getRepository('AppBundle:Payer')->findOneBy( array( "usr"=> $userId), array('payId' => 'DESC'), 1 );
+        if( $result )
+        {
+            return $result;
+        }
+
+        return false;
     }
 
     /*

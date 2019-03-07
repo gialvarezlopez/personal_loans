@@ -287,6 +287,59 @@
 			
 			//return $iLastID;
 		}
+
+		public function getRestingDays( $user_id )
+		{
+			//$em = $this->getDoctrine()->getManager();
+			$userId = $user_id; // $this->getUser()->getUsrId();
+			//SELECT DATE_FORMAT(pay_created,'%Y-%m-%d')  as pay_created
+			$RAW_QUERY = "SELECT pay_deadline, pay_startdate, pay_created FROM payer p WHERE p.usr_id =:userId AND pay_deadline >= NOW() ORDER BY pay_id ";
+			$statement = $this->conn->prepare($RAW_QUERY);
+			$statement->bindValue("userId", $userId);
+			$statement->execute();
+			$result = $statement->fetchAll();
+			$restingDays = 0;
+			for($i =0; $i < count($result); $i++)
+			{
+				$startdate =  $result[$i]['pay_startdate'];
+				$deadline =  $result[$i]['pay_deadline'];
+				$res = $this->restingDays($startdate, $deadline);
+				$restingDays = $restingDays + $res;
+			}
+
+			//return array("licences"=>count($result), "days"=> 1000000 ); // comentar esta linea despues
+			return array("licences"=>count($result), "days"=> $restingDays ); // Descomentar esta liena despues del demo
+		}
+
+		private function restingDays($startdate, $deadline){
+			if( !empty($startdate) && !empty($deadline ) )
+			{
+				$deadline = $deadline; //$result[0]['pay_deadline'];
+				//$created = date('Y-m-d',strtotime($created));
+
+				date_default_timezone_set("UTC");
+
+				//$srv = $this->container->get('srv_TimeZone');
+				//$timezone =  $srv->getNameTimeZone();
+				//date_default_timezone_set($timezone);
+
+				$current = date('Y-m-d'); 
+
+
+				if( $startdate > $current )
+				{
+					$current = $startdate;
+				}
+
+
+				//$s = strtotime($deadline)-strtotime($created); 
+				$s = strtotime($deadline)-strtotime($current);  
+				$d = intval($s/86400);  
+				$diferencia = $d;
+				
+				return ( $diferencia > 0 )?$diferencia:0;
+			}
+		}
 		
 		public function updateOrder( $httpParsedResponseAr )
 		{
@@ -297,6 +350,7 @@
 			{
 				try
 				{
+
 					$paypalTransactionID = urldecode($httpParsedResponseAr["PAYMENTREQUESTINFO_0_TRANSACTIONID"]);
 					$paypalTokenID =  urldecode($httpParsedResponseAr["TOKEN"]);
 					$paypalPayerID = urldecode($httpParsedResponseAr["PAYERID"]);
@@ -315,39 +369,72 @@
 						$res = $stmt->fetchAll();
 						if( count($res) > 0 )
 						{
-							/*
-								foreach ($res as $row)
-								{
-									$email = $row['tmp_email'];
-									$picture = $row['tmp_picture'];
-									$description = $row['tmp_text'];
-									$link = $row['tmp_link'];
-								}
-							*/
-							/*
-								$plan = $this->getPriceProduct();
-								$currentPricing = sprintf( '%0.2f', $plan["currentPricing"] );
-							*/	
 							//==================================================================
 							//Check the last record active and get the deadline
 							//==================================================================
-							$sql= "SELECT pay_deadline FROM ".$this->prefijo."payer WHERE pay_active = 1 AND pay_is_paid = 1 AND usr_id = :usrId ORDER BY pay_id LIMIT 1"; 
-							$stmt = $this->conn->prepare($sql);
-							$stmt->bindParam(':usrId', $_SESSION['clientId']); 
-							$check = $stmt->execute();
-							$result = $stmt->fetchAll();
-							if( count($result) > 0 )
+							/*
+								$sql= "SELECT pay_deadline FROM ".$this->prefijo."payer WHERE pay_active = 1 AND pay_is_paid = 1 AND usr_id = :usrId ORDER BY pay_id LIMIT 1"; 
+								$stmt = $this->conn->prepare($sql);
+								$stmt->bindParam(':usrId', $_SESSION['clientId']); 
+								$check = $stmt->execute();
+								$result = $stmt->fetchAll();
+							*/
+
+							$hasDays = $this->getRestingDays( $_SESSION['clientId'] );
+							
+							$startingDate = date('Y-m-d');
+							if( $hasDays["days"] == 0 )
 							{
-								//echo $result[0]['pay_deadline'];
-								$cursor = $result[0]['pay_deadline'];
-								$newCursor = strtotime ( "+1 day" , strtotime ( $cursor ) ) ;
-								$date = date ( 'Y-m-d' , $newCursor );
 								
-								$startingDate = date ( 'Y-m-d H:i:s' , $newCursor );
-							}else{
-								$date = date('Y-m-d H:i:s');
-								$startingDate = $date;
+								$startingDate = $startingDate;
 							}
+							else
+							{
+								//$start = $now;
+								//$oLastPayment = $this->lastPaymentByUser( $userId );
+								$sql= "SELECT pay_deadline FROM ".$this->prefijo."payer WHERE pay_active = 1 AND pay_is_paid = 1 AND usr_id = :usrId ORDER BY pay_id DESC LIMIT 1"; 
+								$stmt = $this->conn->prepare($sql);
+								$stmt->bindParam(':usrId', $_SESSION['clientId']); 
+								$check = $stmt->execute();
+								$result = $stmt->fetchAll();
+
+								if( count($result) > 0  )
+								{
+									//if( $oLastPayment->getPayDeadline() )
+									//{
+										$startDate = $result[0]['pay_deadline']; //$oLastPayment->getPayDeadline()->format('Y-m-d');
+										$limitDate = date($startDate);
+										$newStartdate = date("Y-m-d",strtotime($limitDate."+ 1 days")); 
+										$startingDate = $newStartdate;
+									//}
+									
+								}
+							}	
+
+							/*
+								if( count($result) > 0 )
+								{
+									$cursor = $result[0]['pay_deadline'];
+
+									if( $cursor )
+									{
+										$startDate = $oLastPayment->getPayDeadline()->format('Y-m-d');
+										$limitDate = date($startDate);
+										$newStartdate = date("Y-m-d",strtotime($limitDate."+ 1 days")); 
+										$start = $newStartdate;
+									}
+
+									//echo $result[0]['pay_deadline'];
+									
+									$newCursor = strtotime ( "+1 day" , strtotime ( $cursor ) ) ;
+									$date = date ( 'Y-m-d' , $newCursor );
+									
+									$startingDate = date ( 'Y-m-d' , $newCursor );
+								}else{
+									$date = date('Y-m-d');
+									$startingDate = $date;
+								}
+							*/
 							//echo $date;
 							//exit();
 							//==================================================================
@@ -356,21 +443,23 @@
 
 							//$date = date('Y-m-d H:i:s');
 							$months = $_SESSION['months'];
-							$newDate = strtotime ( "+".$months." month" , strtotime ( $date ) ) ;
+							$newDate = strtotime ( "+".$months." month" , strtotime ( $startingDate ) ) ;
 							$deadLine = date ( 'Y-m-d H:i:s' , $newDate );
+							
+							$now = date("Y-m-d H:i:s");
 
 							$gsent = $this->conn->prepare( "INSERT INTO ".$this->prefijo."payer ( 
 													pp_id, usr_id, pr_id, pay_active, 
 													pay_money_paid, pay_is_paid, pay_gateway_id_payer,  
 													pay_gateway_id_token, pay_gateway_id_transaction, 
 													pay_http_gateway_parsed_response, 
-													pay_deadline, pay_created ) 
-												VALUES ( ?,?,?,?,?,?,?,?,?,?,?, ? )" 
+													pay_deadline, pay_startdate, pay_created ) 
+												VALUES ( ?,?,?,?,?,?,?,?,?,?,?, ?, ? )" 
 											);
 							$status = $gsent->execute(
 									array( $_SESSION['paymentProcessorId'], $_SESSION['clientId'], $_SESSION['planId'], 1, 
 										$paypalPayedATM, 1, $paypalPayerID, 
-										$paypalTokenID, $paypalTransactionID, $paypalHttpResponse, $deadLine, $startingDate ) 
+										$paypalTokenID, $paypalTransactionID, $paypalHttpResponse, $deadLine, $startingDate, $now ) 
 								);
 							if( $status )
 							{

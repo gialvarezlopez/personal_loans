@@ -105,7 +105,7 @@ class Paypal
 				$_SESSION['link'] = ""; //$link;
 			*/
 			//We need to execute the "SetExpressCheckOut" method to obtain paypal token
-			var_dump($products);
+			//var_dump($products);
 			$paypal->SetExpressCheckOut($products, $charges);	
 		}
 		else

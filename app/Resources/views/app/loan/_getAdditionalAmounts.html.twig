@@ -1,0 +1,63 @@
+<div class="modal fade" id="modalShowAdditionalAmounts" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-money" aria-hidden="true"></i> Montos adicionales</h4>
+      </div>
+      <div class="modal-body">
+        <div id="">
+            {% if loanId is defined and loanId > 0 %}
+                {% set additionalAmounts = srv_Loans.getAdditionalAmounts(loanId) %}
+                {% if additionalAmounts|length > 0 %}
+                <table id="tableAdditionalAmouns" class="table table-striped display nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cantidad($)</th>
+                            <th>Interes por defecto(%)</th>
+                            <th>Interes actual(%)</th>
+                            <th>Fecha solicitado</th>
+                            <th>Comentario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set tr = 0 %}   
+                        {% for aa in additionalAmounts %}
+                            {% set tr = tr + 1 %}
+                            <tr>
+                                <td>{{ tr }}</td>
+                                <td>${{ aa.laa_amount }}</td>
+                                <td>{{ aa.laa_rate_interest_by_default }}%</td>
+                                <td>
+                                    {% if aa.laa_splitted_balance %}
+                                        {% set loan = srv_Loans.getLoanById(loanId) %}
+                                        {{ loan.loaQuotas }}
+                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
+
+                                        {% if pending|length %}
+                                            {{ pending.rate }}
+                                        {% else %}
+                                            {{ aa.laa_rate_interest }} x
+                                        {% endif %}
+                                    {% else %}
+                                        {{ aa.laa_rate_interest }} z
+                                    {% endif %}
+                                    %
+                                </td>
+                                <td>{{ aa.laa_delivered_date|date(app.user.usrDateFormat) }}</td>
+                                <td>{{ aa.laa_comment }}</td> 
+                            </tr> 
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>  {% trans %}general_btn_close{% endtrans %}</button>
+      </div>
+    </div>
+  </div>
+</div>

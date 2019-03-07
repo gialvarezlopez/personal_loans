@@ -544,4 +544,62 @@ class Loan
     {
         return $this->loaResetRateToInterestByDefault;
     }
+    /**
+     * @var boolean
+     */
+    private $loaTotalAmountCompleted = '0';
+
+    /**
+     * @var \DateTime
+     */
+    private $loaNextPaymentDate;
+
+
+    /**
+     * Set loaTotalAmountCompleted
+     *
+     * @param boolean $loaTotalAmountCompleted
+     *
+     * @return Loan
+     */
+    public function setLoaTotalAmountCompleted($loaTotalAmountCompleted)
+    {
+        $this->loaTotalAmountCompleted = $loaTotalAmountCompleted;
+
+        return $this;
+    }
+
+    /**
+     * Get loaTotalAmountCompleted
+     *
+     * @return boolean
+     */
+    public function getLoaTotalAmountCompleted()
+    {
+        return $this->loaTotalAmountCompleted;
+    }
+
+    /**
+     * Set loaNextPaymentDate
+     *
+     * @param \DateTime $loaNextPaymentDate
+     *
+     * @return Loan
+     */
+    public function setLoaNextPaymentDate($loaNextPaymentDate)
+    {
+        $this->loaNextPaymentDate = $loaNextPaymentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get loaNextPaymentDate
+     *
+     * @return \DateTime
+     */
+    public function getLoaNextPaymentDate()
+    {
+        return $this->loaNextPaymentDate;
+    }
 }

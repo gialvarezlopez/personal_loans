@@ -62,10 +62,14 @@ AppBundle\Entity\Payer:
             column: pay_is_paid
         payActive:
             type: boolean
-            nullable: true
+            nullable: false
             options:
                 default: '1'
             column: pay_active
+        payStartdate:
+            type: date
+            nullable: true
+            column: pay_startdate
         payDeadline:
             type: date
             nullable: true

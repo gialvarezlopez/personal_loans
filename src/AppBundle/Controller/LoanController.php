@@ -210,18 +210,18 @@ class LoanController extends Controller
                 $oLoanPayment->setLpaNextPaymentDate($nextPayment);
 
                 /*
-                $nextRate = $rate;
-                if( $period == 1 )
-                {
-                    for($i = 0; $i < $period; $i++ )
+                    $nextRate = $rate;
+                    if( $period == 1 )
                     {
-                        $nextRate = $nextRate + $rate;
+                        for($i = 0; $i < $period; $i++ )
+                        {
+                            $nextRate = $nextRate + $rate;
+                        }
                     }
-                }
-                else
-                {
-                    $nextRate = $rate* $period;
-                }
+                    else
+                    {
+                        $nextRate = $rate* $period;
+                    }
                 */
                 
                 $period = ($arrCheck["quotas"] > 0 )?$arrCheck["quotas"]:1;
@@ -748,6 +748,7 @@ class LoanController extends Controller
                         //$oLoan = $em->getRepository('AppBundle:Loan')->find( $item->getLoaId() );
                         $oLAAmounts->setLoa( $oLoan );
                         $oLAAmounts->setLaaAmount( $amount );
+                        $oLAAmounts->setLaaRateInterest( $interest );
                         $oLAAmounts->setLaaRateInterestByDefault( $interest );
                         $oLAAmounts->setLaaComment( $comment );
                         $oLAAmounts->setLaaDeliveredDate( new \datetime($deliveredDate) );
