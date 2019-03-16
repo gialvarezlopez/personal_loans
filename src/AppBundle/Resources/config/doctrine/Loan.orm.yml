@@ -61,6 +61,12 @@ AppBundle\Entity\Loan:
             precision: 10
             scale: 0
             column: loa_rate_interest_by_default
+        loaLastRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: loa_last_rate_interest
         loaResetRateToInterestByDefault:
             type: boolean
             nullable: true

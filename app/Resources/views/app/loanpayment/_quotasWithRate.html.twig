@@ -1,3 +1,8 @@
+<style>
+#paymetslist td{
+    vertical-align: middle;
+}
+</style>
 <table id="paymetslist" class="table table-striped display nowrap" style="width:100%">
     <thead>
         <tr> 
@@ -44,441 +49,168 @@
 
         {% set num = 0 %}
  
-        {% set max = 0 %}
-        {% set maxNext = 0 %}  
-
         <!-- FOR -->  
         {% for payment in arrData %}
         {# {% for batch in arrData %} #}
             
             {% set num = num + 1 %}
-            
-            {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                {% if payment[0].lpa_next_amount %}
-                    {% set nextAmount = payment[0].lpa_next_amount %}
-                {% else %}   
-                    {% set nextAmount = 0 %}
-                {% endif %}
-            {% else %}
-                 {% set nextAmount = 0 %}
-            {% endif %}
-
-            {% if item_number == 0  %}
-
-                {% if payment|length == 1 %} {# just one payment bach ===========================  #}            
-                    {% set max = (payment[0].lpa_current_amount) - payment[0].lpa_paid_capital %}
-                    {% set iniAmount = payment[0].lpa_current_amount %}
-                {% else %}
-                    {% set max = ((payment[0].lpa_current_amount) - payment[0].lpa_paid_capital)  + ((payment[1].lpa_current_amount) - payment[1].lpa_paid_capital) %}
-                    {% set iniAmount = payment[0].lpa_current_amount + payment[1].lpa_current_amount %}
-                {% endif %}    
-
-            {% else %}
-                {% set maxNext =  max   %}
-                {% set iniAmount = max %}
-            {% endif %}
-        
             <tr>
-                <td>{{ num }}</td>{# Column A #}
-                        
-                <td>{{ payment[0].lpa_max_payment_date }}</td>{# Column B #} {# both have the same date #}
-                <td>{# Column C #}
-
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if payment[0].lpa_total_amount_paid > 0  %}
-                            {{ payment[0].lpa_paid_date }}
-                        {% else %}
-                                    -
-                        {% endif %}
+                {% if payment|length == 1  %}
+                    {% if payment[0].lhp_last_paid_amount == 0 %}
+                        {% set checkColor_0 = "danger" %}
                     {% else %}
-                        {% if (payment[0].lpa_total_amount_paid + payment[1].lpa_total_amount_paid ) > 0  %}
-                            {{ payment[0].lpa_paid_date }} <!-- ambos tienes la misma fecha de pago -->
-                        {% else %}
-                                    -
-                        {% endif %}
+                        {% set checkColor_0 = "success" %}
                     {% endif %}
+                {% else %}
+                    {% if payment[0].lhp_last_paid_amount == 0 %}
+                        {% set checkColor_0 = "danger" %}
+                    {% else %}
+                        {% set checkColor_0 = "success" %}
+                    {% endif %}
+
+                    {% if payment[1].lhp_last_paid_amount == 0 %}
+                        {% set checkColor_1 = "danger" %}
+                    {% else %}
+                        {% set checkColor_1 = "success" %}
+                    {% endif %}
+                {% endif %}
+                <td>{# Column A #}
+                    {{ num }}
+                </td>
+                <td>{# Column B #}
+                    {{ payment[0].lhp_deadline }}
+                </td>
+                <td>{# Column C #}
+                    {% if payment[0].lhp_paid_date %}
+                        {{ payment[0].lhp_paid_date }}
+                    {% else %}
+                        {{ payment[1].lhp_paid_date }}
+                    {% endif %}
+                    
                 </td>
                 <td>{# Column D #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            {% if num == 1  %}
-                                <span class="label label-default amounts">${{ payment[0].lpa_current_amount|number_format(2, '.', ',')  }}</span>
-                            {% else %}
-                                <span class="label label-default amounts">${{ max|number_format(2, '.', ',')  }}</span>
-                            {% endif %}
-                        {% else %}
-                            -
-                        {% endif %}
+                    {% if payment|length == 1 %}
+                        <span class="label label-default amounts">${{ payment[0].lhp_prev_amount }}</span>
                     {% else %}
-                        {% set b_amount_0 = 0 %}
-                        {% set b_amount_1 = 0 %}
-                        {% set sum_b0_b1 = 0 %}
-                        {% if item_number != 0 and (payment[0].lpa_next_rate_interest == payment[1].lpa_next_rate_interest) %}
-                            <span class="label label-default amounts">
-                                ${{ (payment[0].lpa_current_amount + payment[1].lpa_current_amount)|number_format(2, '.', ',')  }}
-                                {% set sum_b0_b1 = (payment[0].lpa_current_amount + payment[1].lpa_current_amount) %}
-                            </span>
-                        {% else %}
-
-                            {% if item_number != 0 or  payment[0].lpa_total_amount_paid  > 0  %}
-                                {% if num == 1  %}
-                                    <span class="label label-default amounts">${{ payment[0].lpa_current_amount|number_format(2, '.', ',')  }}</span>
-                                    {% set b_amount_0 = payment[0].lpa_current_amount %}
-                                {% else %}
-                                    <span class="label label-default amounts">${{ max|number_format(2, '.', ',')  }}</span>
-                                {% endif %}
-                                <br>
-                            {% else %}
-                                -
-                            {% endif %}
-
-                            <!-- ==== divider====  -->
-
-                            {% if item_number != 0 or  payment[1].lpa_total_amount_paid  > 0  %}
-                                {% if num == 1  %}
-                                    <span class="label label-default amounts">${{ payment[1].lpa_current_amount|number_format(2, '.', ',')  }}</span>
-                                    {% set b_amount_1 = payment[1].lpa_current_amount %}
-                                {% else %}
-                                    <span class="label label-default amounts">${{ max|number_format(2, '.', ',')  }}</span>
-                                {% endif %}
-                            {% else %}
-                                -
-                            {% endif %}
-                        {% endif %}
+                        <span class="label label-default amounts">${{ payment[0].lhp_prev_amount }}</span>
+                        <br>
+                        <span class="label label-default amounts">${{ payment[1].lhp_prev_amount }}</span>
                     {% endif %}
                 </td>
                 <td>{# Column E #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% if payment[0].lpa_current_rate_interest %}
-                                    {{ payment[0].lpa_current_rate_interest }}
-                                {% else %}
-                                    0
-                                {% endif %}%
-                            </span>
-                        {% else %}
-                            -
-                        {% endif %}
+                    {% if payment|length == 1 %}
+                        <span class="label label-default amounts">{{ payment[0].lhp_prev_interest|number_format(2, '.', ',') }}%</span>
                     {% else %}
-
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% if payment[0].lpa_current_rate_interest %}
-                                    {{ payment[0].lpa_current_rate_interest }}
-                                {% else %}
-                                    0
-                                {% endif %}%
-                            </span><br>
-                        {% else %}
-                            -
-                        {% endif %}
-                       <!-- ==== divider====  -->
-                        {% if item_number != 0 or  payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% if payment[1].lpa_current_rate_interest %}
-                                    {{ payment[1].lpa_current_rate_interest }}
-                                {% else %}
-                                    0
-                                {% endif %}%
-                            </span>
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endif %}    
-                </td>
-                <td >{# column F #} 
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% set amonXrate =  ( (payment[0].lpa_current_rate_interest/100) * iniAmount ) %}
-                                ${{ amonXrate|number_format(2, '.', ',') }}
-                                    </span>
-                        {% else %}
-                                -
-                        {% endif %}
-                    {% else %}
-                        
-                        {% set amonXrate = 0 %}    
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% set amonXrate =  ( (payment[0].lpa_current_rate_interest/100) * b_amount_0 ) %}
-                                ${{ amonXrate|number_format(2, '.', ',') }}
-                            </span><br>
-                        {% else %}
-                                -
-                        {% endif %}
-                        
-                        <!-- ==== divider====  -->
-
-                        {% set amonXrate_1 = 0 %}
-                        {% if item_number != 0 or  payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                {% set amonXrate_1 =  ( (payment[1].lpa_current_rate_interest/100) * b_amount_1 ) %}
-                                ${{ amonXrate_1|number_format(2, '.', ',') }}
-                            </span>
-                        {% else %}
-                                -
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td class="text-center" style="background-color: #d2d6de">{# column G #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #} 
-                        {% if item_number != 0 or  payment.lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                ${{ (iniAmount + amonXrate)|number_format(2, '.', ',') }}
-                            </span>
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% else %}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0 or payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-default amounts">
-                                ${{ (iniAmount + amonXrate + amonXrate_1 )|number_format(2, '.', ',') }}
-                            </span>
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td>{# column H #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">
-                                ${{ payment[0].lpa_total_amount_paid|number_format(2, '.', ',') }}
-                            </span>
-                            {% set totalPaid  =  totalPaid + payment[0].lpa_total_amount_paid %}
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% else %}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">
-                                ${{ payment[0].lpa_total_amount_paid|number_format(2, '.', ',') }}
-                            </span>
-                            {% set totalPaid  =  totalPaid + payment[0].lpa_total_amount_paid %}
-                        {% else %}
-                            -
-                        {% endif %}
+                        <span class="label label-default amounts">{{ payment[0].lhp_prev_interest|number_format(2, '.', ',') }}%</span>
                         <br>
-                        <!-- ==== divider====  -->
+                        <span class="label label-default amounts">{{ payment[1].lhp_prev_interest|number_format(2, '.', ',') }}%</span>
 
-                        {% if item_number != 0 or  payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">
-                                ${{ payment[1].lpa_total_amount_paid|number_format(2, '.', ',') }}
-                            </span>
-                            {% set totalPaid  =  totalPaid + payment[1].lpa_total_amount_paid %}
-                        {% else %}
-                            -
-                        {% endif %}
+                        {% set prevInterest_1 = 0 %}
+                        {% set prevInterest_2 = 0 %}
                     {% endif %}
                 </td>
-                <td>{# column I #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[0].lpa_paid_rate_interest|number_format(2, '.', ',') }}</span>
-                            {% set totalRate =  totalRate + payment[0].lpa_paid_rate_interest %}
-                        {% else %}
-                            -
-                        {% endif %}
+                <td>{# Column F #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-default amounts">${{ (payment[0].lhp_prev_amount *  (payment[0].lhp_prev_interest/100))|number_format(2, '.', ',') }}</span>
                     {% else %}
-
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[0].lpa_paid_rate_interest|number_format(2, '.', ',') }}</span>
-                            {% set totalRate =  totalRate + payment[0].lpa_paid_rate_interest %}
-                        {% else %}
-                            -
-                        {% endif %}
-                        <br>    
-                        <!-- ==== divider====  -->
-
-                        {% if item_number != 0 or  payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[1].lpa_paid_rate_interest|number_format(2, '.', ',') }}</span>
-                            {% set totalRate =  totalRate + payment[1].lpa_paid_rate_interest %}
-                        {% else %}
-                            -
-                        {% endif %}
-
-                    {% endif %}
-                </td>
-                <td>{# column J #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[0].lpa_paid_capital|number_format(2, '.', ',') }}</span>
-                            {% set totalCapital =  totalCapital + payment[0].lpa_paid_capital %}
-                        {% else %}
-                            -
-                        {% endif %}
-                    {% else %}
-                        {% if item_number != 0 or  payment[0].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[0].lpa_paid_capital|number_format(2, '.', ',') }}</span>
-                            {% set totalCapital =  totalCapital + payment[0].lpa_paid_capital %}
-                        {% else %}
-                            -
-                        {% endif %}
+                        <span class="label label-default amounts">${{ (payment[0].lhp_prev_amount *  (payment[0].lhp_prev_interest/100))|number_format(2, '.', ',') }}</span>
                         <br>
-                        <!-- ==== divider====  -->
-                        
-                        {% if item_number != 0 or  payment[1].lpa_total_amount_paid > 0  %}
-                            <span class="label label-success amounts">${{ payment[1].lpa_paid_capital|number_format(2, '.', ',') }}</span>
-                            {% set totalCapital =  totalCapital + payment[1].lpa_paid_capital %}
-                        {% else %}
-                            -
-                        {% endif %}
+                        <span class="label label-default amounts">${{ (payment[1].lhp_prev_amount *  (payment[1].lhp_prev_interest/100))|number_format(2, '.', ',') }}</span>
                     {% endif %}
                 </td>
-                <td>{# column K #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        <span class="label label-info amounts">
-                            {% if item_number == 0  %}
-                                ${{ max|number_format(2, '.', ',')  }}
-                                {% set n = max %}
-                            {% else %}   
-                                ${{ (maxNext - payment[0].lpa_paid_capital)|number_format(2, '.', ',')  }}  
-                                {% set n = maxNext - payment[0].lpa_paid_capital %}
-                            {% endif  %}
-                        </span>
-                                
-                        {% if payment[0].lpa_next_amount %}
-                            + <span class="label label-info amounts">${{payment[0].lpa_next_amount|number_format(2, '.', ',')}}</span>
-                        {% endif %} 
-
-                        {% set max  = n + payment[0].lpa_next_amount %}
+                <td class="text-center" style="background-color: #d2d6de">{# Column G #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-default amounts">${{ ( payment[0].lhp_prev_amount + (payment[0].lhp_prev_amount *  (payment[0].lhp_prev_interest/100)) )|number_format(2, '.', ',') }}</span>
                     {% else %}
-                            {% set next_ba_0 = 0 %}
-                            {% set next_ba_1 = 0 %}
-                            {% set next_ba_0_1 = 0 %}
-                            {% if item_number == 0  %}
-                                <span class="label label-info amounts">${{ max|number_format(2, '.', ',')  }}</span>
-                                {% set next_ba_0_1 = max %}
-                                {% set n = max %}
-                            {% else %}   
-                                {% if payment[0].lpa_next_rate_interest == payment[1].lpa_next_rate_interest %}
-                                    <span class="label label-info amounts">${{ (maxNext - payment[0].lpa_paid_capital + payment[1].lpa_paid_capital)|number_format(2, '.', ',')  }}</span>
-                                    {% set next_ba_0_1 = (maxNext - payment[0].lpa_paid_capital + payment[1].lpa_paid_capital) %}
-                                {% else %}
-                                    <span class="label label-info amounts">${{ (maxNext - payment[0].lpa_paid_capital)|number_format(2, '.', ',')  }}</span>
-                                    {% set next_ba_0 = (maxNext - payment[0].lpa_paid_capital) %}
-                                    <br>    
-                                    <span class="label label-info amounts">${{ (maxNext - payment[1].lpa_paid_capital)|number_format(2, '.', ',')  }}</span>
-                                    {% set next_ba_1 = (maxNext - payment[1].lpa_paid_capital) %}    
-                                {% endif %}  
-                                {% set n = maxNext - ( payment[0].lpa_paid_capital + payment[1].lpa_paid_capital ) %}
-                            {% endif  %}
-                        
-                        {#
-                            {% if payment.lpa_next_amount %}
-                                + <span class="label label-info amounts">${{payment[0].lpa_next_amount|number_format(2, '.', ',')}}</span>
-                            {% endif %} 
-                        #}
-
-                        {% set max  = n + (payment[0].lpa_next_amount + payment[1].lpa_next_amount) %}
+                        <span class="label label-default amounts">${{ ( payment[0].lhp_prev_amount + (payment[0].lhp_prev_amount *  (payment[0].lhp_prev_interest/100)) )|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-default amounts">${{ ( payment[1].lhp_prev_amount + (payment[1].lhp_prev_amount *  (payment[1].lhp_prev_interest/100)) )|number_format(2, '.', ',') }}</span>
                     {% endif %}
                 </td>
-                <td>{# column L #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        <span class="label label-info amounts">
-                            {% if max > 0  %}
-                                {{ payment[0].lpa_next_rate_interest }} 
-                            {% else %}
-                                0
-                            {% endif %}
-                                %
-                        </span>
+                <td>{# Column H #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_amount|number_format(2, '.', ',') }}</span>
+                        {% set totalPaid  = totalPaid  + payment[0].lhp_last_paid_amount %}
                     {% else %}
-                        {% if payment[0].lpa_next_rate_interest == payment[1].lpa_next_rate_interest %}
-                            <span class="label label-info amounts">
-                                {% if max > 0  %}
-                                    {{ payment[0].lpa_next_rate_interest }} {# both has the same interest #}
-                                {% else %}
-                                    0
-                                {% endif %}
-                                    %
-                            </span>
-                        {% else %}
-                            <span class="label label-info amounts">
-                                {% if max > 0  %}
-                                    {{ payment[0].lpa_next_rate_interest }} 
-                                {% else %}
-                                    0
-                                {% endif %}
-                                    %
-                            </span>
-                            <br>  
-                            <!-- ==== divider====  -->  
-                            <span class="label label-info amounts">
-                                {% if max > 0  %}
-                                    {{ payment[1].lpa_next_rate_interest }} 
-                                {% else %}
-                                    0
-                                {% endif %}
-                                    %
-                            </span>
-                        {% endif %}
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_amount|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-{{checkColor_1}} amounts">${{ payment[1].lhp_last_paid_amount|number_format(2, '.', ',') }}</span>
+
+                        {% set totalPaid  = totalPaid  + (payment[0].lhp_last_paid_amount + payment[1].lhp_last_paid_amount) %}
                     {% endif %}
                 </td>
-                <td>{# column M #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        <span class="label label-info amounts">
-                            ${{ (((payment[0].lpa_next_rate_interest/100) * ( max  ) ) ) |number_format(2, '.', ',') }} 
-                        </span>
+                <td>{# Column I #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_interest|number_format(2, '.', ',') }}</span>
+                        {% set totalRate = totalRate + payment[0].lhp_last_paid_interest %}
                     {% else %}
-                        {% if payment[0].lpa_next_rate_interest == payment[1].lpa_next_rate_interest %}
-                            <span class="label label-info amounts">
-                                ${{ ( ((payment[0].lpa_next_rate_interest/100) * ( next_ba_0_1  ))  ) |number_format(2, '.', ',') }}
-                            </span>
-                        {% else %}
-                            <span class="label label-info amounts">
-                                ${{ ( ((payment[0].lpa_next_rate_interest/100) * ( next_ba_0  ))   ) |number_format(2, '.', ',') }}---
-                            </span>
-                            
-                            <br><!-- ==== divider====  -->
-
-                            <span class="label label-info amounts">
-                                ${{ ( ((payment[1].lpa_next_rate_interest/100) * ( next_ba_1  ))   ) |number_format(2, '.', ',') }}---
-                            </span>    
-                        {% endif %}
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_interest|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-{{checkColor_1}} amounts">${{ payment[1].lhp_last_paid_interest|number_format(2, '.', ',') }}</span>
+                        {% set totalRate = totalRate + (payment[0].lhp_last_paid_interest + payment[1].lhp_last_paid_interest) %}
                     {% endif %}
                 </td>
-                <td class="text-center" style="background-color: #00C0EF">{# column N #}
-                    {% if payment|length == 1 %} {# just one payment bach ===========================  #}
-                        <span class="label label-info amounts">
-                            ${{ ( (max ) + ((payment[0].lpa_next_rate_interest/100) * (max )) )|number_format(2, '.', ',') }} 
-                        </span>
+                <td>{# Column J #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_capital|number_format(2, '.', ',') }}</span>
+                        {% set totalCapital = totalCapital + payment[0].lhp_last_paid_capital %}
                     {% else %}
-                        {% if payment[0].lpa_next_rate_interest == payment[1].lpa_next_rate_interest %}
-                            <span class="label label-info amounts">
-                                ${{ ( (next_ba_0_1 ) + ((payment[0].lpa_next_rate_interest/100) * ( next_ba_0_1 ) ) )|number_format(2, '.', ',') }} 
-                            </span>
-                        {% else %}
-                            <span class="label label-info amounts">
-                                 ${{ ((next_ba_0 ) + ((payment[0].lpa_next_rate_interest/100) * (next_ba_0 )))|number_format(2, '.', ',') }} 
-                            </span>
+                        <span class="label label-{{checkColor_0}} amounts">${{ payment[0].lhp_last_paid_capital|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-{{checkColor_1}} amounts">${{ payment[1].lhp_last_paid_capital|number_format(2, '.', ',') }}</span>
 
-                            <br><!-- ==== divider====  -->
-
-                            <span class="label label-info amounts">
-                                 ${{ ((next_ba_1 ) + ((payment[1].lpa_next_rate_interest/100) * (next_ba_1 )))|number_format(2, '.', ',') }} 
-                            </span>
-
-                        {% endif %}
-                        
+                        {% set totalCapital = totalCapital + ( payment[0].lhp_last_paid_capital + payment[1].lhp_last_paid_capital) %}
                     {% endif %}
                 </td>
-                <td >{# column O #}
-                    {# both have the same next date #}
-                    {% if  payment[0].lpa_next_payment_date %}
-                        {{ payment[0].lpa_next_payment_date|date("Y-m-d") }}
+                <td>{# Column K #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-info amounts">${{ payment[0].lhp_next_capital|number_format(2, '.', ',') }}</span>
+                    {% else %}
+                        <span class="label label-info amounts">${{ payment[0].lhp_next_capital|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-info amounts">${{ payment[1].lhp_next_capital|number_format(2, '.', ',') }}</span>
                     {% endif %}
                 </td>
-                <td>{# column P #}
-                    {# both have the same comment #}
-                    <div class="note">{{ payment[0].lpa_note }}</div>
+                <td>{# Column L #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-info amounts">{{ payment[0].lhp_next_interest|number_format(2, '.', ',') }}%</span>
+                    {% else %}
+                        <span class="label label-info amounts">{{ payment[0].lhp_next_interest|number_format(2, '.', ',') }}%</span>
+                        <br>
+                        <span class="label label-info amounts">{{ payment[1].lhp_next_interest|number_format(2, '.', ',') }}%</span>
+                    {% endif %}
+                </td>
+                <td>{# Column M #}
+                    {% if payment|length == 1 %}
+                        <span class="label label-info amounts">${{ (payment[0].lhp_next_capital *  (payment[0].lhp_next_interest/100))|number_format(2, '.', ',') }}</span>
+                    {% else %}
+                        <span class="label label-info amounts">${{ (payment[0].lhp_next_capital *  (payment[0].lhp_next_interest/100))|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-info amounts">${{ (payment[1].lhp_next_capital *  (payment[1].lhp_next_interest/100))|number_format(2, '.', ',') }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-center" style="background-color: #00C0EF">{# Column N #}
+                   {% if payment|length == 1 %}
+                        <span class="label label-info amounts">${{ ( payment[0].lhp_next_capital + (payment[0].lhp_next_capital *  (payment[0].lhp_next_interest/100)) )|number_format(2, '.', ',') }}</span>
+                    {% else %}
+                        <span class="label label-info amounts">${{ ( payment[0].lhp_next_capital + (payment[0].lhp_next_capital *  (payment[0].lhp_next_interest/100)) )|number_format(2, '.', ',') }}</span>
+                        <br>
+                        <span class="label label-info amounts">${{ ( payment[1].lhp_next_capital + (payment[1].lhp_next_capital *  (payment[1].lhp_next_interest/100)) )|number_format(2, '.', ',') }}</span>
+                    {% endif %}
+                </td>
+                <td>{# Column O #}
+                    {{ payment[0].lhp_next_payment_date }}
+                </td>
+                <td>{# Column P #}
+                    {% if payment|length == 1 %}
+                        {{ payment[0].lhp_note }}
+                    {% else %}
+                        {{ payment[0].lhp_note }}
+                        <hr>
+                        {{ payment[1].lhp_note }}
+                    {% endif %}
                 </td>
             </tr>
-            {% set item_number =  item_number + 1 %}
-
-            
 
         {% endfor %}
     </tbody>

@@ -1,6 +1,7 @@
 {% if hasBalance is defined and hasBalance|length > 0 %}
 
-
+<input type="hidden" id="rateByDefault_additional" value="{{ loandAdd_laaRateInterestByDefault }}">
+<input type="hidden" id="loaRateInterest_additional" value="{{ loanAdd_loaRateInterest }}">
 <div class="row">
     <div class="col-md-12 col-lg-6 col-sm-12">
         <div class="form-group">
@@ -123,6 +124,19 @@
                     <input type="text" id="loaNextInterestRate_additional" name="loaNextInterestRate_additional" required="required" class="form-control" autocomplete="off" value="" readonly="true">
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class"row">
+    <div class="">
+        <div class="form-group">
+            <div class="form_error">{{ form_errors(form.lpaNote)}}</div>
+            <label for="" class=" control-label">{% trans %}loan_form_description{% endtrans %}:</label>
+            <div class="">
+                <textarea class="form-control" maxlength="150" id="lpaNote_add" name="lpaNote_add"></textarea>
+            </div>
+            <span id="helpBlock2" class="help-block">{% trans %}loan_form_description_help{% endtrans %}</span>
         </div>
     </div>
 </div>

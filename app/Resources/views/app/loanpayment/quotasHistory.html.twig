@@ -53,6 +53,7 @@
     margin-bottom: 3px;
     display: inline-block;
 }
+
 </style>
 {#  Check the notifications #}
 {% set created = 0 %}
@@ -147,7 +148,9 @@
 
         {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
 
-        {% set amountJoined = 0.00 %}
+        {# {% set amountJoined = 0.00 %} #}
+        {% set amountJoined = srv_Loans.getTotalAdditionalAmountsJoinedMainBalance(loan.loaId) %}
+        {# {{ amountJoined }} #}
         {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(loan.loaId) %}
         {% if hasBalance %}   
             {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
@@ -218,7 +221,7 @@
                                 {% else %}
                                     {% set stalabel = "nothingPending" %}
                                 {% endif %}
-                                <span class="label label-default {{stalabel}}">${{  pending }}</span>
+                                <span class="label label-info {{stalabel}}">${{  pending }}</span>
                                 {% set total = total + pending %}
                             </span>
                             <br>    
@@ -242,7 +245,7 @@
                                         {% if pending_add %}
                                             {% set rate_add = pending_add.rate %}   
                                         {% else %}
-                                            {% set rate_add = loan.loaRateInterest %}     
+                                            {% set rate_add = loanAdd_loaRateInterest %}     
                                         {% endif %}
                                                             
                                         {% set paidAmount = srv_Loans.checkPaymentsPerLoanAdditional(loanAdd_Id) %}
@@ -265,21 +268,26 @@
                                         {% else %}
                                             {% set stalabel = "nothingPending" %}
                                         {% endif %}
-                                        <span class="label label-default {{stalabel}}">${{  pending_add }}</span>
+                                        <span class="label label-info {{stalabel}}">${{  pending_add }}</span>
                                         {% set total = total + pending_add %}
                                     </span>
 
                                 {% endif %}
                             {% endif %} 
-                                <div style="padding-top:10px; "><span class="label label-default">Total: ${{ total|number_format(2, '.', ',') }}</span>  </div>
+                                <div style="padding-top:10px; "><span class="label label-info">Total: ${{ total|number_format(2, '.', ',') }}</span>  </div>
                             </div>
                             <div style="clear:both"></div>
                         </h3>    
                     </div>
                      <hr>
                 </div>
-            {% endif  %}                        
-            {{ include('app/loanpayment/_quotasWithRate.html.twig' )  }} 
+            {% endif  %}
+            {% set hasPaymentDone = srv_Loans.getTotalAmountPaid(loan.loaId) %}    
+            {% if hasPaymentDone > 0 %}
+                {{ include('app/loanpayment/_quotasWithRate.html.twig' )  }} 
+            {% else %}
+                <div class="alert alert-info">No hay historico de pagos, ya que no se ha hecho ningun pago</div>
+            {% endif %}
         {% endif %}
 
         {#

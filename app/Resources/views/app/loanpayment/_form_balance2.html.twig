@@ -1,0 +1,35 @@
+{% if hasBalance is defined and hasBalance|length > 0 %}
+        <div class="col-lg-6">
+            Balance 2 (Adicional):<br>
+            <div class="well">
+                <table>
+                    <tr>
+                        <td>
+                            <span class="amounts">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                                <span  id="pendingAmount_additional" class="pendingAmount">{{ pendingPaid_add|number_format(2, '.', ',') }}</span>
+                                x <span class="amounts"><span id="htmlRate_additional">{{rate_add}}</span>% </span> 
+                                                                        
+                                = 
+                            </span>
+                        </td>
+                        <td> &#160; <span class="amounts"><i class="fa fa-usd" aria-hidden="true"></i><span id="htmlJustRate_additional">{{ ((rate_add/100)*pendingPaid_add)|number_format(2, '.', ',') }}</span> </div></td>        
+                    </tr>
+                    <tr>
+                        <td><div class="text-right amounts"> + </div></td>
+                        <td><span class="amounts">&#160; <i class="fa fa-usd" aria-hidden="true"></i><span  id="pendingAmount" class="pendingAmount">{{ pendingPaid_add|number_format(2, '.', ',') }}</span></span></td>        
+                    </tr>
+                    <tr>
+                        <td><div class="text-right amounts">Total = </div></td>
+                        <td>
+                            <span class="amounts">
+                                &#160; <i class="fa fa-usd" aria-hidden="true"></i>
+                                <span id="boxHtmlTotalAmount_additional" class="">{{ (pendingPaid_add + (rate_add/100)*pendingPaid_add)|number_format(2, '.', ',') }}</span>
+                                {% set Balance2 = (pendingPaid_add + (rate_add/100)*pendingPaid_add) %}
+                            </span>
+                        </td>        
+                    </tr>    
+                </table>
+            </div>
+        </div>
+    {% endif %}

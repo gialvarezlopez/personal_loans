@@ -232,12 +232,14 @@
                                                                                         {% if pending|length %}
                                                                                             {{ pending.rate }}
                                                                                         {% else %}
-                                                                                            {{ aa.laa_rate_interest }} x
+                                                                                            {{ aa.laa_rate_interest }}
                                                                                         {% endif %}
+                                                                                        %
                                                                                     {% else %}
-                                                                                        {{ aa.laa_rate_interest }} z
+                                                                                        N/A
+                                                                                        {# {{ aa.laa_rate_interest }} #}
                                                                                     {% endif %}
-                                                                                    %
+                                                                                    
                                                                                 </td>
                                                                                 <td>{{ aa.laa_delivered_date|date(app.user.usrDateFormat) }}</td>
                                                                                 <td>{{ aa.laa_comment }}</td> 
@@ -250,7 +252,12 @@
                                                            
                                                      {% endif %}
                                                     {% if loan.loaCompleted == 0 %}
-                                                        <div class="text-right"><button type="button" class="btn bg-purple btn-xs" id="btnAddAmounts" style="margin-bottom: 10px;"><i class="fa fa-fw fa-plus-circle"></i> Adicionar monto</button></div>
+                                                        {% set hasActiveAddAmount = srv_Loans.getActiveNumAdditionalAmount(loan.loaId) %}
+                                                        {% if hasActiveAddAmount|length == 0 %}
+                                                            <div class="text-right"><button type="button" class="btn bg-purple btn-xs" id="btnAddAmounts" style="margin-bottom: 10px;"><i class="fa fa-fw fa-plus-circle"></i> Adicionar monto</button></div>
+                                                        {% else %}
+                                                            <div class="text-right"><button type="button" disabled="disabled" class="btn bg-purple btn-xs" id="" style="margin-bottom: 10px;"><i class="fa fa-fw fa-plus-circle"></i> Adicionar monto</button></div>
+                                                        {% endif %}
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -429,7 +436,7 @@
                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                 {% endif %}
                 
-                        {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
+                        {% set arr =  srv_Loans.getPaymentsByLoandId(loanId) %}
                         {% if loan.loc.locKey  == "inactive_rate" %}
                             <h4>
                                 <span class="">{% trans %}loan_edit_subtitle_payments{% endtrans %}</span> - 
@@ -475,6 +482,7 @@
                                               <span class="label label-default nothingPending">$0.00</span>      
                                         {% endif %}
                                         </h3> 
+                                        
                                     </div>
                                 {% else %}
                                     {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
@@ -498,6 +506,11 @@
     <script>
         //$(document).on("ready", function(){
         $(function (){
+
+            if( $("#holderResume").length == 1  )
+            {
+                $("#holderResume").prependTo("#holderPaymentsDone");
+            } 
 
             {% if loan.loaCompleted == 1 %}
                 $("form[name='appbundle_loan'] input[type='text'], form[name='appbundle_loan'] input[type='number'], form[name='appbundle_loan'] textarea").attr("readonly", true);

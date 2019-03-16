@@ -265,7 +265,7 @@ payments_quotas_title: Payments Quotas
 payments_quotas_btn_pay_detail: Full payment detail
 
 payment_rate_table_payments_date: Payments date
-payment_rate_table_previous_payments: Previous Payments
+payment_rate_table_previous_payments: Previous detail before payment
 payment_rate_table_last_payments: Last Payments 
 payment_rate_table_next_quota: Next Quota
 payment_rate_table_col_date_paid_quota: Date paid quota

@@ -1,0 +1,121 @@
+AppBundle\Entity\LoanHistoricalPayments:
+    type: entity
+    table: loan_historical_payments
+    indexes:
+        FK_loan_historial_payments_loan:
+            columns:
+                - loa_id
+        FK_loan_historial_payments_loan_additional_amounts:
+            columns:
+                - laa_id
+    id:
+        lhpId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: lhp_id
+            generator:
+                strategy: IDENTITY
+    fields:
+        lhpDeadline:
+            type: date
+            nullable: true
+            column: lhp_deadline
+        lhpPaidDate:
+            type: date
+            nullable: true
+            column: lhp_paid_date
+        lhpPrevAmount:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_prev_amount
+        lhpPrevInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_prev_interest
+        lhpLastPaidAmount:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_last_paid_amount
+        lhpLastPaidInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_last_paid_interest
+        lhpLastPaidCapital:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_last_paid_capital
+        lhpNextCapital:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_next_capital
+        lhpNextInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lhp_next_interest
+        lhpNextPaymentDate:
+            type: date
+            nullable: true
+            column: lhp_next_payment_date
+        lhpNote:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+            column: lhp_note
+        lhpHash:
+            type: string
+            nullable: true
+            length: 100
+            options:
+                fixed: false
+            column: lhp_hash
+        lhpActive:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: lhp_active
+        lhpCreated:
+            type: datetime
+            nullable: true
+            column: lhp_created
+    manyToOne:
+        loa:
+            targetEntity: Loan
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                loa_id:
+                    referencedColumnName: loa_id
+            orphanRemoval: false
+        laa:
+            targetEntity: LoanAdditionalAmounts
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                laa_id:
+                    referencedColumnName: laa_id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

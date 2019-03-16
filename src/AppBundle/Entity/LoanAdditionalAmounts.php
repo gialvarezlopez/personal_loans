@@ -341,4 +341,62 @@ class LoanAdditionalAmounts
     {
         return $this->laaNextPaymentDate;
     }
+    /**
+     * @var float
+     */
+    private $laaLastRateInterest;
+
+
+    /**
+     * Set laaLastRateInterest
+     *
+     * @param float $laaLastRateInterest
+     *
+     * @return LoanAdditionalAmounts
+     */
+    public function setLaaLastRateInterest($laaLastRateInterest)
+    {
+        $this->laaLastRateInterest = $laaLastRateInterest;
+
+        return $this;
+    }
+
+    /**
+     * Get laaLastRateInterest
+     *
+     * @return float
+     */
+    public function getLaaLastRateInterest()
+    {
+        return $this->laaLastRateInterest;
+    }
+    /**
+     * @var \DateTime
+     */
+    private $laaUpdated;
+
+
+    /**
+     * Set laaUpdated
+     *
+     * @param \DateTime $laaUpdated
+     *
+     * @return LoanAdditionalAmounts
+     */
+    public function setLaaUpdated($laaUpdated)
+    {
+        $this->laaUpdated = $laaUpdated;
+
+        return $this;
+    }
+
+    /**
+     * Get laaUpdated
+     *
+     * @return \DateTime
+     */
+    public function getLaaUpdated()
+    {
+        return $this->laaUpdated;
+    }
 }

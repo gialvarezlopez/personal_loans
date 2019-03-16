@@ -42,7 +42,7 @@
         <div class="panel-body">
             <div class="row">
                <div class="col-lg-12 text-justify">
-                    <div class='alert alert-warning'>
+                    <div class='well'>
                         Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
                             <strong>
                                 {% if hasPayments == 0 %} 
@@ -52,7 +52,7 @@
                                 {% endif %}
                             </strong>
                             (Ver en el detalle del prestamo), 
-                        quiere decir que solo se hizo un pago de un monto y no de dos
+                        quiere decir que solo se realizo un pago de dos montos
                     </div>
                </div>     
             </div>
@@ -141,9 +141,9 @@
         {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
         {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
         {% set loandAdd_loaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
-      
+        
         {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
-
+        
     {% endif %}                                        
 
 {% endif %}
@@ -161,7 +161,7 @@
         <div class="panel-body">
             <div class="row">
                <div class="col-lg-12 text-justify">
-                    <div class='alert alert-warning'>
+                    <div class='well'>
                         Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
                             <strong>
                                 {% if  hasPayments  == 0 %} 
@@ -171,7 +171,7 @@
                                 {% endif %}
                             </strong>
                             (Ver en el detalle del prestamo), 
-                        quiere decir que solo se hizo un pago de un monto y no de dos
+                        quiere decir que solo se realizo un pago de dos montos
                     </div>
                </div>     
             </div>

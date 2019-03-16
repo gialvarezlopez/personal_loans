@@ -119,6 +119,8 @@ class Loans
         }
     }
 
+    
+
     /*    
     function getTotalAmountPaidAdditional($loanId)
     {
@@ -173,6 +175,8 @@ class Loans
         $expireDay = strtotime( $maxPayDate ); 
         $timeToEnd = ($expireDay - $today); 
         $days =  ($timeToEnd/(60*60*24) ) ;
+        
+        //echo date("Y-m-d");
 
         // result will be negative numbers
         if( $days < 0 ) 
@@ -506,6 +510,50 @@ class Loans
         return $result;  
     }
 
+    function getTotalAdditionalAmountsJoinedMainBalance($loanId)
+    {
+        $result = 0;
+        if( $loanId >0 )
+        {
+            $oAdditionals = $this->em->getRepository('AppBundle:LoanAdditionalAmounts')->findBy( array("loa"=>$loanId,"laaActive"=>1, "laaSplittedBalance"=>0 )  );
+            if( $oAdditionals )
+            {
+                //$RAW_QUERY = "SELECT SUM(laa_amount + (laa_amount *  (laa_rate_interest/100))) AS total FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_active = 1";
+                $RAW_QUERY = "SELECT SUM(laa_amount) AS total FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_splitted_balance = 0 AND laa_active = 1";                
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();  
+                $total = $result[0]["total"]; 
+                if( $total > 0)
+                {
+                    $result = $total;
+
+                    $paid = 0;    
+                    foreach ( $oAdditionals as $item)
+                    {
+                       $res = $this->getTotalPaidCapitalAddAmount($item->getLaaId());
+                       $paid = $paid + $res;
+                    }
+
+                    $result = $result - $paid;
+                } 
+            }     
+        }
+        return $result;  
+    }
+
+    function getTotalPaidCapitalAddAmount($laaId)
+    {
+        if( !empty($laaId) )
+        {
+            $RAW_QUERY  = "SELECT SUM(lpa_paid_capital) as total FROM loan_payment WHERE laa_id = $laaId AND lpa_paid_date !='' ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return ($result[0]["total"]);   
+        }
+    }
+
 
     //New balance
     //Get return amount paid at the moment (no interest rate)
@@ -514,7 +562,7 @@ class Loans
         $result = array();
         if( !empty($loanId) && $loanId > 1 )
         {
-            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_completed = 0 AND laa_active = 1 order by laa_id DESC LIMIT 1";
+            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_splitted_balance = 1 AND laa_completed = 0 AND laa_active = 1 order by laa_id DESC LIMIT 1";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -550,6 +598,20 @@ class Loans
         return $result;
     }
 
+    function getActiveNumAdditionalAmount($loanId)
+    {
+        $result = array();
+        if( !empty($loanId) && $loanId != "" )
+        {
+            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE loa_id =:loanId AND laa_active = 1 AND laa_splitted_balance = 1";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->bindValue('loanId',  $loanId);
+            $statement->execute();
+            $result = $statement->fetchAll();
+        }
+        return $result;
+    }
+
 
 
     function totalHashesPerPayment($hash)
@@ -557,7 +619,7 @@ class Loans
         $result = array();
         if( !empty($hash) && $hash != "" )
         {
-            $RAW_QUERY  = "SELECT * FROM loan_payment WHERE lpa_hash =:p_hash";
+            $RAW_QUERY  = "SELECT * FROM loan_historical_payments WHERE lhp_hash =:p_hash";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->bindValue('p_hash',  $hash);
             $statement->execute();
@@ -576,75 +638,107 @@ class Loans
         $numPayment = 0;
         if( isset($loanId) && $loanId > 0)
         {
-            $oPayments= $this->em->getRepository('AppBundle:LoanPayment')->findBy( array( "loa"=> $loanId) );
+            $oPayments= $this->em->getRepository('AppBundle:LoanHistoricalPayments')->findBy( array( "loa"=> $loanId) );
             if( $oPayments )
             {
                 foreach( $oPayments as $item )
                 {
 
                     //echo $item->getLpaHash()."-";
-                    if( $item->getLpaHash() )
+                    if( $item->getLhpHash() )
                     {
-                        if ( !in_array( $item->getLpaHash() , $arrHashes) )
+                        if ( !in_array( $item->getLhpHash() , $arrHashes) )
                         {
-                            $totalHashes = $this->totalHashesPerPayment( $item->getLpaHash() );
+                            $totalHashes = $this->totalHashesPerPayment( $item->getLhpHash() );
                                             //if( count($totalHashes) == 2 )
                                             //{
                             foreach( $totalHashes as $hash )
                             {
                                 $arrData[$numPayment][] = array(
-                                                                "lpa_id"=>$hash["lpa_id"],
-                                                                "lpa_max_payment_date"=>$hash["lpa_max_payment_date"],
-                                                                "lpa_paid_date"=>$hash["lpa_paid_date"],
-                                                                "lpa_paid_rate_interest"=>$hash["lpa_paid_rate_interest"],
-                                                                "lpa_paid_capital"=>$hash["lpa_paid_capital"],
-                                                                "lpa_current_rate_interest"=>$hash["lpa_current_rate_interest"],
-                                                                "lpa_multiplied_interest_by"=>$hash["lpa_multiplied_interest_by"],
-                                                                "lpa_current_amount"=>$hash["lpa_current_amount"],
-                                                                "lpa_total_amount_paid"=>$hash["lpa_total_amount_paid"],
-                                                                "lpa_next_rate_interest"=>$hash["lpa_next_rate_interest"],
+                                                                "lhp_id"=>$hash["lhp_id"],
+                                                                "lhp_deadline"=>$hash["lhp_deadline"],
+                                                                "lhp_paid_date"=>$hash["lhp_paid_date"],
+                                                                "lhp_prev_amount"=>$hash["lhp_prev_amount"],
+                                                                "lhp_prev_interest"=>$hash["lhp_prev_interest"],
 
-                                                                "lpa_next_amount"=>$hash["lpa_next_amount"],
-                                                                "lpa_next_payment_date"=>$hash["lpa_next_payment_date"],
-                                                                "lpa_note"=>$hash["lpa_note"],
-                                                                "lpa_is_payment"=>$hash["lpa_is_payment"],
+                                                                "lhp_last_paid_amount"=>$hash["lhp_last_paid_amount"],
+                                                                "lhp_last_paid_interest"=>$hash["lhp_last_paid_interest"],
+                                                                "lhp_last_paid_capital"=>$hash["lhp_last_paid_capital"],
 
-                                                                "lpa_changed_amount"=>$hash["lpa_changed_amount"],
-                                                                "lpa_hash"=>$hash["lpa_hash"]
+                                                                "lhp_next_capital"=>$hash["lhp_next_capital"],
+                                                                "lhp_next_interest"=>$hash["lhp_next_interest"],
+                                                                "lhp_next_payment_date"=>$hash["lhp_next_payment_date"],
+
+                                                                "lhp_hash"=>$hash["lhp_hash"],
+                                                                "lhp_active"=>$hash["lhp_active"],
+                                                                "lhp_created"=>$hash["lhp_created"],
+                                                                "lhp_note"=>$hash["lhp_note"],
+
+                                                                "loa_id"=>$hash["loa_id"],
+                                                                "laa_id"=>$hash["laa_id"]
                                                             );
 
 
                             }
                                             //}
                                         
-                                    array_push($arrHashes, $item->getLpaHash() );
+                                    array_push($arrHashes, $item->getLhpHash() );
                                     $numPayment++;
                         }
                     }
                     else //
                     {
-                        $lpa_paid_date = ( $item->getLpaPaidDate() !="" )?$item->getLpaPaidDate()->format("Y-m-d"):"";
-                        $lpa_next_payment_date = ( $item->getLpaNextPaymentDate() !="" )?$item->getLpaNextPaymentDate()->format("Y-m-d"):"";
-                        $lpa_max_payment_date = ( $item->getLpaMaxPaymentDate() != "" )? $item->getLpaMaxPaymentDate()->format("Y-m-d"):"";
+                        $lhp_paid_date = ( $item->getLhpPaidDate() !="" )?$item->getLhpPaidDate()->format("Y-m-d"):"";
+                        $lhp_next_payment_date = ( $item->getLhpNextPaymentDate() !="" )?$item->getLhpNextPaymentDate()->format("Y-m-d"):"";
+                        $lhp_deadline = ( $item->getLhpDeadline() != "" )? $item->getLhpDeadline()->format("Y-m-d"):"";
                         $arrData[$numPayment][] = array(
-                                        "lpa_id"=>$item->getLpaId(),
-                                        "lpa_max_payment_date"=>$lpa_max_payment_date,
-                                        "lpa_paid_date"=>$lpa_paid_date,
-                                        "lpa_paid_rate_interest"=>$item->getLpaPaidRateInterest(),
-                                        "lpa_paid_capital"=>$item->getLpaPaidCapital(),
-                                        "lpa_current_rate_interest"=>$item->getLpaCurrentRateInterest(),
-                                        "lpa_multiplied_interest_by"=>$item->getLpaMultipliedInterestBy(),
-                                        "lpa_current_amount"=>$item->getLpaCurrentAmount(),
-                                        "lpa_total_amount_paid"=>$item->getLpaTotalAmountPaid(),
-                                        "lpa_next_rate_interest"=>$item->getLpaNextRateInterest(),
+                                        /*
+                                            "lpa_id"=>$item->getLpaId(),
+                                            "lpa_max_payment_date"=>$lpa_max_payment_date,
+                                            "lpa_paid_date"=>$lpa_paid_date,
+                                            "lpa_paid_rate_interest"=>$item->getLpaPaidRateInterest(),
+                                            "lpa_paid_capital"=>$item->getLpaPaidCapital(),
+                                            "lpa_current_rate_interest"=>$item->getLpaCurrentRateInterest(),
+                                            "lpa_multiplied_interest_by"=>$item->getLpaMultipliedInterestBy(),
+                                            "lpa_current_amount"=>$item->getLpaCurrentAmount(),
+                                            "lpa_current_amount_joined"=>$item->getlpaCurrentAmountJoined(),
+                                            "lpa_total_amount_paid"=>$item->getLpaTotalAmountPaid(),
+                                            "lpa_next_rate_interest"=>$item->getLpaNextRateInterest(),
 
-                                        "lpa_next_amount"=>$item->getLpaNextAmount(),
-                                        "lpa_next_payment_date"=>$lpa_next_payment_date,
-                                        "lpa_note"=>$item->getLpaNote(),
-                                        "lpa_is_payment"=>$item->getLpaIsPayment(),
+                                            "lpa_next_amount"=>$item->getLpaNextAmount(),
+                                            "lpa_next_payment_date"=>$lpa_next_payment_date,
+                                            "lpa_note"=>$item->getLpaNote(),
+                                            "lpa_is_payment"=>$item->getLpaIsPayment(),
 
-                                        "lpa_changed_amount"=>$item->getLpaChangedAmount(),
-                                        "lpa_hash"=>""
+                                            "lpa_changed_amount"=>$item->getLpaChangedAmount(),
+                                            "lpa_hash"=>"",
+
+                                            "loa_id"=>$item->getLoa(),
+                                            "laa_id"=>$item->getLaa(),
+                                        */
+
+
+                                        "lhp_id"=>$item->getLhpId(),
+                                        "lhp_deadline"=>$lhp_deadline,
+                                        "lhp_paid_date"=>$lhp_paid_date,
+                                        "lhp_prev_amount"=>$item->getLhpPrevAmount(),
+                                        "lhp_prev_interest"=>$item->getLhpPrevInterest(),
+
+                                        "lhp_last_paid_amount"=>$item->getLhpLastPaidAmount(),
+                                        "lhp_last_paid_interest"=>$item->getLhpLastPaidInterest(),
+                                        "lhp_last_paid_capital"=>$item->getLhpLastPaidCapital(),
+
+                                        "lhp_next_capital"=>$item->getLhpNextCapital(),
+                                        "lhp_next_interest"=>$item->getLhpNextInterest(),
+                                        "lhp_next_payment_date"=>$lhp_next_payment_date,
+
+                                        "lhp_hash"=>"",
+                                        "lhp_active"=>$item->getLhpActive(),
+                                        "lhp_created"=>$item->getLhpCreated(),
+                                        "lhp_note"=>$item->getLhpNote(),
+
+                                        "loa_id"=>$item->getLoa(),
+                                        "laa_id"=>$item->getLaa()
                                     );
 
                         $numPayment++;

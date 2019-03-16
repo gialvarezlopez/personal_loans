@@ -144,6 +144,7 @@ class LoanController extends Controller
             $loaDeadline = $form->get("loaDeadline")->getData();
             
 
+
             $srv = $this->get('srv_TimeZone');
             $zone =  $srv->getNameTimeZone();
 
@@ -167,6 +168,8 @@ class LoanController extends Controller
             {
                 $loan->setLoaDeadline( null );
             }
+
+            $loan->setLoaNextPaymentDate( $loaDeadline );
 
             //exit("sali");
             $loan->setCli($oUser);
@@ -392,6 +395,9 @@ class LoanController extends Controller
 
             $rate = $editForm->get("loaRateInterestByDefault")->getData();
             $loan->setLoaRateInterest($rate);
+
+            $loaDeadline = $editForm->get("loaDeadline")->getData();
+            $loan->setLoaNextPaymentDate($loaDeadline);
 
             //echo $statusList = $editForm->get("statusList")->getData();
             //exit("xxxx");
@@ -634,7 +640,7 @@ class LoanController extends Controller
                             //Aquiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
                             if( ($editForm->get("loaAmount")->getData() != $currentAmount) && $oLoanPayment->getLpaTotalAmountPaid() > 0 )
                             {
-                                $oLoanPayment->setLpaNextAmount( ($editForm->get("loaAmount")->getData() - $currentCapita ) );   
+                                //$oLoanPayment->setLpaNextAmount( ($editForm->get("loaAmount")->getData() - $currentCapita ) );   
                             }
 
                             if( count($oLoanPaymentTotal) > 1 )
@@ -727,6 +733,8 @@ class LoanController extends Controller
         $nextPaymentDate = trim($request->get("nextPaymentDate"));
 
         
+
+        
         //exit();
         $res = 0;
         $msg = "";
@@ -737,6 +745,24 @@ class LoanController extends Controller
             $oLoan = $em->getRepository('AppBundle:Loan')->findOneBy(array( "loaId"=>$loadId ) );
             if( $oLoan )
             {
+                $srv_Loans = $this->get('srv_Loans');
+                $srv_TimeZone = $this->get('srv_TimeZone');
+                if( $oLoan->getLoaNextPaymentDate() == "" )
+                {
+                    $nextDate = $oLoan->getLoaDeadline()->format('Y-m-d');
+                }else{
+                    $nextDate = $oLoan->getLoaNextPaymentDate()->format('Y-m-d');
+                }
+                $pending =  $srv_Loans->checkDeadLineToPay( $oLoan->getLoaRateInterest(), $oLoan->getLoaRecurringDayPayment(), $nextDate, $srv_TimeZone->getNameTimeZone() );
+                if( $pending )
+                {
+                    $rate = $pending["rate"];
+
+                }else{
+                    $rate = $oLoan->getLoaRateInterest();
+                }
+
+
                 $em->getConnection()->beginTransaction(); // suspend auto-commit
                 try 
                 {
@@ -750,10 +776,17 @@ class LoanController extends Controller
                         $oLAAmounts->setLaaAmount( $amount );
                         $oLAAmounts->setLaaRateInterest( $interest );
                         $oLAAmounts->setLaaRateInterestByDefault( $interest );
+                        $oLAAmounts->setLaaLastRateInterest( $interest );
                         $oLAAmounts->setLaaComment( $comment );
                         $oLAAmounts->setLaaDeliveredDate( new \datetime($deliveredDate) );
                         $oLAAmounts->setLaaNextPaymentDate( new \datetime($nextPaymentDate) );
                         $oLAAmounts->setLaaCreated( new \datetime("now") );
+
+                        if( $rate == $interest )
+                        {
+                            $oLAAmounts->setLaaSplittedBalance( 0 );
+                        }    
+
                         $em->persist($oLAAmounts);			
                         $flush = $em->flush();
                         if( $flush == null )

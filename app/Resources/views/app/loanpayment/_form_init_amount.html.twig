@@ -1,5 +1,6 @@
 <div class="row">
-    
+    <input type="hidden" id="rateByDefault" value="{{ loan.loaRateInterestByDefault }}">
+    <input type="hidden" id="loaRateInterest" value="{{ loan.loaRateInterest }}">
     <div class="col-md-12 col-lg-6 col-sm-12">
         <div class="form-group">
             <div class="form_error">{{ form_errors(form.lpaCurrentRateInterest)}}</div>
@@ -114,6 +115,17 @@
                 </div>
                 <div class="">{{ form_widget(form.loaNextInterestRate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":"",  "required":"required",  "readonly":"true"} } ) }}</div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class"row">
+    <div class="">
+        <div class="form-group">
+            <div class="form_error">{{ form_errors(form.lpaNote)}}</div>
+            <label for="" class=" control-label">{% trans %}loan_form_description{% endtrans %}:</label>
+            <div class="">{{ form_widget(form.lpaNote,  { 'attr': {'class': 'form-control', 'placeholder':'', "maxlength":"150"} } ) }}</div>
+            <span id="helpBlock2" class="help-block">{% trans %}loan_form_description_help{% endtrans %}</span>
         </div>
     </div>
 </div>

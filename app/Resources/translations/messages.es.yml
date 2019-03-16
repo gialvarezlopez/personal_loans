@@ -265,7 +265,7 @@ payments_quotas_title: Cuotas de pago
 payments_quotas_btn_pay_detail: Detalle completo de pagos
 
 payment_rate_table_payments_date: Fechas de pagos
-payment_rate_table_previous_payments: Pagos anteriores
+payment_rate_table_previous_payments: Detalle previo antes del pago
 payment_rate_table_last_payments: Últimos pagos
 payment_rate_table_next_quota: Siguiete cuota
 payment_rate_table_col_date_paid_quota: Fecha pagada

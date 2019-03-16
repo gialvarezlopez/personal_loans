@@ -234,6 +234,7 @@
 
                                     {# {% set money = (loan.loaAmount + additionalAmounts)|abs %} #}
                                 {% endif %}
+                                {#
                                 <tr>
                                     <td>{% trans %}loan_label_pending_amount_rate{% endtrans %}</td>
                                     <td>
@@ -252,6 +253,7 @@
                                         </span>
                                     </td>
                                 </tr>
+                                #}
                                 {% if loan.loc.locKey == "active_rate" %}
                                     {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loaId) %}
                                     {% if additionalAmounts > 0 %}
@@ -363,7 +365,7 @@
 
 
                     <div id="holderMainRight">
-                        {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
+                        {% set arr =  srv_Loans.getPaymentsByLoandId(loanId) %}
                         {% if loan.loc.locKey  == "inactive_rate" %}
                             <h4><span class="">{% trans %}loan_edit_subtitle_payments{% endtrans %}</span></h4>
                              <hr>
@@ -377,7 +379,7 @@
                             <hr>
                             {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"show"}) }}
                         {% else %}
-                            {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":false}) }}
+                            {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
                         {% endif %}    
                         
                     </div>
@@ -432,6 +434,12 @@
     <script>
         //$(document).on("ready", function(){
         $(function (){
+
+            if( $("#holderResume").length == 1  )
+            {
+                $("#holderResume").prependTo("#holderPaymentsDone");
+            }   
+
             $('#paymentList').DataTable({
                 //"scrollX": true,
                 //'paging'      : true,

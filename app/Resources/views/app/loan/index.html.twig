@@ -136,7 +136,16 @@
                         {% endif %}
                     </td>
                     <td><a href="{{ loan.cli_id }}" class="btnShowClient"> {{ loan.cli_first_name ~" "~ loan.cli_middle_name ~" "~ loan.cli_first_surname ~" "~ loan.cli_second_surname }} </a></td>
-                    <td><span class="amounts">${{ loan.loa_amount|number_format(2, '.', ',') }}</span></td>
+                    <td>
+                        <span class="amounts">
+                            ${{ loan.loa_amount|number_format(2, '.', ',') }}
+                            
+                             {% set additionalAmounts = srv_Loans.getTotalAdditionalAmounts(loan.loa_id) %}
+                             {% if additionalAmounts > 0 %}
+                                + ${{ additionalAmounts|number_format(2, '.', ',') }}
+                             {% endif %}
+                        </span>
+                    </td>
                     {#
                     <td>{{ loan.loaRateInterest }}%</td>
                     <td>{{ loan.loaDescription }}</td>

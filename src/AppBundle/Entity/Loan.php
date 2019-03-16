@@ -602,4 +602,33 @@ class Loan
     {
         return $this->loaNextPaymentDate;
     }
+    /**
+     * @var float
+     */
+    private $loaLastRateInterest;
+
+
+    /**
+     * Set loaLastRateInterest
+     *
+     * @param float $loaLastRateInterest
+     *
+     * @return Loan
+     */
+    public function setLoaLastRateInterest($loaLastRateInterest)
+    {
+        $this->loaLastRateInterest = $loaLastRateInterest;
+
+        return $this;
+    }
+
+    /**
+     * Get loaLastRateInterest
+     *
+     * @return float
+     */
+    public function getLoaLastRateInterest()
+    {
+        return $this->loaLastRateInterest;
+    }
 }

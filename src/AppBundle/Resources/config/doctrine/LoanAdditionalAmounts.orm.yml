@@ -34,6 +34,12 @@ AppBundle\Entity\LoanAdditionalAmounts:
             precision: 10
             scale: 0
             column: laa_rate_interest_by_default
+        laaLastRateInterest:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: laa_last_rate_interest
         laaDeliveredDate:
             type: date
             nullable: true
@@ -72,6 +78,10 @@ AppBundle\Entity\LoanAdditionalAmounts:
             options:
                 default: '1'
             column: laa_active
+        laaUpdated:
+            type: datetime
+            nullable: true
+            column: laa_updated
     manyToOne:
         loa:
             targetEntity: Loan

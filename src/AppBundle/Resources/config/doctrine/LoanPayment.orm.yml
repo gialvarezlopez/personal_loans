@@ -68,6 +68,12 @@ AppBundle\Entity\LoanPayment:
             options:
                 comment: 'just for loan with no interest rate'
             column: lpa_current_amount
+        lpaCurrentAmountJoined:
+            type: float
+            nullable: true
+            precision: 10
+            scale: 0
+            column: lpa_current_amount_joined
         lpaTotalAmountPaid:
             type: float
             nullable: true
@@ -89,7 +95,7 @@ AppBundle\Entity\LoanPayment:
                 comment: 'Just for loan with interest rate to calculate next amount if there is an change amount'
             column: lpa_next_amount
         lpaNextPaymentDate:
-            type: datetime
+            type: date
             nullable: true
             column: lpa_next_payment_date
         lpaNote:

@@ -544,4 +544,33 @@ class LoanPayment
     {
         return $this->laa;
     }
+    /**
+     * @var float
+     */
+    private $lpaCurrentAmountJoined;
+
+
+    /**
+     * Set lpaCurrentAmountJoined
+     *
+     * @param float $lpaCurrentAmountJoined
+     *
+     * @return LoanPayment
+     */
+    public function setLpaCurrentAmountJoined($lpaCurrentAmountJoined)
+    {
+        $this->lpaCurrentAmountJoined = $lpaCurrentAmountJoined;
+
+        return $this;
+    }
+
+    /**
+     * Get lpaCurrentAmountJoined
+     *
+     * @return float
+     */
+    public function getLpaCurrentAmountJoined()
+    {
+        return $this->lpaCurrentAmountJoined;
+    }
 }
