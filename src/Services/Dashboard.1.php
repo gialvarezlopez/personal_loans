@@ -33,9 +33,61 @@ class Dashboard
 
     function getClientLoans($clientId)
     {
+        /*
+            if( !empty($clientId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                $loans = $this->em->getRepository('AppBundle:Loan')->findBy( array("cli"=>$clientId,"loaCompleted"=>0, "loaActive"=>1)  );
+                return $loans;
+            }
+        */
         
     }
-
+    /*
+        function getDetailLoanPayments($loanId)
+        {
+            if( !empty($loanId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                $payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
+                return $payments;
+            }
+            
+        }
+    */
+    /*
+        function getCountLoanPaymentsDone($loanId)
+        {
+            if( !empty($loanId) )
+            {
+                //$em = $this->getDoctrine()->getManager();
+                //$payments = $this->em->getRepository('AppBundle:LoanPayment')->findBy( array("loa"=>$loanId )  );
+                //return $payments;
+                $RAW_QUERY  = "SELECT COUNT(*) as total FROM loan_payment WHERE loa_id = $loanId AND lpa_paid_date !='' ";
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();
+                return ($result[0]["total"]);
+                
+            }
+            
+        }
+    */
+    /*
+        //Get all detail about the loan
+        function getAllDetailLoan($loanId)
+        {
+            if( !empty($loanId) )
+            {
+                $RAW_QUERY  = "SELECT * FROM loan_payment lp
+                                LEFT JOIN loan_payment_type lpt ON lp.lpt_id=lpt.lpt_id WHERE lp.loa_id = $loanId ";
+                $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+                $statement->execute();
+                $result = $statement->fetchAll();
+                return $result;   
+            }
+        }
+    */
 
     public function getLoans($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false, $periodCompletedDate=false)
     {
@@ -247,8 +299,6 @@ class Dashboard
 
                 
                 $arr[$num]["note"] =  $itemLoans[$item["loa_id"]]["note"];
-
-
                 
                 $num++;
             }

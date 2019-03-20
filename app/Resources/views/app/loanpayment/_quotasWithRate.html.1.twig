@@ -98,10 +98,7 @@
                         <td>
                             
                             {% if item_number != 0 or  payment.lpaTotalAmountPaid > 0  %}
-
                                 <span class="label label-default amounts">${{ prev|number_format(2, '.', ',')  }}</span>
-
-                                ****{{ max }}  
                             {% else %}
                                 -
                             {% endif %}

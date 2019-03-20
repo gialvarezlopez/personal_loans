@@ -4,7 +4,7 @@ usercontrolapp_user:
 
 usercontrolapp_checkUserControlEvent:
     path:   /checkUserControlEvent
-    defaults: { _controller: "AppBundle:UsersControlApp:checkUserControlEvent" }    
+    defaults: { _controller: "AppBundle:UsersControlApp:checkUserControlEvent" }       
     
    
    

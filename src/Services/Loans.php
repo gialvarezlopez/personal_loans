@@ -629,7 +629,7 @@ class Loans
     }
 
     //===========================================================
-    //This functio gets all payments history
+    //This function gets all payments history
     //===========================================================
     public function getPaymentsByLoandId($loanId)
     {

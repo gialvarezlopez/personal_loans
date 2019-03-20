@@ -344,13 +344,13 @@
                                                 <div style="float:left">
                                                 <span class="amountsX">
                                                     ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
-                                                    {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                                                    {% set pending = ((money) * (rate/100) + (money)) %}
                                                     {% if pending > 0 %}
                                                         {% set stalabel = "pending" %}
                                                     {% else %}
                                                         {% set stalabel = "nothingPending" %}
                                                     {% endif %}
-                                                    <span class="label label-info {{stalabel}}">${{  pending }}</span>
+                                                    <span class="label label-info {{stalabel}}">${{  pending|number_format(2, '.', ',') }}</span>
                                                     {% set total = total + pending %}
                                                 </span>
                                                 <br>    

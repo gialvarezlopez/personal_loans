@@ -213,67 +213,67 @@
                             {% set total = 0.00 %}
                             <div style="width:200px; float:left"><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span></div>
                             <div style="float:left">
-                            <span class="amountsX">
-                                ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
-                                {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
-                                {% if pending > 0 %}
-                                    {% set stalabel = "pending" %}
-                                {% else %}
-                                    {% set stalabel = "nothingPending" %}
-                                {% endif %}
-                                <span class="label label-info {{stalabel}}">${{  pending }}</span>
-                                {% set total = total + pending %}
-                            </span>
-                            <br>    
-                            {# ================================ Check if has additional amounts ================================ #}
-                            {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(loan.loaId) %}
-                            {% if hasBalance %}
-                                {#
-                                    {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
-                                    {% set loanAdd_loaRateInterest = hasBalance[0]["laa_rate_interest"] %}
-                                    {% set loandAdd_laaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
-                                    {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
-                                    {% set loandAdd_splitted = hasBalance[0]["laa_splitted_balance"] %}
-                                    {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
-                                    {% set loandAdd_loaAmount = hasBalance[0]["laa_amount"] %}
-                                #}
-                                
-                                {% if loandAdd_completed == 0 and  loandAdd_splitted == 1 %}
-                                    
-                                    {% if loandAdd_splitted == 1 %}
-                                        {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
-                                        {% if pending_add %}
-                                            {% set rate_add = pending_add.rate %}   
-                                        {% else %}
-                                            {% set rate_add = loanAdd_loaRateInterest %}     
-                                        {% endif %}
-                                                            
-                                        {% set paidAmount = srv_Loans.checkPaymentsPerLoanAdditional(loanAdd_Id) %}
-                                        {% if paidAmount %}
-                                            {% set money_add = ( (loandAdd_loaAmount) - paidAmount[0]['paidCapital'])|abs %}
-                                            {% set amountJoined = money_add %} 
-                                        {% else %}
-                                            {% set money_add = (loandAdd_loaAmount)|abs %}
-                                            {% set amountJoined = money_add %} 
-                                        {% endif %}
-                                        
-                                            
+                                <span class="amountsX">
+                                    ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+                                    {% set pending = ((money) * (rate/100) + (money)) %}
+                                    {% if pending > 0 %}
+                                        {% set stalabel = "pending" %}
+                                    {% else %}
+                                        {% set stalabel = "nothingPending" %}
                                     {% endif %}
-
-                                    <span class="amountsX">
-                                        ( ${{ (money_add)|number_format(2, '.', ',') }} x {{rate_add}}%  ) + ${{ money_add|number_format(2, '.', ',') }} = 
-                                        {% set pending_add = ((money_add) * (rate_add/100) + (money_add))|number_format(2, '.', ',') %}
-                                        {% if pending_add > 0 %}
-                                            {% set stalabel = "pending" %}
-                                        {% else %}
-                                            {% set stalabel = "nothingPending" %}
+                                    <span class="label label-info {{stalabel}}">${{  pending|number_format(2, '.', ',') }}</span>
+                                    {% set total = total + pending %} 
+                                </span>
+                                <br>    
+                                {# ================================ Check if has additional amounts ================================ #}
+                                {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(loan.loaId) %}
+                                {% if hasBalance %}
+                                    {#
+                                        {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
+                                        {% set loanAdd_loaRateInterest = hasBalance[0]["laa_rate_interest"] %}
+                                        {% set loandAdd_laaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
+                                        {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
+                                        {% set loandAdd_splitted = hasBalance[0]["laa_splitted_balance"] %}
+                                        {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
+                                        {% set loandAdd_loaAmount = hasBalance[0]["laa_amount"] %}
+                                    #}
+                                    
+                                    {% if loandAdd_completed == 0 and  loandAdd_splitted == 1 %}
+                                        
+                                        {% if loandAdd_splitted == 1 %}
+                                            {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+                                            {% if pending_add %}
+                                                {% set rate_add = pending_add.rate %}   
+                                            {% else %}
+                                                {% set rate_add = loanAdd_loaRateInterest %}     
+                                            {% endif %}
+                                                                
+                                            {% set paidAmount = srv_Loans.checkPaymentsPerLoanAdditional(loanAdd_Id) %}
+                                            {% if paidAmount %}
+                                                {% set money_add = ( (loandAdd_loaAmount) - paidAmount[0]['paidCapital'])|abs %}
+                                                {% set amountJoined = money_add %} 
+                                            {% else %}
+                                                {% set money_add = (loandAdd_loaAmount)|abs %}
+                                                {% set amountJoined = money_add %} 
+                                            {% endif %}
+                                            
+                                                
                                         {% endif %}
-                                        <span class="label label-info {{stalabel}}">${{  pending_add }}</span>
-                                        {% set total = total + pending_add %}
-                                    </span>
 
-                                {% endif %}
-                            {% endif %} 
+                                        <span class="amountsX">
+                                            ( ${{ (money_add)|number_format(2, '.', ',') }} x {{rate_add}}%  ) + ${{ money_add|number_format(2, '.', ',') }} = 
+                                            {% set pending_add = ((money_add) * (rate_add/100) + (money_add))|number_format(2, '.', ',') %}
+                                            {% if pending_add > 0 %}
+                                                {% set stalabel = "pending" %}
+                                            {% else %}
+                                                {% set stalabel = "nothingPending" %}
+                                            {% endif %}
+                                            <span class="label label-info {{stalabel}}">${{  pending_add }}</span>
+                                            {% set total = total + pending_add %}
+                                        </span>
+
+                                    {% endif %}
+                                {% endif %} 
                                 <div style="padding-top:10px; "><span class="label label-info">Total: ${{ total|number_format(2, '.', ',') }}</span>  </div>
                             </div>
                             <div style="clear:both"></div>
@@ -284,7 +284,8 @@
             {% endif  %}
             {% set hasPaymentDone = srv_Loans.getTotalAmountPaid(loan.loaId) %}    
             {% if hasPaymentDone > 0 %}
-                {{ include('app/loanpayment/_quotasWithRate.html.twig' )  }} 
+                {{ include('app/loanpayment/_quotasWithRate.html.twig' )  }}
+                {# <div id="holderMigration"><button id="btnMigration">Migrar</button></div> #}
             {% else %}
                 <div class="alert alert-info">No hay historico de pagos, ya que no se ha hecho ningun pago</div>
             {% endif %}
@@ -324,6 +325,62 @@
     <script>
         //$(document).on("ready", function(){
         $(function (){
+            ///alert("");
+            $("#btnMigration").on("click", function(){
+                $("#btnMigration").html("cargando...");
+                var data = [];
+                $("#paymetslist tbody tr").each(function(){
+                    var lhp_deadline = $.trim($(this).find("td").eq(1).text());
+                    var lhp_paid_date = $.trim($(this).find("td").eq(2).text());
+
+                    var lhp_prev_amount = $.trim($(this).find("td").eq(3).text());
+                    var lhp_prev_interest = $.trim($(this).find("td").eq(4).text());
+
+                    var lhp_last_paid_amount = $.trim($(this).find("td").eq(7).text());
+                    var lhp_last_paid_interest = $.trim($(this).find("td").eq(8).text());
+                    var lhp_last_paid_capital = $.trim($(this).find("td").eq(9).text());
+
+                    var lhp_next_capital = $.trim($(this).find("td").eq(10).text());
+                    var lhp_next_interest = $.trim($(this).find("td").eq(11).text());
+
+                    var lhp_next_payment_date = $.trim($(this).find("td").eq(14).text());
+                    var lhp_note = $.trim($(this).find("td").eq(15).text());
+                    //alert(lhp_deadline);
+                    var tds = {
+                                lhp_deadline: lhp_deadline, lhp_paid_date: lhp_paid_date, lhp_prev_amount: lhp_prev_amount, lhp_prev_interest: lhp_prev_interest,
+                                lhp_last_paid_amount: lhp_last_paid_amount, lhp_last_paid_interest: lhp_last_paid_interest,  lhp_last_paid_capital: lhp_last_paid_capital,
+                                lhp_next_capital: lhp_next_capital, lhp_next_interest: lhp_next_interest, lhp_next_payment_date: lhp_next_payment_date, lhp_note: lhp_note
+                            }
+                    data.push(tds);
+                });  
+
+                $.ajax({
+					type: "POST",
+					url: "{{ path('loanpayment_migrations') }}",
+					data: { loaId:"{{ app.request.get('loaId') }}", data: data},
+                    dataType: "json",
+					error: function (data) {
+						//$("#holder_loading").hide();
+                        
+                        if( data.result != "ok")
+                        {
+                            $("#btnMigration").html("Error");
+                        }
+					},
+					success: function (data) {
+                        if( data.result == "ok")
+                        {
+                            $("#btnMigration").html("Procesado");
+                            alert(data.saveIt);
+                        }
+                             
+						
+					}
+				});    
+                //paymetslist
+                console.log(data);
+            });                
+
             $('table').DataTable({
             //$('#paymetslist').DataTable({    
                 "scrollX": true,

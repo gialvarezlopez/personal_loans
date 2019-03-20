@@ -9,8 +9,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 use AppBundle\Entity\LoanHistoricalAmounts;
 use AppBundle\Entity\LoanHistoricalPayments;
+
 
 /**
  * Loanpayment controller.
@@ -811,5 +814,106 @@ class LoanPaymentController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+
+    //Migraciones
+    public function migrationsAction( Request $request )
+    {
+        $em = $this->getDoctrine()->getManager();
+        $userId = $this->getUser()->getUsrId();
+
+        $loaId = $request->get('loaId');
+        $data = $request->get('data');
+
+        $aResult = array(
+            'result' => "error",
+            'saveIt' => 0,
+            'message' => ""
+        );
+
+        if( isset($loaId) && $loaId > 0)
+        {
+            $em->getConnection()->beginTransaction(); // suspend auto-commit
+            try 
+            {      
+                $saveIt = 0;
+                //for ($i = 0; $i < count($registros); $i++) {
+                $simbols = array("$", ",", "%");    
+                //str_replace($vowels, "", "Hello World of PHP");
+                foreach ($data as $item) 
+                {    
+                    $row = 1;
+
+                    $lhp_deadline = str_replace($simbols,"", $item["lhp_deadline"]);
+                    $lhp_paid_date = str_replace($simbols,"",$item["lhp_paid_date"]);
+                    $lhp_prev_amount = str_replace($simbols,"",$item["lhp_prev_amount"]);
+                    $lhp_prev_interest = str_replace($simbols,"",$item["lhp_prev_interest"]);
+                    $lhp_last_paid_amount = str_replace($simbols,"",$item["lhp_last_paid_amount"]);
+                    $lhp_last_paid_interest = str_replace($simbols,"",$item["lhp_last_paid_interest"]);
+                    $lhp_last_paid_capital = str_replace($simbols,"",$item["lhp_last_paid_capital"]);
+                    $lhp_next_capital = str_replace($simbols,"",$item["lhp_next_capital"]);
+                    $lhp_next_interest = str_replace($simbols,"",$item["lhp_next_interest"]);
+                    $lhp_next_payment_date = str_replace($simbols,"",$item["lhp_next_payment_date"]);
+                    $lhp_note = $item["lhp_note"];
+                            
+
+                    
+                    $oLHP = new LoanHistoricalPayments();
+
+                    
+                    $oLHP->setLoa( $em->getRepository('AppBundle:Loan')->findOneBy( array("loaId"=>$loaId) ) );
+
+                    $oLHP->setLhpDeadline( new \datetime($lhp_deadline));
+                    $oLHP->setLhpPaidDate( new \datetime($lhp_paid_date) );
+                    $oLHP->setLhpPrevAmount($lhp_prev_amount);
+                    $oLHP->setLhpPrevInterest($lhp_prev_interest);
+                    $oLHP->setLhpLastPaidAmount($lhp_last_paid_amount);
+                    $oLHP->setLhpLastPaidInterest($lhp_last_paid_interest );
+                    $oLHP->setLhpLastPaidCapital($lhp_last_paid_capital);
+                    $oLHP->setLhpNextCapital($lhp_next_capital);
+                    $oLHP->setLhpNextInterest($lhp_next_interest);
+                    if( $lhp_next_payment_date != "")
+                    {
+                        $oLHP->setLhpNextPaymentDate( new \datetime($lhp_next_payment_date) );
+                    }
+                    $em->persist($oLHP);			
+                    $flush = $em->flush();
+                    if( $flush == null )
+                    {
+                        $saveIt++;
+                    }
+                   
+
+                    //$saveIt++;
+                }    
+                               
+                 
+                
+                if( $saveIt == count($data) )
+                {
+                    $em->getConnection()->commit();
+                    $aResult = array(
+                        'result' => "ok",
+                        'saveIt' => $saveIt."/".count($data),
+                        'message' => "Usuarios creados exitosamente"
+                    );
+
+                    //$session->getFlashBag()->set('result', $aResult["result"]);
+                    //$session->getFlashBag()->set('message', $aResult["message"]);
+                    //$session->getFlashBag()->set('saveIt', $aResult["saveIt"]);
+                }
+                else
+                {
+                    $em->getConnection()->rollBack();
+                }
+                //$em->getConnection()->commit();
+            }catch (Exception $e) {
+                $em->getConnection()->rollBack();
+                throw $e;
+            }
+        }
+        //exit();
+        return  new JsonResponse($aResult);
     }
 }

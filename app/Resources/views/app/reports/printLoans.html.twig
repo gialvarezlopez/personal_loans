@@ -161,23 +161,12 @@ body{
                                 {% for item in lastLoan %}
                                     <tr>
                                         <td >{{itemNumber}}</td>
-                                        {#
-                                            <td><a href="{{ path('loan_show', { 'loaId': item.loa_id }) }}" class="product-title">{{ item.loa_code }}</a></td>
-                                            <td>
-                                                
-                                                {% if item.loc_key == "active_rate" %}
-                                                    <span class="label label-primary">{% trans %}general_loan_with_percentage{% endtrans %}</span>
-                                                    
-                                                {% elseif item.loc_key == "inactive_rate"  %}
-                                                    <span class="label label-warning">{% trans %} general_loan_per_quotas {% endtrans %}</span>
-                                                {% else %}
-                                                    {{ item.loc_type }}
-                                                {% endif %}
-                                            </td>
-                                        #}
                                         <td> 
                                              {% if item.loc_key == "active_rate" %}    
                                                 {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                
+                                                 {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(item.loa_id) %}
+
                                                 {% if pending.quotas is defined and pending.quotas > 0 %}
                                                     {% set color = "color: #9b1111; font-weight: 700;" %}
                                                     <span style="{{color}}">En mora</span>
@@ -323,13 +312,41 @@ body{
                                                 {% if pending %}
                                                 
                                                     {% set rate = pending.rate %}   
-                                                    <span class="amounts" style="{{color}}">{{ rate }}%</span> 
+                                                    <span class="amounts" style="{{color}}">{{ rate|number_format(2, '.', ',') }}%</span> 
                                                         
                                                 {% else %}
                                                     
                                                     {% set rate = item.loa_rate_interest %}
-                                                    <span class="amounts" style="{{color}}">{{ item.loa_rate_interest }}%</span>
+                                                    <span class="amounts" style="{{color}}">{{ item.loa_rate_interest|number_format(2, '.', ',') }}%</span>
                                                          
+                                                {% endif %}
+
+                                                {% if hasBalance %}
+                                                    <br>
+                                                    {% set loanAdd_Id = hasBalance[0]["laa_id"] %}
+                                                    {% set loanAdd_loaRateInterest = hasBalance[0]["laa_rate_interest"] %}
+                                                    {% set loandAdd_laaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
+                                                    {% set loandAdd_completed = hasBalance[0]["laa_completed"] %}
+                                                    {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
+                                                    {% set loandAdd_splitted_balance = hasBalance[0]["laa_splitted_balance"] %}
+
+                                                    {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, item.loa_recurring_day_payment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+                                                    {# {{ dump(pending_add) }} #}
+                                                    {% if pending_add %}
+                                                        {% set rate_add = pending_add.rate  %}
+                                                        {% set quotas_add = pending_add.quotas %}
+                                                        {% set IsOverDueDate_add = 1 %}
+                                                    {% else %}
+                                                        {% set rate_add = loanAdd_loaRateInterest  %}
+                                                        {% set quotas_add = "" %}
+                                                    {% endif %}
+
+                                                    {% set arrPendingAmount_add = srv_Loans.getPendingAmount(loanAdd_Id, true) %}
+                                                    {% set pendingPaid_add = arrPendingAmount_add[0]["pending"] %}
+
+                                                     <span class="amounts" style="{{color}}">{{ ((rate_add/100)*pendingPaid_add)|number_format(2, '.', ',') }}%</span>
+
+                                                     
                                                 {% endif %}
 
                                                 {# {{ item.lpa_next_rate_interest }}% #}
@@ -342,7 +359,12 @@ body{
                                             <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Interest amont #}
-                                                ${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}
+                                                <span class="amounts" style="{{color}}">${{ ((pendingPayment) * (rate/100))|number_format(2, '.', ',')  }}</span>
+
+                                                {% if hasBalance %}
+                                                    <br>
+                                                    <span class="amounts" style="{{color}}">${{  (((rate_add/100)*pendingPaid_add) )|number_format(2, '.', ',')  }}</span>
+                                                {% endif %}
                                             {% else %}
 
                                                 {# ----------- calculates the interest amount  if the payment has it, per quotas----------- #} 
@@ -458,7 +480,13 @@ body{
                                             <div>
                                             {% if item.loc_key == "active_rate" %}
                                                 {# Next Capita Capital amount #}
-                                                ${{ (pendingPayment)|number_format(2, '.', ',')  }}
+                                                <span class="amounts" style="{{color}}">${{ (pendingPayment)|number_format(2, '.', ',')  }}</span>
+
+                                                {% if hasBalance %}
+                                                    <br>
+                                                    <span class="amounts" style="{{color}}">${{  (((rate_add/100)*pendingPaid_add) + pendingPaid_add)|number_format(2, '.', ',')  }}</span>
+                                                {% endif %}
+
                                             {% else %}
                                                 {# N/A  ---------------#}  {# ${{ nextCap|number_format(2, '.', ',') }}  #}
                                                 {% if detailPending["numQuotas"] != '' %}

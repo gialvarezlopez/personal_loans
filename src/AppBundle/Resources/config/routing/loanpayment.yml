@@ -35,3 +35,7 @@ loanpayment_delete:
     path:     /{lpaId}/delete
     defaults: { _controller: "AppBundle:LoanPayment:delete" }
     methods:  DELETE
+
+loanpayment_migrations:
+    path:   /migrations/
+    defaults: { _controller: "AppBundle:LoanPayment:migrations" }     
