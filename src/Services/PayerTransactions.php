@@ -119,7 +119,6 @@ class PayerTransactions
         //$timezone =  $srv->getNameTimeZone();
         //date_default_timezone_set($timezone);
         
-        //$em = $this->getDoctrine()->getManager();
         $payer = new \AppBundle\Entity\Payer();
 
         $oPricing = $this->em->getRepository('AppBundle:Pricing')->findOneBy( array("prActive"=> 1, "prKey"=>"free") );
