@@ -85,6 +85,14 @@
 .selectedBalance{
     background-color: #fff;
 }
+
+.tabInitBalance{
+    padding: 12px !important;
+}
+.control-label{
+    font-weight: 550!important;
+    font-size: 14px;
+}
 </style>
 
 {#  Check the notifications #}
@@ -698,9 +706,6 @@
                 calculateAmounts();
             });
 
-            $("#appbundle_loanpayment_loaNextInterestRate").keyup(function(){
-
-            });
 
             //$("#appbundle_loanpayment_lpaTotalAmountPaid").focusout(function(){
             function calculateAmounts()
@@ -839,10 +844,10 @@
                     pr = parseFloat(pr);
                     if( c > 0 || ( pr == justRate) )
                     {
-                        $("#"+inputLoaNextInterestRate).val(idInputRate);
-                        //$("#"+inputLoaNextInterestRate).val(inputRateByDefault);
+                        //$("#"+inputLoaNextInterestRate).val(idInputRate);
+                        $("#"+inputLoaNextInterestRate).val(inputRateByDefault);
                         var htmlRate = parseFloat(inputRateByDefault); //"{{loan.loaRateInterestByDefault}}";
-                        //alert(typeof(htmlRate) );
+                        //alert(inputRateByDefault);
                         console.log("if" + htmlRate);
                     }
                     else
@@ -1045,18 +1050,21 @@
                             {
                                 newNextRate = parseFloat(pendingRate + rate).toFixed(2);
                             }
-                            $("#"+typeLoaNextInterestRate).val( newNextRate );
+                            //$("#"+typeLoaNextInterestRate).val( newNextRate );
                             //console.log("--------"+pendingRate);
+                            //alert(newNextRate + "bbbbbbbbbbb"); //-----------------------------------
                         }
                     }
                    // console.log("if");
                 }
                 else
                 {
-                    $("#"+typeLoaNextInterestRate).val( inputRateByDefault );
+                    //$("#"+typeLoaNextInterestRate).val( inputRateByDefault );
                     nextDate = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
                     //console.log("else");
                     var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+
+                    //alert(inputRateByDefault + "aaaaaaaaa"); //-----------------------------------
                 }
 
                 
