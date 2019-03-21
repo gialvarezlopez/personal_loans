@@ -32,7 +32,7 @@
 }
 
 .amounts{
-    font-size:15px;
+    font-size:13px;
     font-weight: 600;
     color: #34825F;
 }
@@ -86,12 +86,15 @@
     background-color: #fff;
 }
 
-.tabInitBalance{
+.tabInitBalance, .tabAdditional{
     padding: 12px !important;
 }
-.control-label{
+.control-label, th, #tablePayments td, .widthAuto td{
     font-weight: 550!important;
-    font-size: 14px;
+    font-size: 13px;
+}
+.infoAlert{
+    font-size: 13px;
 }
 </style>
 
@@ -252,7 +255,7 @@
                                 {% set IsOverDueDate_add = 0 %}
                                 {% if loandAdd_completed == 0 %}
                                     {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loandAdd_laaRateInterestByDefault, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
-                                    {# {{ dump(pending_add) }} #}
+                                    
                                     {% if pending_add %}
                                         {% set rate_add = pending_add.rate  %}
                                         {% set quotas_add = pending_add.quotas %}
@@ -269,6 +272,14 @@
 
                                 {% set arrPendingAmount_add = srv_Loans.getPendingAmount(loanAdd_Id, true) %}
                                 {% set pendingPaid_add = arrPendingAmount_add[0]["pending"] %}
+                                {#
+                                {% if pendingPaid_add == 0 %}
+                                    {% set arrPendingAmount_add = srv_Loans.getAdditionalAmountById(loanAdd_Id) %}
+                                    {% set pendingPaid_add = arrPendingAmount_add[0]["laa_amount"] %}
+                                {% endif %}
+                                #}
+
+                                
                             {% endif %}
                             {# end additional amounts ===================================================================================== #}
 

@@ -308,6 +308,7 @@ class Loans
             {
                 $RAW_QUERY  = "SELECT *  FROM loan_payment where loa_id = $loanId AND laa_id IS NULL ";
             }
+            //echo $RAW_QUERY;
             //$RAW_QUERY  = "SELECT *  FROM loan_payment where $fieldId = $loanId";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
@@ -573,7 +574,7 @@ class Loans
     function getAdditionalAmountById($id)
     {
         $result = array();
-        if( !empty($id) && $id > 1 )
+        if( !empty($id) && $id > 0 )
         {
             $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE laa_id = $id AND laa_active = 1";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);

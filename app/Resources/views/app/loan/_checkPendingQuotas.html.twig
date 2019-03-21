@@ -41,7 +41,7 @@
         <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial) - <strong>Fecha maxima de pago: {{ deadline }}</strong></div>
         <div class="panel-body">
             <div class="row">
-               <div class="col-lg-12 text-justify">
+               <div class="col-lg-12 text-left infoAlert">
                     <div class='well'>
                         Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
                             <strong>
@@ -57,7 +57,7 @@
                </div>     
             </div>
             <div class="row">
-                <div class="col-lg-6 text-justify">
+                <div class="col-lg-6 col-md-12 text-left infoAlert">
                     {#
                     This loan has <span class='bc'>{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
                     <span class='bc'>{{ pending.days }}  day(s) of delay</span>. 
@@ -72,7 +72,7 @@
 
                     <p></p>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6 col-md-12">
                     {% set period = loan.loaRecurringDayPayment %}
                     {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
                     {% set maxDate = loan.loaDeadline|date('Y-m-d') %}
@@ -160,7 +160,7 @@
         <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional) - <strong>Fecha maxima de pago: {{ loandAdd_nextPaymentDate }}</strong></div>
         <div class="panel-body">
             <div class="row">
-               <div class="col-lg-12 text-justify">
+               <div class="col-lg-12 text-left infoAlert">
                     <div class='well'>
                         Si esta fecha maxima de pago es diferente a la fecha del campo llamado 
                             <strong>
@@ -176,7 +176,7 @@
                </div>     
             </div>
             <div class="row">
-                <div class="col-lg-6 text-justify">
+                <div class="col-lg-6 col-md-12 text-left infoAlert">
                     {#
                     This loan has <span class='bc'>{{ pending.quotas }} pending quotas </span>  <b>(Including the current quota)</b> with a total of 
                     <span class='bc'>{{ pending.days }}  day(s) of delay</span>. 
@@ -191,7 +191,7 @@
 
                     <p></p>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6 col-md-12">
                     {% set period = loan.loaRecurringDayPayment %}
                     {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
                     {% set maxDate = loandAdd_nextPaymentDate %}

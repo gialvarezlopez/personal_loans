@@ -211,10 +211,10 @@
                     <div>
                         <h3 class="">
                             {% set total = 0.00 %}
-                            <div style="width:200px; float:left"><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span></div>
+                            <div style="width:170px; float:left; font-size: 18px"><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span></div>
                             <div style="float:left">
                                 <span class="amountsX">
-                                    ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+                                    ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) = ( ${{ (money * (rate/100))|number_format(2, '.', ',') }}  + ${{ money|number_format(2, '.', ',') }} ) = 
                                     {% set pending = ((money) * (rate/100) + (money)) %}
                                     {% if pending > 0 %}
                                         {% set stalabel = "pending" %}
@@ -261,7 +261,12 @@
                                         {% endif %}
 
                                         <span class="amountsX">
-                                            ( ${{ (money_add)|number_format(2, '.', ',') }} x {{rate_add}}%  ) + ${{ money_add|number_format(2, '.', ',') }} = 
+                                            ( ${{ (money_add)|number_format(2, '.', ',') }} x {{rate_add}}%  ) = 
+                                            
+                                            
+                                            ( ${{ (money_add * (rate_add/100))|number_format(2, '.', ',') }}  + ${{ money_add|number_format(2, '.', ',') }} )
+
+                                            = 
                                             {% set pending_add = ((money_add) * (rate_add/100) + (money_add))|number_format(2, '.', ',') %}
                                             {% if pending_add > 0 %}
                                                 {% set stalabel = "pending" %}
