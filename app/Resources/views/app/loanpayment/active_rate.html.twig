@@ -185,7 +185,7 @@
         
         {{form_start(form,{'enctype':'multipart/form-date'})}}
             <div class="row">
-                <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                     {% set IsOverDueDate = 0 %}
                     {% if loan.loaCompleted == 0 %}
                         {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRateInterestByDefault, loan.loaRecurringDayPayment, loan.loaNextPaymentDate|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
@@ -434,7 +434,7 @@
                         <hr> 
                     </div>
                 </div>
-                <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                      {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "rateByDefault":loan.loaRateInterestByDefault, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                      
                      {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
