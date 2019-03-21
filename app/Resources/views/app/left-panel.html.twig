@@ -61,7 +61,7 @@
               
               {% if app.user == "ROLE_ADMIN" %}
                 <li> <a href="{{ path('usercontrolapp_user') }}"><i class="fa fa-wrench" aria-hidden="true"></i> Control de usuarios</a> </li>
-                <li> <a href="{{ path('usercontrolapp_migrations') }}"><i class="fa fa-wrench" aria-hidden="true"></i> Migraciones</a> </li>
+                
               {% endif %}
               <li>
                 <a href="{{ path('settings_show') }}"><i class="fa fa-gears" aria-hidden="true"></i><span>{% trans %}menu_left_setting{% endtrans %}</span></a>
