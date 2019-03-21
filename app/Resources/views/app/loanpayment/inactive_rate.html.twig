@@ -75,7 +75,7 @@
     <div class="box-header">
         {% set IsOverDueDate = 0 %}
                     {% if loan.loaCompleted == 0 %}
-                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRateInterestByDefault, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                         {# {% set rate = pending.rate  %} #}
                         {% if pending %}
                             {% set rate = pending.rate  %}

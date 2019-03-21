@@ -33,7 +33,7 @@
                                     {% if aa.laa_splitted_balance %}
                                         {% set loan = srv_Loans.getLoanById(loanId) %}
                                         {{ loan.loaQuotas }}
-                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
+                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, aa.laa_rate_interest_by_default, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
 
                                         {% if pending|length %}
                                             {{ pending.rate }}

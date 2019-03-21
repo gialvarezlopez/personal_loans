@@ -153,7 +153,7 @@ class LoanController extends Controller
 
             //echo $maxPayDate->format('Y-m-d');;
             //exit();
-            $arrCheck = $sCheckRate->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);
+            $arrCheck = $sCheckRate->checkDeadLineToPay($rate, $rate, $recurringDays, $maxPayDate, $zone);
 
             $newRate = $arrCheck["rate"];
             //$loan->setLoaRateInterest($rate);
@@ -240,7 +240,7 @@ class LoanController extends Controller
                 //$srvTimezone = $this->get('srv_TimeZone');
                 //$zone = $srvTimezone->getNameTimeZone();
                 //$srvLoan = $this->get('srv_Loans');  
-                //$checkPayments = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $deadline, $zone);  
+                //$checkPayments = $srvLoan->checkDeadLineToPay($rate, $rate, $recurringDays, $deadline, $zone);  
                 /*
                 $period = 1;
                 if( $arrCheck )
@@ -399,18 +399,12 @@ class LoanController extends Controller
             $loaDeadline = $editForm->get("loaDeadline")->getData();
             $loan->setLoaNextPaymentDate($loaDeadline);
 
-            //echo $statusList = $editForm->get("statusList")->getData();
-            //exit("xxxx");
-            //$loan->setLoaCompleted($statusList);
-            //exit();
             $status_update = false;
             $em->getConnection()->beginTransaction(); // suspend auto-commit
             try 
             {
 
                 //Save data in historial if the amount changes
-                
-                
                 if( $oCheckLoan )
                 {
                     //echo $oCheckLoan->getLoaAmount()." ".$currentAmount;
@@ -600,7 +594,7 @@ class LoanController extends Controller
                                 $zone = $srvTimezone->getNameTimeZone();
                                 $srvLoan = $this->get('srv_Loans');  
                                 $maxPayDate = $deadline->format('Y-m-d');
-                                $checkPayments = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);  
+                                $checkPayments = $srvLoan->checkDeadLineToPay($rate, $rate, $recurringDays, $maxPayDate, $zone);  
                                 if( $checkPayments )
                                 {
                                     $period = $checkPayments["quotas"];
@@ -753,7 +747,7 @@ class LoanController extends Controller
                 }else{
                     $nextDate = $oLoan->getLoaNextPaymentDate()->format('Y-m-d');
                 }
-                $pending =  $srv_Loans->checkDeadLineToPay( $oLoan->getLoaRateInterest(), $oLoan->getLoaRecurringDayPayment(), $nextDate, $srv_TimeZone->getNameTimeZone() );
+                $pending =  $srv_Loans->checkDeadLineToPay( $oLoan->getLoaRateInterest(), $oLoan->getLoaRateInterestByDefault(), $oLoan->getLoaRecurringDayPayment(), $nextDate, $srv_TimeZone->getNameTimeZone() );
                 if( $pending )
                 {
                     $rate = $pending["rate"];

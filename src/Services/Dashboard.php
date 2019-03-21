@@ -273,11 +273,12 @@ class Dashboard
             for($i = 0; $i < count($result); $i++)
             {
                 $rate = $result[$i]["loa_rate_interest"];
+                $rateByDefault = $result[$i]["loa_rate_interest_by_default"];
                 $recurringDays = $result[$i]["loa_recurring_day_payment"];
                 $maxPayDate = $result[$i]["loa_deadline"];
                 $zone = $srvTimeZone->getNameTimeZone();
 
-                $data = $srvLoan->checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone);
+                $data = $srvLoan->checkDeadLineToPay($rate, $rateByDefault, $recurringDays, $maxPayDate, $zone);
                 if( $data )
                 {
                     $hasPending = ($data["quotas"]) - 1;

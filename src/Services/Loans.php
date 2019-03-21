@@ -163,7 +163,7 @@ class Loans
     }
 
 
-    function checkDeadLineToPay($rate, $recurringDays, $maxPayDate, $zone)
+    function checkDeadLineToPay($rate, $rateByDefault, $recurringDays, $maxPayDate, $zone)
     {
         date_default_timezone_set($zone);
 
@@ -196,7 +196,7 @@ class Loans
                {
                    if( $pros != 0 || $days > 0 )
                    {
-                    $newRate += $rate;
+                    $newRate += $rateByDefault; ////quiiii
                    }
                     //echo "i - ".$i;
                     $pros++;

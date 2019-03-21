@@ -180,7 +180,7 @@
                 <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
                     {% set IsOverDueDate = 0 %}
                     {% if loan.loaCompleted == 0 %}
-                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaNextPaymentDate|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                        {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRateInterestByDefault, loan.loaRecurringDayPayment, loan.loaNextPaymentDate|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                         {# {% set rate = pending.rate  %} #}
                         {% if pending %}
                             {% set rate = pending.rate  %}
@@ -243,7 +243,7 @@
 
                                 {% set IsOverDueDate_add = 0 %}
                                 {% if loandAdd_completed == 0 %}
-                                    {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+                                    {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loandAdd_laaRateInterestByDefault, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
                                     {# {{ dump(pending_add) }} #}
                                     {% if pending_add %}
                                         {% set rate_add = pending_add.rate  %}
@@ -427,7 +427,7 @@
                     </div>
                 </div>
                 <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
-                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
+                     {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "rateByDefault":loan.loaRateInterestByDefault, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                      
                      {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
                      {% if changedAmount > 0 %}

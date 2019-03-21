@@ -229,7 +229,7 @@
                                         </td>
                                         <td> 
                                              {% if item.loc_key == "active_rate" %}    
-                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                                {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_rate_interest_by_default, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                                                
                                                  {% set hasBalance = srv_Loans.hasCurrentAdditionalAmount(item.loa_id) %}
 
@@ -413,7 +413,7 @@
                                             {% if item.loc_key == "active_rate" %}
                                                 {# next Interest #}
 
-                                                {# {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
+                                                {# {% set pending =  srv_Loans.checkDeadLineToPay( item.loa_rate_interest, item.loa_rate_interest_by_default, item.loa_recurring_day_payment, item.loa_deadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
                                                 {% if pending %}
                                                 
                                                     {% set rate = pending.rate %}   
@@ -435,7 +435,7 @@
                                                     {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
                                                     {% set loandAdd_splitted_balance = hasBalance[0]["laa_splitted_balance"] %}
 
-                                                    {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, item.loa_recurring_day_payment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+                                                    {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loandAdd_laaRateInterestByDefault, item.loa_recurring_day_payment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
                                                     {# {{ dump(pending_add) }} #}
                                                     {% if pending_add %}
                                                         {% set rate_add = pending_add.rate  %}

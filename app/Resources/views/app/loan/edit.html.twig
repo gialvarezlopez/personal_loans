@@ -227,7 +227,7 @@
                                                                                     {% if aa.laa_splitted_balance %}
                                                                                         {% set loan = srv_Loans.getLoanById(loanId) %}
                                                                                         {{ loan.loaQuotas }}
-                                                                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
+                                                                                        {% set pending =  srv_Loans.checkDeadLineToPay( aa.laa_rate_interest, aa.laa_rate_interest_by_default, loan.loaRecurringDayPayment, aa.laa_next_payment_date, srv_TimeZone.getNameTimeZone() ) %}
 
                                                                                         {% if pending|length %}
                                                                                             {{ pending.rate }}
@@ -433,7 +433,7 @@
             <div class="col-lg-7 col-md-6 col-sm-12 col-xs-12">
 
                 {% if loan.loc.locKey == "active_rate" %}
-                    {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
+                    {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "rateByDefault":loan.loaRateInterestByDefault, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                 {% endif %}
                 
                         {% set arr =  srv_Loans.getPaymentsByLoandId(loanId) %}
@@ -457,36 +457,41 @@
                             </div>
                         {% else %}
                             <div id="holderMainRight">
-                                {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %} 
-                                {% if changedAmount > 0 %}
-                                    <div>
-                                        <div>Este prestamo tiene actualizaciones en el monto inicial. <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}loan_table_rate_payments_full_history{% endtrans %}</a></div>
-                                        {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, true) %}
-                                        {# {{ dump(arrPendingAmount[0]["pending"]) }} #}
-                                        <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
-                                        {% if loan.loaCompleted != 1 %}
-                                            <span class="amountsX">
-                                            {% set rate = loan.loaRateInterest %}
-                                            {% set money =  arrPendingAmount[0]["pending"] %}
-                                            ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+                                {#
+                                    {% set changedAmount = srv_Loans.checkChangeAmountPerLoan(loan.loaId) %}
 
-                                            {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
-                                            {% if pending > 0 %}
-                                                {% set stalabel = "pending" %}
+                                    {% if changedAmount > 0 %}
+                                        <div>
+                                            <div>Este prestamo tiene actualizaciones en el monto inicial. <a class="" href="{{ path('loanpayment_quotasHistory') }}?loaId={{loan.loaId}}">{% trans %}loan_table_rate_payments_full_history{% endtrans %}</a></div>
+                                            {% set arrPendingAmount = srv_Loans.getPendingAmount(loan.loaId, true) %}
+                                            
+                                            <h3 class=""><span class="labelCurrency">{% trans %}loan_msg_pending_to_pay{% endtrans %}: </span>
+                                            {% if loan.loaCompleted != 1 %}
+                                                <span class="amountsX">
+                                                {% set rate = loan.loaRateInterest %}
+                                                {% set money =  arrPendingAmount[0]["pending"] %}
+                                                ( ${{ (money)|number_format(2, '.', ',') }} x {{rate}}%  ) + ${{ money|number_format(2, '.', ',') }} = 
+
+                                                {% set pending = ((money) * (rate/100) + (money))|number_format(2, '.', ',') %}
+                                                {% if pending > 0 %}
+                                                    {% set stalabel = "pending" %}
+                                                {% else %}
+                                                    {% set stalabel = "nothingPending" %}
+                                                {% endif %}
+                                                <span class="label label-default {{stalabel}}">${{  pending }}</span>
+                                                </span>
                                             {% else %}
-                                                {% set stalabel = "nothingPending" %}
+                                                <span class="label label-default nothingPending">$0.00</span>      
                                             {% endif %}
-                                            <span class="label label-default {{stalabel}}">${{  pending }}</span>
-                                            </span>
-                                        {% else %}
-                                              <span class="label label-default nothingPending">$0.00</span>      
-                                        {% endif %}
-                                        </h3> 
-                                        
-                                    </div>
-                                {% else %}
-                                    {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
-                                {% endif  %}
+                                            </h3> 
+                                            xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                                        </div>
+                                    {% else %}
+                                        {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
+                                    {% endif  %}
+                                #}
+
+                                {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}
                                
                             </div>
                         {% endif %}    

@@ -1,6 +1,6 @@
 {% if loan.loaCompleted == 0 %}
     {# {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaQuotas, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %} #}
-    {% set pending =  srv_Loans.checkDeadLineToPay( rate, quotas, deadline, srv_TimeZone.getNameTimeZone() ) %}
+    {% set pending =  srv_Loans.checkDeadLineToPay( rate, rateByDefault, quotas, deadline, srv_TimeZone.getNameTimeZone() ) %}
 {% else %}
     {% set pending = false %}
 {% endif %}
@@ -142,7 +142,7 @@
         {% set loandAdd_nextPaymentDate = hasBalance[0]["laa_next_payment_date"] %}
         {% set loandAdd_loaRateInterestByDefault = hasBalance[0]["laa_rate_interest_by_default"] %}
         
-        {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
+        {% set pending_add =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loandAdd_loaRateInterestByDefault,  loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
         
     {% endif %}                                        
 

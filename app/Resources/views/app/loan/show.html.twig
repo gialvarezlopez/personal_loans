@@ -160,7 +160,7 @@
                                     <td>{% trans %}loan_form_default_interest_rate{% endtrans %}</td>
                                     <td><span class="amounts">{{ loan.loaRateInterestByDefault }}%</span></td>
                                 </tr>
-                                {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
+                                {% set pending =  srv_Loans.checkDeadLineToPay( loan.loaRateInterest, loan.loaRateInterestByDefault, loan.loaRecurringDayPayment, loan.loaDeadline|date('Y-m-d'), srv_TimeZone.getNameTimeZone() ) %}
                                 {% if pending %}
                                     <tr>
                                         <td>{% trans %}loan_form_default_current_interest_rate{% endtrans %}</td>
@@ -351,7 +351,7 @@
 
                     {# loan.loaRateInterest, loan.loaQuotas, loan.loaDeadline|date('Y-m-d') #}
                     {% if loan.loc.locKey == "active_rate" %}
-                        {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
+                        {{ include('app/loan/_checkPendingQuotas.html.twig', {"rate":loan.loaRateInterest, "rateByDefault":loan.loaRateInterestByDefault, "quotas":loan.loaRecurringDayPayment, "deadline":loan.loaNextPaymentDate|date('Y-m-d')}  )  }}
                     {% endif %}
                     {#
                     <h4>
