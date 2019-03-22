@@ -321,7 +321,7 @@
                                                 {% set pendingPayment =  item.loa_amount - sumCapital[0]["paidCapital"] %}
 
                                                 {% set arrPendingAmount = srv_Loans.getPendingAmount(item.loa_id) %}
-                                                {% set pendingPayment =  arrPendingAmount[0]["pending"] %}
+                                                {% set pendingPayment =  arrPendingAmount[0]["pending"] + srv_Loans.getTotalAdditionalAmountsJoinedMainBalance(item.loa_id) %}
                                                 
                                                 
 

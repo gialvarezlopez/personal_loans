@@ -193,7 +193,7 @@ class Dashboard
             {
                 $RAW_QUERY  .= " l.loa_id, l.loa_code, loc.loc_key,loc.loc_type, 
                             CONCAT_WS(' ', c.cli_first_name, c.cli_middle_name, c.cli_first_surname, c.cli_second_surname) AS name, 
-                            l.loa_rate_interest, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount";
+                            l.loa_rate_interest, l.loa_rate_interest_by_default, l.loa_recurring_day_payment, l.loa_deadline, l.loa_amount";
             }
             $RAW_QUERY  .= " FROM loan l 
                             INNER JOIN `client` c ON l.cli_id = c.cli_id
@@ -224,6 +224,7 @@ class Dashboard
             $statement->execute();
             $result = $statement->fetchAll();
             //var_dump($result);
+           // exit();
             $num = 0;
             foreach( $result  as $item)
             {
@@ -234,6 +235,7 @@ class Dashboard
                 $arr[$num]["loc_type"] = $item["loc_type"];
                 $arr[$num]["name"] = $item["name"];
                 $arr[$num]["loa_rate_interest"] = $item["loa_rate_interest"];
+                $arr[$num]["loa_rate_interest_by_default"] = $item["loa_rate_interest_by_default"];
                 $arr[$num]["loa_recurring_day_payment"] = $item["loa_recurring_day_payment"];
                 $arr[$num]["loa_deadline"] = $item["loa_deadline"];
                 $arr[$num]["loa_amount"] = $item["loa_amount"];
