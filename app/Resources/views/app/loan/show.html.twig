@@ -377,6 +377,7 @@
                                 {{ ('loan_msg_payments_click_here'|trans({ '%link%': linkHere}))|raw }}
                             </div>
                             <hr>
+                            {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
                             {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"show"}) }}
                         {% else %}
                             {{ include("app/loan/_inputWithRatePayments.html.twig",{"showResume":true}) }}

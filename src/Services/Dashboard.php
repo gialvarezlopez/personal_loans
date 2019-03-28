@@ -219,7 +219,7 @@ class Dashboard
             }
 
             $arr = array();
-            $RAW_QUERY .= " ORDER BY name ASC ";
+            $RAW_QUERY .= " AND l.loa_id = 162 ORDER BY name ASC ";
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();

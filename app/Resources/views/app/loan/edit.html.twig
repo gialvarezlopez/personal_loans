@@ -464,6 +464,7 @@
                                 
                             <hr>
                             <div id="holderMainRight">
+                                {% set arr =  srv_Loans.getAllDetailLoan(loanId) %}
                                 {{ include("app/loan/_inputNoRateEditPayments.html.twig",{"action":"edit"}) }}
                             </div>
                         {% else %}

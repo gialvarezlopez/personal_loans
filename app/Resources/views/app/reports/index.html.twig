@@ -241,15 +241,18 @@
                                              {% else %}
                                                 {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
                                                 {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}   
-
+                                                
                                                 {% if noPaid|length > 1 %}
-                                                    <span style='color:red'>En mora</span>
+                                                    <span style='color:red'>En mora</span> 
                                                 {% else %}
+                                                {#
                                                     {% if item.loa_deadline|date("Y-m-d") >= date("now") %}
                                                         <span style='color:green'>Al dia</span>
                                                     {% else %}
-                                                        <span style='color:red'>En mora</span>
-                                                    {% endif %}
+                                                        <span style='color:red'>En mora</span> xxxxx
+                                                    {% endif %} #}
+
+                                                    <span style='color:green'>Al dia</span>
                                                 {% endif %}
                                              {% endif %}
                                         </td>
