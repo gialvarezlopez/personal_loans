@@ -470,8 +470,24 @@
     <script>
         //$(document).on("ready", function(){
         var newCalc1 = true;
-        var newCalc2 = true;    
+        var newCalc2 = true;   
+        
+        
+
+        
         $(function (){
+
+            var btnSetManualCalculate = "<label class='control-label'>Desea proyectar calculos manuales?</label><span class='btn bg-purple eventSetManualCalculate'><i class='fa fa-hand-o-up' aria-hidden='true'></i> Realizar calculos manules</span>";
+
+            var recalculate = "<label class='control-label'>Desea proyectar calculos manuales?</label><div class='row'>";
+            recalculate += "<div class='col-lg-6'>";
+            recalculate += "<span class='btn btn-info btnReCalculateAmounts' id='btnReCalculateAmounts' data-toggle='tooltip' data-placement='top' title='' data-original-title='Re-calcular montos ($)'><i class='fa fa-calculator' aria-hidden='true'></i></span>";
+            recalculate += "</div>";
+            recalculate += "<div class='col-lg-6'>";
+            recalculate += "<span class='btn bg-purple eventCancelManualCalculate'><i class='fa fa-times' aria-hidden='true'></i> Cancelar</span>";
+            recalculate += "</div>";
+            recalculate += "</div>";
+            var btnCancelManualCalculate = recalculate
 
             if( $("#holderResume").length == 1  )
             {
@@ -721,6 +737,7 @@
             //$("#appbundle_loanpayment_lpaTotalAmountPaid").focusout(function(){
             function calculateAmounts()
             {    
+                
 
                 if( $("#btnCalculateAmounts").is(":visible") )
                 {
@@ -744,8 +761,12 @@
 
                     var typeNewBalance = "newBalance";
 
+                    var typeHolderManualCalculate = "holderManualCalculate";
+
                     var balanceActive = "balance1";
                     console.log("aqui");
+
+                    var holderManual = "holderManualCalculate";
                 }
                 else
                 {
@@ -770,8 +791,12 @@
 
                     var typeNewBalance = "newBalance_additional";
 
+                    var typeHolderManualCalculate = "holderManualCalculate_additional";
+
                     var balanceActive = "balance2";
                     console.log("2");
+
+                    var holderManual = "holderManualCalculate_additional";
                 }
 
                 var inputRateByDefault = parseFloat($("#"+idInputRateByDefault).val());
@@ -907,7 +932,7 @@
                     //if( c > 0 )
                     //{
                         var a = $("#"+typePendingAmountWithoutRate).val();
-                        var DnewAmount = (a - c).toFixed(2);
+                        var DnewAmount = (a - c);//.toFixed(2);
                         var Dnewrate = htmlRate; //$("#appbundle_loanpayment_lpaCurrentRateInterest").val();
                         var calculate = parseFloat(DnewAmount) + parseFloat(DnewAmount * (Dnewrate/100)) ;
                         var iconMoney = '<i class="fa fa-usd" aria-hidden="true"></i>';
@@ -930,11 +955,11 @@
                         }
 
 
-                        var table = "<table style=''>";
-                        table += "<tr><td>"+iconMoney+DnewAmount+"x"+Dnewrate+"% =</td><td>"+iconMoney+(parseFloat(DnewAmount * (Dnewrate/100)).toFixed(2))+"</td></tr>";
-                        table += "<tr><td ><div class='text-right amounts'> + </div></td><td> &#160;"+iconMoney+DnewAmount+"</td></tr>";
-                        table += "<tr><td ><div class='text-right amounts'>Total = </div></td><td>&#160;"+iconMoney+calculate.toFixed(2)+"</td></tr>";
-                        table += "</table>";
+                        var table = "<span class='amounts'><table style=''>";
+                        table += "<tr><td>"+iconMoney+DnewAmount.toLocaleString(undefined, {minimumFractionDigits: 2})+"x"+Dnewrate+"% </td><td> = </td><td class='text-left'> &#160;"+iconMoney+(parseFloat(DnewAmount * (Dnewrate/100)).toLocaleString(undefined, {minimumFractionDigits: 2}))+"</td></tr>";
+                        table += "<tr><td></td><td ><div class='text-center amounts'> + </div></td><td class='text-left'> &#160;"+iconMoney+(DnewAmount.toLocaleString(undefined, {minimumFractionDigits: 2}))+"</td></tr>";
+                        table += "<tr><td ><div class='text-right amounts'>Total </div></td><td> = </td><td class='text-left'> &#160;"+iconMoney+(calculate.toLocaleString(undefined, {minimumFractionDigits: 2}))+"</td></tr>";
+                        table += "</table></span>";
 
                          if( $("#btnCalculateAmounts").is(":visible") )
                          {
@@ -979,14 +1004,103 @@
                         checkRadioEndLoan();
 
                    // }
+                    
                     $("#"+typeNewBalance).html(table);
+                    $("."+typeHolderManualCalculate).html(btnSetManualCalculate);
+
+                    //alert(btnSetmanualCalculate);
 
                     $("#"+balanceActive).val(1);
+
+                    $("#"+holderManual).show();
                 //}
 
                 
                 //console.log(amount);
             }
+
+            $("body").on("click",".eventSetManualCalculate", function(){
+                $(this).closest(".tab-balance").find("input[type='text']").attr("readonly",false);
+                //alert(btnCancelManualCalculate);
+                $(this).closest(".tab-balance").find(".holderManualCalculate").html(btnCancelManualCalculate);
+            });
+
+            $("body").on("click",".eventCancelManualCalculate", function(){
+                //alert();
+                $(this).closest(".tab-balance").find(".balance").val("");
+                $(this).closest(".tab-balance").find(".mainHolderPayments").hide();
+                $(this).closest(".tab-balance").find(".holderManualCalculate").hide();
+
+                
+                
+                $(this).closest(".tab-balance").find(".inputCalculate").each(function(){
+                    $(this).val("");
+                    $(this).attr("readonly",true);
+                }); 
+            });
+
+            $("body").on("click","#btnReCalculateAmounts", function(){
+                //mainHolderPayments
+                var id = $(this).closest(".tab-balance").find(".mainHolderPayments").attr("id");
+
+                var holder = $(this).closest(".tab-balance").find(".detailBalance");
+
+                if( id == "holderPaymentDetail" )
+                {
+                    var pendingCapital = $("#pendingAmountWithoutRate").val();
+                    //var rate = $("#rateByDefault").val();
+                    var capitalToPay = $("#inputPaidCapital").val();
+
+                    var nextRate = $("#appbundle_loanpayment_loaNextInterestRate").val();
+
+                    
+                }else{
+                    var pendingCapital = $("#pendingAmountWithoutRate_additional").val();
+                    //var rate = $("#rateByDefault_additional").val();
+                    var capitalToPay = $("#inputPaidCapital_additional").val();
+
+                    var nextRate = $("#loaNextInterestRate_additional").val();
+                }
+
+                var rate = nextRate;
+
+                var nextCapital = (parseFloat(pendingCapital) - parseFloat(capitalToPay));
+                var rateWithCapital = parseFloat(nextCapital * (rate/100));
+
+                var iconMoney = '<i class="fa fa-usd" aria-hidden="true"></i>';
+
+                var table = "<span class='amounts text-left'><table style=''>";
+                table += "<tr><td>"+iconMoney+nextCapital.toLocaleString(undefined, {minimumFractionDigits: 2})+"x"+rate+"% =</td><td>&#160; "+iconMoney+rateWithCapital.toLocaleString(undefined, {minimumFractionDigits: 2})+"</td></tr>";
+                table += "<tr><td ><div class='text-right amounts'> + </div></td><td> &#160; "+iconMoney+nextCapital.toLocaleString(undefined, {minimumFractionDigits: 2})+"</td></tr>";
+                table += "<tr><td ><div class='text-right amounts'>Total = </div></td><td>&#160; "+iconMoney+(parseFloat(nextCapital)+parseFloat(rateWithCapital)).toLocaleString(undefined, {minimumFractionDigits: 2})+"</td></tr>";
+                table += "</table></span>";
+                holder.html(table);
+
+                //var n = 125232;
+                //var s = n.toLocaleString(undefined, {minimumFractionDigits: 2});
+                //alert(s);
+            });
+
+            $("#inputPaidCapital, #inputPaidCapital_additional, #inputPaidInterest, #inputPaidInterest_additional").keyup(function(){
+                var id = $(this).closest(".tab-balance").find(".mainHolderPayments").attr("id");
+
+                //var amount = $(this).val();
+                if( id == "holderPaymentDetail" )
+                {
+                    var inpRate = $("#inputPaidInterest").val();
+                    var inpCapital = $("#inputPaidCapital").val();
+                }
+                else
+                {
+                    var inpRate = $("#inputPaidInterest_additional").val();
+                    var inpCapital = $("#inputPaidCapital_additional").val();
+                }
+
+                
+                $(this).closest(".tab-balance").find(".inputAmountToPay").val( parseFloat(inpCapital) + parseFloat(inpRate));
+            });
+
+
 
             $('input[name="endLoan"]').on('change', function() {
                 checkRadioEndLoan();
@@ -1173,6 +1287,9 @@
                     //var typeHolderPaymentDetail = "holderPaymentDetail"; 
                     var typeLpaTotalAmountPaid = "appbundle_loanpayment_lpaTotalAmountPaid"; 
                     //var typeLoaNextInterestRate = "appbundle_loanpayment_loaNextPaymentDate"; 
+
+                    var PaidInterest = "inputPaidInterest";
+                    var PaidCapital = "inputPaidCapital";
                     //console.log("aqui");
                 }
                 else
@@ -1181,9 +1298,13 @@
                     var typeLpaTotalAmountPaid = "lpaTotalAmountPaid_additional";
                     //var typeLoaNextInterestRate = "loaNextInterestRate_additional"; 
                     //console.log("2");
+                    var PaidInterest = "inputPaidInterest_additional";
+                    var PaidCapital = "inputPaidCapital_additional";
                 }    
 
                  var amount = $("#"+typeLpaTotalAmountPaid).val();
+
+                
                  //alert(amount);
                 if( $("#appbundle_loanpayment_loaNextPaymentDate").prop('disabled') || $.trim(amount) <= 0 )
                 {
@@ -1192,12 +1313,28 @@
 							icon: 'glyphicon glyphicon-exclamation-sign',
 							title: 'Error!',
 							//content: 'Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts and the next payment date.</span>',
-                            content: "{{ ('payment_rata_press_calculator'|trans())|raw }}",
+                            content: "{{ ('payment_rate_msg_amount_must_number'|trans())|raw }}",
 							type: 'red',
 							typeAnimated: true,
 					});
 
                     
+                    return false;
+                }
+
+                var validAmountInterest = $("#"+PaidInterest).val();
+                var validAmountCapital = $("#"+PaidCapital).val();
+
+                if( validAmountInterest <= 0 && validAmountCapital <= 0)
+                {
+                    $.alert({
+							icon: 'glyphicon glyphicon-exclamation-sign',
+							title: 'Error!',
+							//content: 'Press <i class="fa fa-calculator" aria-hidden="true"></i> to get the amounts and the next payment date.</span>',
+                            content: "{{ ('payment_rate_msg_amount_rate_and_capital'|trans())|raw }}",
+							type: 'red',
+							typeAnimated: true,
+					});
                     return false;
                 }
 

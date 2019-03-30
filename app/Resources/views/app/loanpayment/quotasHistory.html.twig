@@ -323,6 +323,8 @@
     </div>
 </div>
 
+
+
 {{ include('app/client/_modals.html.twig' )  }} 
 {% endblock %}
 
@@ -384,7 +386,15 @@
 				});    
                 //paymetslist
                 console.log(data);
-            });                
+            });           
+
+            var typeLoan = "{{ loan.loc.locKey }}"; 
+            if( typeLoan  == "inactive_rate" )
+            {
+                var order = "asc";     
+            }else{
+                var order = "desc";
+            }  
 
             $('table').DataTable({
             //$('#paymetslist').DataTable({    
@@ -396,7 +406,7 @@
                 //'info'        : true,
                 //'autoWidth'   : false,
                 //'dom': 'Bfrtip',
-                "order": [[ 0, "asc" ]],
+                "order": [[ 0, order ]],
                 'dom': 'Blfrtip',
                 'buttons': [
                     'copyHtml5',

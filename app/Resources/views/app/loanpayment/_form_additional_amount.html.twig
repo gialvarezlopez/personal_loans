@@ -28,7 +28,7 @@
                     <i class="fa fa-usd" aria-hidden="true"></i>
                 </div>
                 {# {{ form_widget(form.lpaTotalAmountPaid,  { 'attr': {'class': 'form-control', "autocomplete":"off", "required":"required"}} ) }} #}
-                <input type="text" id="lpaTotalAmountPaid_additional" name="lpaTotalAmountPaid_additional" class="form-control" autocomplete="off" >
+                <input type="text" id="lpaTotalAmountPaid_additional" name="lpaTotalAmountPaid_additional" class="form-control inputAmountToPay" autocomplete="off" >
                 <span class="input-group-btn">
                     <button class="btn btn-info btnCalculateAmounts" id="btnCalculateAmounts_additional" type="button" data-toggle="tooltip" data-placement="top" title="{% trans %}payment_rate_btn_tooltip_calculator{% endtrans %}"><i class="fa fa-calculator" aria-hidden="true"></i></button>
                 </span>
@@ -37,7 +37,7 @@
         </div>
     </div>
 </div>
-<div class="" id="holderPaymentDetail_additional">
+<div class="mainHolderPayments" id="holderPaymentDetail_additional" >
     <hr>
     <input type="hidden" id="balance2" name="balance2" class="balance" value="">
     <h4 class="text-center">{% trans %}payment_rate_subtitle{% endtrans %}</h4>
@@ -54,7 +54,7 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-usd" aria-hidden="true"></i>
                                     </div>
-                                    <input type="text" id="inputPaidInterest_additional" name="inputPaidInterest_additional" class="form-control" readonly="readonly">
+                                    <input type="text" id="inputPaidInterest_additional" name="inputPaidInterest_additional" class="form-control inputCalculate" readonly="readonly" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-usd" aria-hidden="true"></i>
                                     </div>
-                                    <input type="text" id="inputPaidCapital_additional" name="inputPaidCapital_additional" class="form-control" readonly="readonly">
+                                    <input type="text" id="inputPaidCapital_additional" name="inputPaidCapital_additional" class="form-control inputCalculate" readonly="readonly" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-percent" aria-hidden="true"></i>
                                     </div>
-                                    <input type="text" id="inputCompletedRate_additional" name="inputCompletedRate_additional" class="form-control" readonly="readonly">
+                                    <input type="text" id="inputCompletedRate_additional" name="inputCompletedRate_additional" class="form-control inputCalculate" readonly="readonly" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-percent" aria-hidden="true"></i>
                                     </div>
-                                    <input type="text" id="inputPendingRate_additional" name="inputPendingRate_additional" class="form-control" readonly="readonly">
+                                    <input type="text" id="inputPendingRate_additional" name="inputPendingRate_additional" class="form-control inputCalculate" readonly="readonly" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,13 @@
         </div>
         <div class="col-lg-6 col-md-12">
             <h5 class="text-center">{% trans %}payment_rate_new_balance{% endtrans %}</h5>
-            <div class="text-center"><span class="amounts" id="newBalance_additional">$0.00</span></div>
+            {#<div class="text-center"><span class="amounts" id="newBalance_additional">$0.00</span></div>#}
+            <div class="text-center">
+                <div id="newBalance_additional" class="detailBalance">
+                    <span class="amounts" id="">$0.00</span>
+                </div>
+                
+            </div>
         </div>
     </div>
 </div>
@@ -121,9 +127,14 @@
                 </div>
                 <div class="">
                     {# {{ form_widget(form.loaNextInterestRate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":"",  "required":"required",  "readonly":"true"} } ) }} #}
-                    <input type="text" id="loaNextInterestRate_additional" name="loaNextInterestRate_additional" required="required" class="form-control" autocomplete="off" value="" readonly="true">
+                    <input type="text" id="loaNextInterestRate_additional" name="loaNextInterestRate_additional" required="required" class="form-control inputCalculate" autocomplete="off" value="" readonly="true">
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-sm-12">
+        <div class=''>
+            <div class="holderManualCalculate_additional" class='holderManualCalculate'></div>
         </div>
     </div>
 </div>

@@ -353,5 +353,6 @@ payment_rate_label_interest_rate: Interest Rate
 payment_rate_label_rate_reached: Rate reached
 payment_rate_label_pending_rate: Pending rate
 payment_rate_msg_amount_must_number: The payment value must be a number
+payment_rate_msg_amount_rate_and_capital: The interest and capital are zero, you must enter at least one field greater than zero
 payment_rate_msg_amount_higher: The payment to execute is higher than the current balance
 payment_rate_msg_fill_when_was_it_paid: Fill the field called 'when was it paid?

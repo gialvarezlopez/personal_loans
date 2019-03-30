@@ -353,5 +353,6 @@ payment_rate_label_interest_rate: Tasa de interes
 payment_rate_label_rate_reached: Tasa alcanzada
 payment_rate_label_pending_rate: Interes pendiente
 payment_rate_msg_amount_must_number: El pago debe ser un valor mayor a cero
+payment_rate_msg_amount_rate_and_capital: El interes y capital son cero, debe de ingresar al menos un campo mayor a cero
 payment_rate_msg_amount_higher: El pago a ejecutar es superior al saldo actual
 payment_rate_msg_fill_when_was_it_paid: Complete el campo llamado 'Cuando fue pagada la cuota?'
