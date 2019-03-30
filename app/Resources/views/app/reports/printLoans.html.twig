@@ -182,7 +182,7 @@ body{
                                                     {% set color = "color: #9b1111; font-weight: 700;" %}
                                                     <span style="{{color}}">En mora</span>
                                                 {% else %}
-                                                    
+                                                    {#
                                                     {% if item.loa_deadline|date("Y-m-d") >= date("now") %}
                                                         {% set color = "color: #34825F; font-weight: 700;" %}
                                                         <span style="{{color}}">Al dia</span>
@@ -190,6 +190,8 @@ body{
                                                         {% set color = "color: #9b1111; font-weight: 700;" %}
                                                         <span style="{{color}}">En mora</span>
                                                     {% endif %}
+                                                    #}
+                                                    <span style='color:green'>Al dia</span>
                                                 {% endif %}
                                              {% endif %}
                                         </td>
