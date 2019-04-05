@@ -481,7 +481,8 @@
 
             var recalculate = "<label class='control-label'>Desea proyectar calculos manuales?</label><div class='row'>";
             recalculate += "<div class='col-lg-6'>";
-            recalculate += "<span class='btn btn-info btnReCalculateAmounts' id='btnReCalculateAmounts' data-toggle='tooltip' data-placement='top' title='' data-original-title='Re-calcular montos ($)'><i class='fa fa-calculator' aria-hidden='true'></i></span>";
+            recalculate += "<span class='btn btn-info btnReCalculateAmounts' id='btnReCalculateAmounts' data-toggle='tooltip' data-placement='top' title='' data-original-title='Re-calcular montos ($)'><i class='fa fa-calculator' aria-hidden='true'></i></span> ";
+            recalculate += "<span class='btn btn-default btnGetPercent' id='btnGetPercent' data-toggle='tooltip' data-placement='top' title='' data-original-title='Obtener porcentaje ($)'><i class='fa fa-percent' aria-hidden='true'></i></span>";
             recalculate += "</div>";
             recalculate += "<div class='col-lg-6'>";
             recalculate += "<span class='btn bg-purple eventCancelManualCalculate'><i class='fa fa-times' aria-hidden='true'></i> Cancelar</span>";
@@ -730,6 +731,7 @@
                     alert("{% trans %} payment_rate_msg_fill_when_was_it_paid {% endtrans %}");
                     return false;
                 }
+                //alert();
                 calculateAmounts();
             });
 
@@ -798,6 +800,12 @@
 
                     var holderManual = "holderManualCalculate_additional";
                 }
+                //alert();
+                $(".tab-pane").find(".inputCalculate").each(function(){
+                    $(this).attr("readonly", true);
+                    //console.log("->");
+                });
+                //$(".inputCalculate").attr("readonly", true);
 
                 var inputRateByDefault = parseFloat($("#"+idInputRateByDefault).val());
 
@@ -1080,6 +1088,72 @@
                 //var s = n.toLocaleString(undefined, {minimumFractionDigits: 2});
                 //alert(s);
             });
+
+            $("body").on("click", ".btnGetPercent", function(){
+                var id = $(this).closest(".tab-balance").find(".mainHolderPayments").attr("id");
+                if( id == "holderPaymentDetail" )
+                {
+                    var pendingCapital = $("#pendingAmountWithoutRate").val();
+
+                    
+                }else{
+                    var pendingCapital = $("#pendingAmountWithoutRate_additional").val();
+                }
+
+                $("#pCapital").val(pendingCapital);
+                $("#pInterestToPay").val("");
+                $("#pAditionalAmount").val("");
+                $("#pResultAmount").val(0);
+                $("#holderResultPercent").empty("");
+
+                $('#myModalPercent').modal({backdrop: 'static', keyboard: false}) 
+
+            });
+
+            $("#btnShowPercent").on("click", function(){
+                var capital = parseFloat($("#pCapital").val());
+                var interest = $("#pInterestToPay").val();
+                var amount = $("#pAditionalAmount").val();
+
+                if( interest < 0 )
+                {
+                    alert("Ingrese el monto de interes a pagar");
+                    return false;
+                }
+
+                if( amount < 0 )
+                {
+                    alert("Ingrese el Monto adicional recivido");
+                    return false;
+                }
+
+                var amount = (interest - amount);
+
+                var result = ((amount/capital)*100).toLocaleString(undefined, {minimumFractionDigits: 2});
+                var html = "El porcentaje obtenido del capital $"+capital.toLocaleString(undefined, {minimumFractionDigits: 2});
+                html +=  " con respecto al monto "+amount.toLocaleString(undefined, {minimumFractionDigits: 2})+ " es: ";
+                html += "<span class='amounts'>"+result+" <i class='fa fa-percent' aria-hidden='true'></i> </span>";
+                $("#holderResultPercent").html("<p>"+html+"</p>");
+            });
+
+             $("#pInterestToPay, #pAditionalAmount").keyup(function(){
+                var interest = $("#pInterestToPay").val();
+                if( interest <= 0 )
+                {
+                    interest = 0;
+                }
+
+                var amount = $("#pAditionalAmount").val();
+
+                if( amount <= 0 )
+                {
+                    amount = 0;
+                }
+
+                $("#pResultAmount").val( interest - amount );
+             });
+
+
 
             $("#inputPaidCapital, #inputPaidCapital_additional, #inputPaidInterest, #inputPaidInterest_additional").keyup(function(){
                 var id = $(this).closest(".tab-balance").find(".mainHolderPayments").attr("id");
