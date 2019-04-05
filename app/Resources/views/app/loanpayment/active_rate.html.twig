@@ -1114,16 +1114,25 @@
                 var capital = parseFloat($("#pCapital").val());
                 var interest = $("#pInterestToPay").val();
                 var amount = $("#pAditionalAmount").val();
-
-                if( interest < 0 )
+                if( capital < 0 || capital == "" )
+                {
+                    alert("El capital a pagar no puede ser nulo");
+                    $("#pCapital").focus();
+                    return false;
+                }
+                
+                //alert(interest);    
+                if( interest < 0 || interest == "" )
                 {
                     alert("Ingrese el monto de interes a pagar");
+                    $("#pInterestToPay").focus();
                     return false;
                 }
 
-                if( amount < 0 )
+                if( amount < 0  || amount == "" )
                 {
                     alert("Ingrese el Monto adicional recivido");
+                    $("#pAditionalAmount").focus();
                     return false;
                 }
 
