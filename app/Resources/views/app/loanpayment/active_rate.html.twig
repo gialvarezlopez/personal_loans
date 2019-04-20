@@ -524,27 +524,7 @@
                     'pdfHtml5'
                 ],
             });
-           //Date picker
-            /*
-                $('.datepicker').datepicker({
-                    autoclose: true,
-                    format: 'yyyy-mm-dd'
-                });
-            */
-            /*
-                $('.datepicker').daterangepicker({
-                    singleDatePicker: true,
-                    showDropdowns: true,
-                    locale: {
-                        format: 'YYYY-MM-DD'
-                    },
-                    //minYear: 1901,
-                    //maxYear: parseInt(moment().format('YYYY'),10)
-                }, function(start, end, label) {
-                    //var years = moment().diff(start, 'years');
-                    //alert("You are " + years + " years old!");
-                });
-            */
+
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
@@ -801,10 +781,11 @@
                     var holderManual = "holderManualCalculate_additional";
                 }
                 //alert();
-                $(".tab-pane").find(".inputCalculate").each(function(){
+                $("#"+typeHolderPaymentDetail).find(".inputCalculate").each(function(){
                     $(this).attr("readonly", true);
                     //console.log("->");
                 });
+                //$("#"+typeHolderPaymentDetail+" INextRate").attr("readonly", false);
                 //$(".inputCalculate").attr("readonly", true);
 
                 var inputRateByDefault = parseFloat($("#"+idInputRateByDefault).val());
@@ -1030,7 +1011,19 @@
             $("body").on("click",".eventSetManualCalculate", function(){
                 $(this).closest(".tab-balance").find("input[type='text']").attr("readonly",false);
                 //alert(btnCancelManualCalculate);
-                $(this).closest(".tab-balance").find(".holderManualCalculate").html(btnCancelManualCalculate);
+                if( $("#btnCalculateAmounts").is(":visible") )
+                {
+                    var holderManualCalculate = "holderManualCalculate"; 
+                    
+                }
+                else
+                {
+                    var holderManualCalculate = "holderManualCalculate_additional"; 
+                }
+                //alert( holderManualCalculate );
+                //console.log( holderManualCalculate );
+                //$(this).closest(".tab-balance").find("#"+holderManualCalculate).html(btnCancelManualCalculate);
+                $("#"+holderManualCalculate).html(btnCancelManualCalculate);
             });
 
             $("body").on("click",".eventCancelManualCalculate", function(){
