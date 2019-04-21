@@ -5,25 +5,6 @@
     {% set pending = false %}
 {% endif %}
 
-{#
-{% if loan.loaResetRateToInterestByDefault  %}
-    <div class="panel panel-info">
-        <div class="panel-heading"><i class="fa fa-fw fa-plus" aria-hidden="true"></i> <i class="fa fa-fw fa-money" aria-hidden="true"></i> Nuevo monto adicional </div>
-        <div class="panel-body">
-        <div class="">Se ha creado un nuevo monto adicional a este prestamo, La tasa de interes ha sido reseteda al <strong>{{ loan.loaRateInterestByDefault }}%</strong>
-            para el proximo pago.<br>
-            {% if pending|length %}
-                <strong>Nota:</strong> Las cuotas pendintes han sido sumadas + el nuevo monto adicional en una sola cuota para el próximo pago
-            {% else %}
-                <strong>Nota:</strong> El monto de la cuota anterior ha sido sumada + el nuevo monto adicional en una sola cuota para el próximo pago
-            {% endif %}
-
-        </div>
-    </div>
-    </div>
-{% endif %}
-#}
-
 {% set hasPayments = srv_Loans.getCountLoanPaymentsDone(loan.loaId) %}
 
 
@@ -147,6 +128,9 @@
     {% endif %}                                        
 
 {% endif %}
+
+
+
 
 {% if pending_add|length %}
     <style>

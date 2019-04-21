@@ -511,6 +511,19 @@ class Loans
         return $result;  
     }
 
+    //Get last payment done for the client
+    function getLastAddAmountJoined($loanId)
+    {
+        if( !empty($loanId) )
+        {
+            $RAW_QUERY  = "SELECT * FROM loan_additional_amounts WHERE loa_id = $loanId AND laa_splitted_balance = 0 ORDER BY laa_id DESC LIMIT 1 ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
+            return ($result);   
+        }
+    }
+
     function getTotalAdditionalAmountsJoinedMainBalance($loanId)
     {
         $result = 0;
