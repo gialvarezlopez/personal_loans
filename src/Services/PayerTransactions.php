@@ -204,7 +204,7 @@ class PayerTransactions
             //$payer->setPr($oPricing);
 
             $payer->setPayMoneyPaid( $arrData["amountPaid"] );
-            $payer->setPayGatewayIdToken( $arrData["transactionID"] );
+            $payer->setPayGatewayIdTransaction( $arrData["transactionID"] );
 
 
             $start = date('Y-m-d H:i:s');
