@@ -30,7 +30,6 @@ AppBundle\Entity\Loan:
             type: boolean
             nullable: true
             options:
-                comment: 'describe si el monto total ha sido cancelado por el usuario'
                 default: '0'
             column: loa_total_amount_completed
         loaAmount:

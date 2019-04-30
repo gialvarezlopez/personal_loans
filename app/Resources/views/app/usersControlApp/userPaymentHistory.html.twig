@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Users control app - Personal Loans
+    Payments History - Personal Loans
 {% endblock %}
 
 {% block breadcrumb %}
@@ -32,7 +32,7 @@
 
 <section class="content-header">
       <h1>
-        Users control
+        Payments History
         <small></small>
       </h1>
       <ol class="breadcrumb">
@@ -44,7 +44,7 @@
 
         <div class="box  {# collapsed-box #}">
             <div class="box-header">
-                <h3 class="box-title">list
+                <h3 class="box-title">{{ userData.usrEmail }}
                    {# <small>Advanced and full of features</small> #}
                 </h3>
             </div>
@@ -59,67 +59,81 @@
                             </div>
                             #}
                             <div class="box-body">
-
+                                {% if payments %}
                                 <table class="table table-bordered table-striped dataTable">
                                     <thead>
                                         <tr>
                                             <td>ID</td>
-                                            <td>Email</td>
-                                            <td>Last login</td>
-                                            <td>Token validation</td>
-                                            <td>Paid amount</td>
-                                            <td>Remaining days of membership</td>
-                                            <td>Acquired memberships</td>
-                                            <td>Set membership</td>
-                                            <td>Payment History</td>
-                                            <td>New payment</td>
+                                            <td>Plan</td>
+                                            <td>Pasarela de pago</td>
+                                            <td>Monto pagado</td>
+                                            <td>ID del procesador</td>
+                                            <td>Es activo</td>
+                                            <td>Esta pagado</td>
+                                            <td>Fecha Inicio</td>
+                                            <td>Fecha Fin</td>
+                                            <td>Fecha Creacion</td>
                                         </tr>
                                     </thead>    
                                     <tbody>
-                                            {% for user in users %}
-                                                <tr id="tr_{{ user.usrId }}">
-                                                    <td>{{ user.usrId }}</td>
-                                                    <td>{{ user.usrEmail }}</td>
+                                            {% for item in payments %}
+                                                <tr id="tr_{{ item.payId }}">
+                                                    <td>{{ item.payId }}</td>
                                                     <td>
-                                                    {% if user.usrLastLogin %}
-                                                        {{ user.usrLastLogin|date('Y-m-d H:i:s') }}
-                                                    {% endif %}
+                                                        {% if item.pr %}
+                                                            {{ item.pr.prPlan }}
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
                                                     </td>
-                                                    <td>
-                                                        {% if user.usrStatus == 0 %}
-                                                         <button class="btn btn-block btn-default btn-sm btnAction validateToken" value="{{ user.usrId }}">Validate token</button>
-                                                         {% else %}
-                                                            Validated
+                                                    <td>{% if item.pp %}
+                                                            {{ item.pp.ppName }}
+                                                        {% else %}
+                                                            N/A
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        {% set amount = srv_PayerTransactions.checkPayments(user.usrId) %}
-                                                        ${{amount[0]["total"]|number_format(2, '.', ',')}}
-
-                                                        
-                                                    </td>
-                                                    <td class="td_restingDays">
-                                                        {% set restingDays = srv_PayerTransactions.getRestingDays(user.usrId) %}
-                                                        {{restingDays["days"]}}
-                                                    </td>
-                                                    <td class="td_acquiredMemberships">
-                                                        {% set memberships = srv_PayerTransactions.countAcquiredMemberships(user.usrId) %}
-                                                        {{memberships[0]["total"]}}
+                                                        ${{ item.payMoneyPaid|number_format(2, '.', ',')  }}
                                                     </td>
                                                     <td>
-                                                        <button class="btn btn-block btn-success btn-sm btnAction setFreeMembership" value="{{ user.usrId }}">Set free membership</button>
+                                                        {{ item.payGatewayIdToken }}
                                                     </td>
                                                     <td>
-                                                        <a class="btn btn-default" href="{{ path('usercontrolapp_payment_history',{ id:user.usrId  }) }}">Payment History</a>
+                                                        {% if item.payActive %}
+                                                            Si
+                                                        {% else %}
+                                                            No
+                                                        {% endif %} 
+                                                    </td>
+                                                    <td class="">
+                                                        {% if item.payIsPaid %}
+                                                            Si
+                                                        {% else %}
+                                                            No
+                                                        {% endif %} 
+                                                    </td>
+                                                    <td class="">
+                                                        {{ item.payStartdate|date('Y-m-d') }}
                                                     </td>
                                                     <td>
-                                                        <a class="btn btn-success" href="{{ path('usercontrolapp_payment_new', {id: user.usrId } ) }}" >Create new payment</a>
+                                                        {{ item.payDeadline|date('Y-m-d') }}
                                                     </td>
-                                                    
+                                                    <td>
+                                                        {{ item.paycreated|date('Y-m-d: H:i:s') }}
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                     </tbody>
                                 </table> 
+                                {% else %}
+                                    <div class="alert alert-info">There is not data to show</div>
+                                {% endif %} 
+                                <p>
+                                    <ul class="list-inline">
+                                        <li><a class="btn btn-default" href="{{ path('usercontrolapp_user') }}">Return to list</a></li>
+                                        <li><a class="btn btn-success" href="{{ path('usercontrolapp_payment_new', {id: userData.usrId } ) }}" >Create new payment</a></li>
+                                    </ul>    
+                                </p>
                             </div>
                         </div>  
                     </div>

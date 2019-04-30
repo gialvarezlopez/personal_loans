@@ -5,13 +5,21 @@ namespace AppBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Session\Session;
 //use AppBundle\Entity\User;
 
 
 
 class UsersControlAppController extends Controller
 {
+    private $session;
+	
+	public function __construct() {
+		$this->session = new Session();
+    }
+    
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
@@ -134,4 +142,111 @@ class UsersControlAppController extends Controller
         return $this->redirectToRoute('settings_show');
     }
 
+
+    public function userPaymentHistoryAction( Request $request )
+    {
+        $userId = $request->get('id');
+
+        $em = $this->getDoctrine()->getManager();
+        //$userId = $this->getUser()->getUsrId();
+        $oPayer = array();
+        if( isset($userId) )
+        {
+
+            $oUser = $em->getRepository('AppBundle:User')->findOneBy( array("usrId"=>$userId)  );
+            $oPayer = $em->getRepository('AppBundle:Payer')->findBy( array("usr"=>$userId) ) ;
+        }
+        
+
+        //$contactForm = $this->getUser()->getUsrNotificationContactForm();
+        return $this->render('app/usersControlApp/userPaymentHistory.html.twig', array(
+            'payments' => $oPayer,
+            'userData'=> $oUser
+        ));
+
+    }
+
+    public function newPaymentAction( Request $request )
+    {
+        $userId = $request->get('id');
+
+        $em = $this->getDoctrine()->getManager();
+
+        if( isset($userId) ){
+            $oUser = $em->getRepository('AppBundle:User')->findOneBy( array("usrId"=>$userId)  );
+            if( !$oUser )
+            {
+                $msg = "El usuaio no existe";
+                throw new NotFoundHttpException($msg);
+            }
+        }
+
+        if( isset($oss) )
+        {
+
+            //return $this->redirectToRoute('usercontrolapp_payment_history', array('id' => $userId));
+        }
+
+        $oPaymentProcessor = $em->getRepository('AppBundle:PaymentProcessor')->findBy( array("ppActive"=>1)  );
+
+        return $this->render('app/usersControlApp/newPayment.html.twig', array(
+            'paymentProcessor' => $oPaymentProcessor,
+            'userData'=> $oUser
+        ));
+
+
+    }
+
+    public function createPaymentAction( Request $request )
+    {
+        $userId = $request->get('id');
+        $paymentType = $request->get('inputTypePayment');
+        $transactionID = $request->get('inputIdTransaction');
+        $amountPaid = $request->get('inputAmountPaid');
+        $months = $request->get('inputMonths');
+        $startDate = $request->get('inputStartDate');
+
+        //exit();
+
+        $em = $this->getDoctrine()->getManager();
+
+        if( isset($userId) && $userId > 0 )
+        {
+            $oUser = $em->getRepository('AppBundle:User')->findOneBy( array("usrId"=>$userId)  );
+            if( !$oUser )
+            {
+                $msg = "El usuaio no existe";
+                throw new NotFoundHttpException($msg);
+            }
+            else
+            {
+
+                $arrData = array("userId"=>$userId, "paymentType"=>$paymentType,"transactionID"=>$transactionID, "amountPaid"=>$amountPaid, "months"=>$months, "startDate"=>$startDate );
+
+                $membership = $this->get('srv_PayerTransactions');			
+                $res = $membership->setManualPaymentAccount( $arrData );
+
+
+                //exit("fin");
+                //$json = new JsonResponse($res);
+                if( $res["res"] == 1 )
+                {
+                    $msg = "Payment has been done OK";
+                    $this->session->getFlashBag()->add("success", $msg);
+                    return $this->redirectToRoute('usercontrolapp_payment_history', array('id' => $userId));
+                }else{
+                    $msg = "Error to create the payment";
+                    $this->session->getFlashBag()->add("error", $msg);
+                    return $this->redirectToRoute('usercontrolapp_payment_new', array('id' => $userId));
+                }
+                //return ($json);
+            }
+        }
+        else
+        {
+            return $this->redirectToRoute('usercontrolapp_user');
+        }
+
+       // exit("Fin");
+    }
 }

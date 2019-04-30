@@ -1,7 +1,7 @@
 {% extends 'app/base.html.twig' %}
 
 {% block title_page %}
-    Users control app - Personal Loans
+    New payment - Personal Loans
 {% endblock %}
 
 {% block breadcrumb %}
@@ -32,7 +32,7 @@
 
 <section class="content-header">
       <h1>
-        Users control
+        New Payment
         <small></small>
       </h1>
       <ol class="breadcrumb">
@@ -44,7 +44,7 @@
 
         <div class="box  {# collapsed-box #}">
             <div class="box-header">
-                <h3 class="box-title">list
+                <h3 class="box-title">{{ userData.usrEmail }}
                    {# <small>Advanced and full of features</small> #}
                 </h3>
             </div>
@@ -59,67 +59,60 @@
                             </div>
                             #}
                             <div class="box-body">
-
-                                <table class="table table-bordered table-striped dataTable">
-                                    <thead>
-                                        <tr>
-                                            <td>ID</td>
-                                            <td>Email</td>
-                                            <td>Last login</td>
-                                            <td>Token validation</td>
-                                            <td>Paid amount</td>
-                                            <td>Remaining days of membership</td>
-                                            <td>Acquired memberships</td>
-                                            <td>Set membership</td>
-                                            <td>Payment History</td>
-                                            <td>New payment</td>
-                                        </tr>
-                                    </thead>    
-                                    <tbody>
-                                            {% for user in users %}
-                                                <tr id="tr_{{ user.usrId }}">
-                                                    <td>{{ user.usrId }}</td>
-                                                    <td>{{ user.usrEmail }}</td>
-                                                    <td>
-                                                    {% if user.usrLastLogin %}
-                                                        {{ user.usrLastLogin|date('Y-m-d H:i:s') }}
-                                                    {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if user.usrStatus == 0 %}
-                                                         <button class="btn btn-block btn-default btn-sm btnAction validateToken" value="{{ user.usrId }}">Validate token</button>
-                                                         {% else %}
-                                                            Validated
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% set amount = srv_PayerTransactions.checkPayments(user.usrId) %}
-                                                        ${{amount[0]["total"]|number_format(2, '.', ',')}}
-
-                                                        
-                                                    </td>
-                                                    <td class="td_restingDays">
-                                                        {% set restingDays = srv_PayerTransactions.getRestingDays(user.usrId) %}
-                                                        {{restingDays["days"]}}
-                                                    </td>
-                                                    <td class="td_acquiredMemberships">
-                                                        {% set memberships = srv_PayerTransactions.countAcquiredMemberships(user.usrId) %}
-                                                        {{memberships[0]["total"]}}
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-block btn-success btn-sm btnAction setFreeMembership" value="{{ user.usrId }}">Set free membership</button>
-                                                    </td>
-                                                    <td>
-                                                        <a class="btn btn-default" href="{{ path('usercontrolapp_payment_history',{ id:user.usrId  }) }}">Payment History</a>
-                                                    </td>
-                                                    <td>
-                                                        <a class="btn btn-success" href="{{ path('usercontrolapp_payment_new', {id: user.usrId } ) }}" >Create new payment</a>
-                                                    </td>
+                                <form action="{{ path('usercontrolapp_payment_create') }}" class="form-horizontal" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            
+                                                <input type="hidden" class="form-control" id="id" name="id" value="{{ userData.usrId }}">
+                                                <div class="form-group">
+                                                    <label for="inputPassword" class="col-sm-2 control-label">Via de pago: </label>
+                                                    <div class="col-sm-10">
                                                     
-                                                </tr>
-                                            {% endfor %}
-                                    </tbody>
-                                </table> 
+                                                    <select class="form-control" id="inputTypePayment" name="inputTypePayment">
+                                                        {% for item in paymentProcessor %}
+                                                            <option value="{{ item.ppId }}">{{ item.ppName }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="inputIdTransaction" class="col-sm-2 control-label">ID Transaccion: </label>
+                                                    <div class="col-sm-10">
+                                                    <input type="text" class="form-control" id="inputIdTransaction" name="inputIdTransaction" placeholder="ID Transaccion">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="inputAmountPaid" class="col-sm-2 control-label">Monto cancelado $:</label>
+                                                    <div class="col-sm-10">
+                                                    <input type="text" class="form-control" id="inputAmountPaid" name="inputAmountPaid" placeholder="Monto cancelado" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="inputMonths" class="col-sm-2 control-label"># de meses:</label>
+                                                    <div class="col-sm-10">
+                                                    <input type="text" class="form-control" id="inputMonths" name="inputMonths" placeholder="# de meses" required>
+                                                    </div>
+                                                </div>
+                                                {#
+                                                <div class="form-group">
+                                                    <label for="inputStartDate" class="col-sm-2 control-label">Fecha de inicio: </label>
+                                                    <div class="col-sm-10">
+                                                    <input type="text" class="form-control" id="inputStartDate" name="inputStartDate" placeholder="Fecha de inicio">
+                                                    </div>
+                                                </div>
+                                                #}
+                                            
+                                        </div>
+                                    </div>
+                                    <p>
+                                        <ul class="list-inline">
+                                            <li><button type="submit" class="btn btn-success">Create</button></li>
+                                            <li><a class="btn btn-default" href="{{ path('usercontrolapp_user') }}">Return to list</a></li>
+                                            <li><a class="btn btn-default" href="{{ path('usercontrolapp_payment_history',{ id:userData.usrId  }) }}">Show payment History</a></li>
+                                            
+                                        </ul>    
+                                    </p>
+                                </form>
                             </div>
                         </div>  
                     </div>
@@ -249,6 +242,20 @@
 						}
 					});
             }
+
+            $("#inputStartDate").daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                //minYear: 1901,
+                //maxYear: parseInt(moment().format('YYYY'),10)
+            }, function(start, end, label) {
+                //var years = moment().diff(start, 'years');
+                //alert("You are " + years + " years old!");
+                //setNextPaymentDate();
+            });
         });
     </script>
 {% endblock %}        

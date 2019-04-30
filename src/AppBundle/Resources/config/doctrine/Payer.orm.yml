@@ -62,7 +62,7 @@ AppBundle\Entity\Payer:
             column: pay_is_paid
         payActive:
             type: boolean
-            nullable: false
+            nullable: true
             options:
                 default: '1'
             column: pay_active

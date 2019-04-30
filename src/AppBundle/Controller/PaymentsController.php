@@ -96,7 +96,7 @@ class PaymentsController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $userId = $this->getUser()->getUsrId();
-        $processors = $em->getRepository('AppBundle:PaymentProcessor')->findBy( array("ppActive"=> 1) );
+        $processors = $em->getRepository('AppBundle:PaymentProcessor')->findBy( array("ppActive"=> 1, "ppShowUser"=>1) );
 
         $pricing = $em->getRepository('AppBundle:Pricing')->findBy( array("prActive"=> 1) );
 

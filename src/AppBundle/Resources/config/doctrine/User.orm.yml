@@ -116,6 +116,6 @@ AppBundle\Entity\User:
             length: 20
             options:
                 fixed: false
-                default: mm/dd/yyyy
+                default: Y-m-d
             column: usr_date_format
     lifecycleCallbacks: {  }

@@ -138,4 +138,33 @@ class PaymentProcessor
     {
         return $this->ppActive;
     }
+    /**
+     * @var boolean
+     */
+    private $ppShowUser = '0';
+
+
+    /**
+     * Set ppShowUser
+     *
+     * @param boolean $ppShowUser
+     *
+     * @return PaymentProcessor
+     */
+    public function setPpShowUser($ppShowUser)
+    {
+        $this->ppShowUser = $ppShowUser;
+
+        return $this;
+    }
+
+    /**
+     * Get ppShowUser
+     *
+     * @return boolean
+     */
+    public function getPpShowUser()
+    {
+        return $this->ppShowUser;
+    }
 }

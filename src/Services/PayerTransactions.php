@@ -132,19 +132,19 @@ class PayerTransactions
 
             $payer->setPayMoneyPaid($oPricing->getPrPrice());
 
-            $now = date('Y-m-d H:i:s');
+            $start = date('Y-m-d H:i:s');
             
-            $payer->setPayCreated( new \DateTime($now) );
+            $payer->setPayCreated( new \DateTime($start) );
 
             //Check if the user has available days    
             $hasDays = $this->getRestingDays( $userId );
             if( $hasDays["days"] == 0 )
             {
-                $payer->setPayStartdate( new \DateTime($now) );
+                $payer->setPayStartdate( new \DateTime($start) );
             }
             else
             {
-                $start = $now;
+                //$start = $now;
                 $oLastPayment = $this->lastPaymentByUser( $userId );
                 if( $oLastPayment )
                 {
@@ -181,6 +181,89 @@ class PayerTransactions
                 //return 1;
             }
         }
+        //return $this->redirectToRoute('payments_info');
+    }
+
+    public function setManualPaymentAccount( $arrData )
+    {
+        date_default_timezone_set("UTC");
+        
+        //$srv = $this->container->get('srv_TimeZone');
+        //$timezone =  $srv->getNameTimeZone();
+        //date_default_timezone_set($timezone);
+        //exit();
+        $payer = new \AppBundle\Entity\Payer();
+
+        //$oPricing = $this->em->getRepository('AppBundle:Pricing')->findOneBy( array("prActive"=> 1, "prKey"=>"free") );
+                    
+        //if( $oPricing )
+        //{
+            $oUser = $this->em->getRepository('AppBundle:User')->findOneBy( array( "usrId"=> $arrData["userId"] ) );
+            $payer->setUsr($oUser);
+
+            //$payer->setPr($oPricing);
+
+            $payer->setPayMoneyPaid( $arrData["amountPaid"] );
+            $payer->setPayGatewayIdToken( $arrData["transactionID"] );
+
+
+            $start = date('Y-m-d H:i:s');
+            
+            $payer->setPayCreated( new \DateTime($start) );
+
+            if( $arrData["startDate"] != "" )
+            {
+                $start = $arrData["startDate"];
+            }
+
+            //Check if the user has available days    
+            $hasDays = $this->getRestingDays( $arrData["userId"] );
+            if( $hasDays["days"] == 0 )
+            {
+                
+                $payer->setPayStartdate( new \DateTime($start) );
+            }
+            else
+            {
+                //$start = $now;
+                $oLastPayment = $this->lastPaymentByUser( $arrData["userId"] );
+                if( $oLastPayment )
+                {
+                    if( $oLastPayment->getPayDeadline() )
+                    {
+                        $startDate = $oLastPayment->getPayDeadline()->format('Y-m-d');
+                        $limitDate = date($startDate);
+                        $newStartdate = date("Y-m-d",strtotime($limitDate."+ 1 days")); 
+                        $start = $newStartdate;
+
+                        //ECHO "---".$start."--------------";
+                    }
+                    
+                }
+                $payer->setPayStartdate( new \DateTime($start) );
+            }
+            
+            $months = $arrData["months"];// $months;
+            $newDate = strtotime ( "+".$months." month" , strtotime ( $start ) ) ;
+            $deadLine = date ( 'Y-m-d H:i:s' , $newDate );
+            
+            $payer->setPayDeadLine( new \DateTime($deadLine) );
+            //ECHO "------".$deadLine;
+            //EXIT();
+            $payer->setPayActive(1);
+            $payer->setPayIsPaid(1);
+
+            $this->em->persist($payer);			
+            $flush = $this->em->flush();
+            if( $flush == null)
+            {
+                $resdays = $this->getRestingDays( $arrData["userId"] );
+                $menberships = $this->countAcquiredMemberships($arrData["userId"]);
+
+                return ( array("days"=>$resdays["days"], "menberships"=>$menberships, "res"=>1) );
+                //return 1;
+            }
+        //}
         //return $this->redirectToRoute('payments_info');
     }
 

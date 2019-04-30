@@ -39,4 +39,10 @@ AppBundle\Entity\PaymentProcessor:
             options:
                 default: '1'
             column: pp_active
+        ppShowUser:
+            type: boolean
+            nullable: true
+            options:
+                default: '0'
+            column: pp_show_user
     lifecycleCallbacks: {  }

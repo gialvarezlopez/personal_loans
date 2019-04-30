@@ -4,7 +4,18 @@ usercontrolapp_user:
 
 usercontrolapp_checkUserControlEvent:
     path:   /checkUserControlEvent
-    defaults: { _controller: "AppBundle:UsersControlApp:checkUserControlEvent" }       
+    defaults: { _controller: "AppBundle:UsersControlApp:checkUserControlEvent" }    
     
-   
-   
+    
+usercontrolapp_payment_history:
+    path:   /payment-history/{id}
+    defaults: { _controller: "AppBundle:UsersControlApp:userPaymentHistory" }
+    
+usercontrolapp_payment_new:
+    path:   /new-payment/{id}
+    defaults: { _controller: "AppBundle:UsersControlApp:newPayment" }    
+    
+usercontrolapp_payment_create:
+    path:   /create-payment
+    defaults: { _controller: "AppBundle:UsersControlApp:createPayment" }   
+    
