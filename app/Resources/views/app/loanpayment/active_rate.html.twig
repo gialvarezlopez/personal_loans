@@ -414,11 +414,11 @@
                                                                 {% set loandAdd_splitted_balance = hasBalance[0]["laa_splitted_balance"] %}
 
 
-
+                                                                {# {{ loanAdd_loaRateInterest }} - {{ loandAdd_laaRateInterestByDefault}} - {{ loan.loaRecurringDayPayment }} - {{ loandAdd_nextPaymentDate }} #}
                                                                 {% set pending =  srv_Loans.checkDeadLineToPay( loanAdd_loaRateInterest, loandAdd_laaRateInterestByDefault, loan.loaRecurringDayPayment, loandAdd_nextPaymentDate, srv_TimeZone.getNameTimeZone() ) %}
                                                                 
                                                                 {# {% set pending =  srv_Loans.checkDeadLineToPay( rate, rateByDefault, quotas, deadline, srv_TimeZone.getNameTimeZone() ) %} #}
-                                                                {% if pending %}
+                                                                {% if pending and loandAdd_splitted_balance == 1 %}        
                                                                     {% set rate = pending.rate  %}  
                                                                     {% set rateByDefault = loanAdd_loaRateInterest %} 
                                                                     {% set deadline = loandAdd_nextPaymentDate %}
