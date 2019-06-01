@@ -55,7 +55,7 @@
                 <div class="alert alert-warning">{% trans %}my_payments_msg_no_payments{% endtrans %}</div>
 
             {% else %}
-                {{ dump(pays) }}
+                
                 <h4><i class="fa fa-id-card-o" aria-hidden="true"></i> {% trans %}my_payments_sub_title{% endtrans %}</h4><hr>
                 <table class="table table-striped">
                     <thead class="">
@@ -75,7 +75,7 @@
                             <tr>
                                 <td>
                                     {% if pay.pp.ppName is defined %}
-                                        US$ {{ pay.payMoneyPaid|number_format(2, '.', ',') }}
+                                        <strong>US$ {{ pay.payMoneyPaid|number_format(2, '.', ',') }}</strong>
                                     {% else %}
                                         <h4 ><span class="label label-success">US$ {{ pay.payMoneyPaid|number_format(2, '.', ',') }}</span></h4>
                                     {% endif %}
@@ -85,7 +85,7 @@
                                     {% if  pay.pr.prPlan is defined %}
                                         {{ pay.pr.prPlan }}
                                     {% else %}
-                                        Custom    
+                                        No definido    
                                     {% endif %}
                                 </td>
                                 <td>

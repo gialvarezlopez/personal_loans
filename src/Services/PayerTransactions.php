@@ -206,6 +206,20 @@ class PayerTransactions
             $payer->setPayMoneyPaid( $arrData["amountPaid"] );
             $payer->setPayGatewayIdTransaction( $arrData["transactionID"] );
 
+            $oPaymentGateway = $this->em->getRepository('AppBundle:PaymentProcessor')->findOneBy( array("ppActive"=>1, "ppId"=> $arrData["paymentType"] ) ); 
+            if( $oPaymentGateway )
+            {
+                $payer->setPp( $oPaymentGateway );
+            }
+
+
+            $oPricing = $this->em->getRepository('AppBundle:Pricing')->findOneBy( array("prActive"=>1, "prId"=> $arrData["pricingType"] ) ); 
+            if( $oPricing )
+            {
+                $payer->setPr( $oPricing );
+            }
+            
+
 
             $start = date('Y-m-d H:i:s');
             

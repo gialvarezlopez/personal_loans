@@ -204,7 +204,7 @@ class UsersControlAppController extends Controller
     {
         $userId = $request->get('id');
         $paymentType = $request->get('inputTypePayment');
-        $pricing = $request->get('inputTypePricing');
+        $pricingType = $request->get('inputTypePricing');
         $transactionID = $request->get('inputIdTransaction');
         $amountPaid = $request->get('inputAmountPaid');
         $months = $request->get('inputMonths');
@@ -225,7 +225,15 @@ class UsersControlAppController extends Controller
             else
             {
 
-                $arrData = array("userId"=>$userId, "paymentType"=>$paymentType,"transactionID"=>$transactionID, "amountPaid"=>$amountPaid, "months"=>$months, "startDate"=>$startDate );
+                $arrData = array(
+                    "userId"=>$userId, 
+                    "paymentType"=>$paymentType,
+                    "pricingType"=>$pricingType,
+                    "transactionID"=>$transactionID, 
+                    "amountPaid"=>$amountPaid, 
+                    "months"=>$months, 
+                    "startDate"=>$startDate 
+                );
 
                 $membership = $this->get('srv_PayerTransactions');			
                 $res = $membership->setManualPaymentAccount( $arrData );
