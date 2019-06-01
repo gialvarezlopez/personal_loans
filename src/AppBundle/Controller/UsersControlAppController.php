@@ -189,9 +189,12 @@ class UsersControlAppController extends Controller
 
         $oPaymentProcessor = $em->getRepository('AppBundle:PaymentProcessor')->findBy( array("ppActive"=>1)  );
 
+        $oPricing = $em->getRepository('AppBundle:Pricing')->findBy( array("prActive"=>1)  );
+
         return $this->render('app/usersControlApp/newPayment.html.twig', array(
             'paymentProcessor' => $oPaymentProcessor,
-            'userData'=> $oUser
+            'userData'=> $oUser,
+            "pricing"=>$oPricing
         ));
 
 
@@ -201,6 +204,7 @@ class UsersControlAppController extends Controller
     {
         $userId = $request->get('id');
         $paymentType = $request->get('inputTypePayment');
+        $pricing = $request->get('inputTypePricing');
         $transactionID = $request->get('inputIdTransaction');
         $amountPaid = $request->get('inputAmountPaid');
         $months = $request->get('inputMonths');

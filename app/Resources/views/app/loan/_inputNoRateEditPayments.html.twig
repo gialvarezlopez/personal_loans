@@ -62,7 +62,7 @@
 }
 
 .updateItemDone{
-    cursor: pointer;
+    /*cursor: pointer; */
 }
 </style>
                         
@@ -311,64 +311,67 @@
 
 
                         <!-- Modal -->
-                        <div class="modal fade" id="myModalUpdatePaid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="myModalLabel">Actualizacion de cuota ya pagada</h4>
-                                </div>
-                                <div class="modal-body">
-                                
-                                        <input type="text" value="" id="updateId">
-                                        <div class="form-group">
-                                            <div>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</div>
-                                            <div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon">
-                                                        <i class="fa fa-usd" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input type="number" class="form-control" id="updateQuota" value="">
+                        {#
+                            //Modal no se ocupa de momento por estar incompleto
+                            <div class="modal fade" id="myModalUpdatePaid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Actualizacion de cuota ya pagada</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                    
+                                            <input type="text" value="" id="updateId">
+                                            <div class="form-group">
+                                                <div>{% trans %}loan_table_payments_quota_to_pay{% endtrans %}</div>
+                                                <div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="number" class="form-control" id="updateQuota" value="">
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div>{% trans %}loan_table_payments_action{% endtrans %}</div>
-                                            <div>
-                                                <select class="form-control" id="updateAction">
-                                                    <option value="1">{% trans %}general_msg_paid{% endtrans %}</option>
-                                                    {# <option value="2">{% trans %}general_msg_freezed{% endtrans %}</option> #}
-                                                    <option value="0">{% trans %}general_msg_pending{% endtrans %}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div>{% trans %}loan_table_payments_paid_amount{% endtrans %}</div>
-                                            <div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon">
-                                                        <i class="fa fa-usd" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input type="number" class="form-control" id="updatePaid" value="">
+                                            <div class="form-group">
+                                                <div>{% trans %}loan_table_payments_action{% endtrans %}</div>
+                                                <div>
+                                                    <select class="form-control" id="updateAction">
+                                                        <option value="1">{% trans %}general_msg_paid{% endtrans %}</option>
+                                                        
+                                                        <option value="0">{% trans %}general_msg_pending{% endtrans %}</option>
+                                                    </select>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div>{% trans %}loan_table_payments_paid_date{% endtrans %}</div>
-                                            <div>
-                                                <div class="input-group">
-                                                    <span class="input-group-addon">
-                                                        <i class="fa fa-calendar" aria-hidden="true"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control datepicker" id="updatePaidDate" value="">
+                                            <div class="form-group">
+                                                <div>{% trans %}loan_table_payments_paid_amount{% endtrans %}</div>
+                                                <div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-usd" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="number" class="form-control" id="updatePaid" value="">
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
+                                            <div class="form-group">
+                                                <div>{% trans %}loan_table_payments_paid_date{% endtrans %}</div>
+                                                <div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control datepicker" id="updatePaidDate" value="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        #}

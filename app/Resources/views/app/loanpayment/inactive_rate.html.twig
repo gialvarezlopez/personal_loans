@@ -325,32 +325,142 @@
 
             });
 
+
+
+            $(".inputAmount").mouseleave(function(){
+
+                //var btn = $(this).closest("tr").find(".btnPaymentItem");
+                //var date = $(this).closest("tr").find(".datepicker");
+                //var note = $(this).closest("tr").find(".note");    
+
+                
+            });
+
+            function setFildsPayments()
+            {
+
+            }
+
             $("body").on("click",".btnPaymentItem", function(){
+                
                 var paymentId = $(this).val();
                 var tr = $(this).closest("tr");
+
+                var btn = tr.find(".btnPaymentItem");
+
+
                 var amount = tr.find(".inputAmount").val();
+                amount = parseFloat($.trim(amount)).toFixed(2)
+
                 var date = tr.find(".datepicker").val();
                 var note = tr.find(".note").val();
 
                 var type = tr.find(':selected').data('type');
                 //console.log(type);
+                
+                var currency = "$";
+                var payment = parseFloat($(this).closest("tr").find("td").eq(2).attr("data-amount")).toFixed(2);
+
+
                 if( $.trim(date) == "" && type =="paid")
                 {
-                    tr.find(".datepicker").focus();
+                        //tr.find(".datepicker").focus();
                     $.alert({
-					    icon: 'glyphicon glyphicon-exclamation-sign',
-						title: 'Info!',
-						content: 'Select a paid date',
-						type: 'red',
-						typeAnimated: true,
-					});
+                        icon: 'glyphicon glyphicon-exclamation-sign',
+                        title: 'Info!',
+                        content: 'Select a paid date',
+                        type: 'red',
+                        typeAnimated: true,
+                    });
                     return false;
                 }
-                else
+
+
+
+                if( $.isNumeric(amount) && amount > 0  &&  ( payment != amount) )
                 {
-                   // console.log("paso");
+                   
+                    //if( payment != amount )
+                    //{
+                        
+                        var detail = "<hr>Cuota establecida: <strong>"+currency+""+payment+"</strong> - Monto a cancelar por el usuario: <strong>"+currency+""+amount+"</strong>";
+                        var difference = "<hr> Diferencia: <strong>"+currency+""+(Math.abs(payment - amount)).toFixed(2)+"</strong>";
+                        $.confirm({
+                            boxWidth: '500px',
+                            useBootstrap: false,
+                            draggable: true,
+                            title: 'Confirme!',
+                            content: 'El monto a cancelar por el usuario es diferente al valor de la cuota a pagar!'+detail+difference,
+                            buttons: {
+                                confirmar:{
+                                    //$.alert('Confirmed!');
+                                    //alert("aliminar pruebas")
+                                    //return false;
+                                    // console.log("paso");
+                                    text: 'Proceder',
+                                    btnClass: 'btn-green',
+                                    action: function(){
+                                        doPayment(type, paymentId, amount, date, note);
+                                    }
+                                },
+                                cancelar:{
+                                    text: 'Cancelar',
+                                    btnClass: 'btn-red',
+                                    //keys: ['enter', 'shift'],
+                                    action: function(){
+                                        //$.alert('Something else?');
+                                        btn.attr("disabled", true);
+                                    }
+                                    //$.alert('Canceled!');
+                                    
+                                   //tr.find(".datepicker").attr("disabled",true);
+                                    //tr.find(".datepicker").val("");
+                                    //tr.find(".note").attr("disabled", true);
+                                    //tr.find(".note").val("");
+                                    //return false;
+                                },
+                                /*
+                                somethingElse: {
+                                    text: 'Something else',
+                                    btnClass: 'btn-blue',
+                                    keys: ['enter', 'shift'],
+                                    action: function(){
+                                        $.alert('Something else?');
+                                    }
+                                }
+                                */
+                            }
+                        });
+                    //}
+                }
+                else if ( $.isNumeric(amount) && amount > 0  &&  ( payment == amount) ) {
+                    //alert("xxxx");
+                    //
+                    /*
+                        if( $.trim(date) == "" && type =="paid")
+                        {
+                            //tr.find(".datepicker").focus();
+                            $.alert({
+                                icon: 'glyphicon glyphicon-exclamation-sign',
+                                title: 'Info!',
+                                content: 'Select a paid date',
+                                type: 'red',
+                                typeAnimated: true,
+                            });
+                            //return false;
+                        }
+                        else
+                        {
+                        
+                        }
+                    */
+                    //alert("aliminar pruebas")
+                    //return false;
+                        // console.log("paso");
                     doPayment(type, paymentId, amount, date, note)
                 }
+                
+                
                 //console.log(date);
             });
 
@@ -430,7 +540,7 @@
             }
 
 
-            updateItemAlreadyPaid();
+            //updateItemAlreadyPaid(); //No se ocupa por eso esta comentada
             function updateItemAlreadyPaid()
             {
                 $("body").on("click", ".updateItemDone", function(){
