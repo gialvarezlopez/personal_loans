@@ -1,11 +1,15 @@
-{% if pendingDays.days == 0 %}
-<div class="msgBoxAlert">
-    
-        <div class="alert alert-danger">
-            <p><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You must select a payment gateway to continue using this app. 
-            Click <a href="{{ path('payments_review') }}" class="alert-link">here</a> to do the payment</p>
-        </div>
-       {# {{ app.request.attributes.get('_route') }} #}
-    
-</div>
+{% if justDays is defined and justDays == false %}
+    {% if pendingDays.days == 0 %}
+    <div class="msgBoxAlert">
+        
+            <div class="alert alert-danger">
+                <p><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You must select a payment gateway to continue using this app. 
+                Click <a href="{{ path('payments_review') }}" class="alert-link">here</a> to do the payment</p>
+            </div>
+        {# {{ app.request.attributes.get('_route') }} #}
+        
+    </div>
+    {% endif %}
+{% else %}
+    {{ pendingDays.days }}
 {% endif %}

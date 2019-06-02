@@ -100,7 +100,7 @@ class PaymentsController extends Controller
 
         $pricing = $em->getRepository('AppBundle:Pricing')->findBy( array("prActive"=> 1) );
 
-        $result = $this->getPayer();
+        $result =  $this->getPayer();
         //$deadline = $result[0]['pay_deadline'];
         //$created = date('Y-m-d',strtotime($result[0]['pay_created']));
 
