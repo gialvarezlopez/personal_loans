@@ -148,7 +148,9 @@ body{
                                             {# <div>( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )</div> #}
                                         </td>
                                         {# <td>Cuotas a pagar</td> #}
+                                        <td>Pagos incompletos a cobrar</td>
                                         <td>Cuotas totales</td>
+                                        
                                         {# <td>{% trans %}reports_table_title_deadline_to_pay{% endtrans %}</td> #}
                                         
                                         <td>{# {% trans %}reports_table_title_next_capital_amount{% endtrans %} #} Capital/Cuotas</td>
@@ -191,7 +193,8 @@ body{
                                                         <span style="{{color}}">En mora</span>
                                                     {% endif %}
                                                     #}
-                                                    <span style='color:green'>Al dia</span>
+                                                    {% set color = "color: #34825F; font-weight: 700;" %}
+                                                    <span style="{{ color }}">Al dia</span>
                                                 {% endif %}
                                              {% endif %}
                                         </td>
@@ -425,7 +428,10 @@ body{
                                         </td>
 
                                         <td>{{ item.name }} </td>
-
+                                        {% if color is defined %}
+                                        {% else %}
+                                            {% set color = "" %}
+                                        {% endif %}
                                         <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">
                                             <div class='plusAmount' >    
                                                 {% if item.loc_key == "inactive_rate" %}    
@@ -437,7 +443,21 @@ body{
                                                 {% else %}
                                                     {{ noapply }}   
                                                 {% endif %}
+
+                                                
                                             </div>
+                                        </td>
+                                        <td>
+                                            {% if item.loc_key == "inactive_rate" %}
+                                                {% set data =  srv_Loans.checkPaymentDoneIncompleted( item.loa_id ) %}
+                                                {% if data.info %}
+                                                    {{ data.info }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            {% else %}
+                                                N/A   
+                                            {% endif %}
                                         </td>
                                         {#
                                         <td>
@@ -496,7 +516,14 @@ body{
                                                 {% else %}  
                                                         N/A      
                                                 {% endif %}
-                                            {% endif %}
+
+                                                {% if item.loc_key == "inactive_rate" %}
+                                                        {% set data =  srv_Loans.checkPaymentDoneIncompleted( item.loa_id ) %}
+                                                        {% if data.cuotes > 0 %}
+                                                            <span style="{{color}}" > + {{ data.cuotes }} </span>
+                                                        {% endif %}   
+                                                    {% endif %}
+                                                {% endif %}
                                             </div>
                                         </td>
                                         {#

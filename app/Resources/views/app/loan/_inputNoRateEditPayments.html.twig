@@ -6,6 +6,11 @@
     color: #34825F;
 }
 
+.hasPending{
+   color: #EC971F; 
+   font-weight: 700;
+}
+
 .titleCurrency{
     font-size: 18px !important;
 }
@@ -163,7 +168,8 @@
                                                         {% endif %}
                                                     </div>
                                                 {% else %}
-                                                   <span class="amounts">${{ item.lpa_current_amount|number_format(2, '.', ',') }}</span>
+                                                    
+                                                    <span class="amounts">${{ item.lpa_current_amount|number_format(2, '.', ',') }}</span>
                                                 {% endif %}
                                                 {% set totalToPay = totalToPay + item.lpa_current_amount %}
                                             </td>
@@ -184,13 +190,23 @@
                                                      {% if item.lpt_key == "freezed" %}
                                                                 <span class="actionFreezed"><i class="fa fa-clock-o" aria-hidden="true"> </i>  {% trans %}general_msg_freezed{% endtrans %}</span>
                                                             {% else %}
-                                                                <span class="actionPaid"><i class="fa fa-check-circle" aria-hidden="true"> </i> {% trans %}general_msg_paid{% endtrans %}</span>
+                                                                {% if item.lpa_total_amount_paid !=  item.lpa_current_amount %}
+                                                                    {% set paymentStatus = "hasPending" %}
+                                                                {% else %}
+                                                                    {% set paymentStatus = "actionPaid" %}
+                                                                {% endif %}
+                                                                <span class="{{ paymentStatus }}"><i class="fa fa-check-circle" aria-hidden="true"> </i> {% trans %}general_msg_paid{% endtrans %}</span>
                                                             {% endif %}
                                                 {% endif %}
                                             </td>
                                             <td data-paid="{{ item.lpa_total_amount_paid }}">
                                                 {% if item.lpa_paid_capital or item.lpa_paid_rate_interest %}
-                                                    <span class="amounts">${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span> 
+                                                    {% if item.lpa_total_amount_paid !=  item.lpa_current_amount %}
+                                                        {% set paymentStatus = "hasPending" %}
+                                                     {% else %}
+                                                        {% set paymentStatus = "amounts" %}
+                                                    {% endif %}
+                                                    <span class="{{ paymentStatus }}">${{ item.lpa_total_amount_paid|number_format(2, '.', ',') }}</span> 
                                                     {% set totalPaid = totalPaid + item.lpa_total_amount_paid %}
                                                 {% else %}
                                                     {% if  action is defined and (action == "payment" ) %}
@@ -240,7 +256,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                             </td>
-                                            <td>
+                                            <td data-paidNote="{% if item.lpa_note %}{{ item.lpa_note }}{% else %}N/A{% endif %}">
                                                 {% if  action is defined and action == "payment" %}
                                                     {% if item.lpa_paid_date  %} 
                                                         
@@ -259,7 +275,15 @@
                                             </td>
                                             <td>
                                                 {% if item.lpa_paid_capital > 0 or item.lpa_paid_rate_interest > 0 %}
-                                                    <span class="updateItemDone"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span>
+                                                    {% if app.request.attributes.get('_route') == "loanpayment_new" %}
+                                                        <div class="btn-group" role="group" aria-label="">
+                                                            <button class="btnSetApdate btn btn-default" value="{{ item.lpa_id }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> {# {% trans %}general_btn_update{% endtrans %} #}</button>
+                                                            <button class="btnRollBack btn btn-danger" value="{{ item.lpa_id }}"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    {% else %}
+                                                        <span class="updateItemDone"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span>
+                                                    {% endif %}
+                                                    
                                                 {% else %}
                                                     {% if loan.loaCompleted == 0 %}
                                                         {% if  action is defined and action == "edit" %}
@@ -375,3 +399,9 @@
                                 </div>
                             </div>
                         #}
+
+                        
+
+                        {% set data =  srv_Loans.checkPaymentDoneIncompleted( loan.loaId ) %}
+
+                        {{ dump(data) }}

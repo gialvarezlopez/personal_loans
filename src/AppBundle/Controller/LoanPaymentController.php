@@ -514,6 +514,8 @@ class LoanPaymentController extends Controller
         $userId = $this->getUser()->getUsrId();
         $em = $this->getDoctrine()->getManager();
 
+        $isEdit = $request->get("isEdit");
+
         if( isset($loanId) && $loanId > 0 /*&&  $amount > 0 && $date != ""*/ )
         {
             $oLoan= $em->getRepository('AppBundle:Loan')->findOneBy( array( "loaId"=> $loanId, "loaActive"=>1) );
@@ -535,7 +537,14 @@ class LoanPaymentController extends Controller
                         else
                         {
                             $srvLoan = $this->get('srv_Loans');  
-                            $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);
+                            if( $isEdit == 1)
+                            {
+                                $this->setNullPaymentAlreadyDone($paymentId);
+                                $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId, false, $paymentId);
+                            }else{
+                                $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId, false, false);
+                            }
+                            
 
                             if( isset($amount) && $amount > 0 )
                             {
@@ -593,7 +602,12 @@ class LoanPaymentController extends Controller
                                     
 
                                     //$srvLoan = $this->get('srv_Loans');  
-                                    $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId);  
+                                    if( $isEdit == 1)
+                                    {
+                                        $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId, false, $paymentId);
+                                    }else{
+                                        $checkPayments = $srvLoan->checkPaymentsPerLoan($loanId, false, false);
+                                    }
                                     if( $checkPayments )
                                     {
                                         if( $checkPayments[0]['paidTotal'] >= $checkPayments[0]['currentAmount'] )
@@ -632,6 +646,80 @@ class LoanPaymentController extends Controller
             throw new NotFoundHttpException("Bad parameters");
         }
 
+    }
+
+    public function setNullPaymentAlreadyDone($paymentId)
+    {
+        if( isset($paymentId) )
+        {
+            $em = $this->getDoctrine()->getManager();
+            $oPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "lpaId"=> $paymentId ) );
+            if( $oPayment )
+            {
+                $oPayment->setLpaPaidRateInterest(NULL);
+                $oPayment->setLpaPaidCapital(NULL);
+                $em->persist($oPayment);			
+                $flush = $em->flush();
+            }
+        }
+    }
+
+    public function setRollBackPaymentAlreadyDoneAction(Request $request)
+    {
+
+        $loanId = $request->get("loanId");
+        $paymentId = $request->get("paymentId");
+        $userId = $this->getUser()->getUsrId();
+        
+        $em = $this->getDoctrine()->getManager();
+
+        if( isset($loanId) && $loanId > 0 &&  isset($paymentId) && $paymentId > 0 )
+        {
+            $oLoan= $em->getRepository('AppBundle:Loan')->findOneBy( array( "loaId"=> $loanId, "loaActive"=>1) );
+            if( $oLoan )
+            {
+                if( $userId != $oLoan->getCli()->getUsr()->getUsrId() )
+                {
+                    throw new AccessDeniedHttpException("Access Denied");
+                }
+                else
+                {
+                    $oPayment = $em->getRepository('AppBundle:LoanPayment')->findOneBy( array( "loa"=> $loanId, "lpaId"=>$paymentId ) );
+                    if( $oPayment )
+                    {
+                        if( $loanId != $oPayment->getLoa()->getLoaId() )
+                        {
+                            throw new AccessDeniedHttpException("Access Denied");
+                        }
+                        else
+                        {
+                            $oPayment->setLpaPaidRateInterest(NULL);
+                            $oPayment->setLpaPaidCapital(NULL);
+                            $oPayment->setLpt(NULL);
+                            $oPayment->setLpaTotalAmountPaid(NULL);
+                            $oPayment->setLpaPaidDate(NULL);
+                            $em->persist($oPayment);			
+                            $flush = $em->flush();
+                            if($flush == null)
+                            {
+                                $msg = "Roll back was done successfully";
+                                $this->session->getFlashBag()->add("success", $msg);
+                                exit("success");
+                            }else{
+                                exit("Error");
+                            }    
+                            
+                        }
+                    }else{
+                        throw new NotFoundHttpException("Payment does not exists");
+                    }
+                }
+            }
+        }
+        else
+        {
+            throw new NotFoundHttpException("Bad parameters");
+        }
     }
 
     public function calculatePaymentWithRate()

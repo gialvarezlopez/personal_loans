@@ -31,6 +31,11 @@ loanpayment_edit:
     defaults: { _controller: "AppBundle:LoanPayment:edit" }
     methods:  [GET, POST]
 
+loanpayment_setRollBackPaymentAlreadyDone:
+    path:     /setRollBackPaymentAlreadyDone
+    defaults: { _controller: "AppBundle:LoanPayment:setRollBackPaymentAlreadyDone" }
+    methods:  [GET, POST]    
+
 loanpayment_delete:
     path:     /{lpaId}/delete
     defaults: { _controller: "AppBundle:LoanPayment:delete" }

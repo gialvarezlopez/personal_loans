@@ -201,6 +201,7 @@
                                         <td style="display:none">{% trans %}reports_table_title_paid_capital{% endtrans %}</td>
                                         <td style="display:none">{% trans %} reports_table_title_pending_to_pay {% endtrans %}</td>
                                         <td style="display:none">{% trans %}reports_table_title_note{% endtrans %}</td>
+                                        <td> Monto a pagar en pagos incompletos <br> en cuotas anteriores </td>
                                         <td id='title_show_why'>
                                             <div>{% trans %}reports_table_title_pending_and_current_quotas{% endtrans %}</div>
                                             {# <div>( {% trans %}reports_table_title_loan_type{% endtrans %}: {% trans %} general_loan_per_quotas {% endtrans %} )</div> #}
@@ -344,7 +345,18 @@
                                            </div>
                                         </td>
                                         <td style="display:none">{{ item.note }}</td>
-                                        
+                                        <td>
+                                            {% if item.loc_key == "inactive_rate" %}
+                                                {% set data =  srv_Loans.checkPaymentDoneIncompleted( item.loa_id ) %}
+                                                {% if data.info %}
+                                                    {{ data.info }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            {% else %}
+                                                -    
+                                            {% endif %}
+                                        </td>
 
                                             {% set totalPendingAmountQuotas = 0 %}
                                             {% set currentQuota = 0 %}
@@ -370,6 +382,7 @@
                                                 
                                                 {% set noapply = "N/A" %}   
                                             {% endif %}
+                                        
                                         <td class="{% if ((totalPendingAmountQuotas  - currentQuota )|abs) > 0 %} bgred {% endif %}">
                                             <div class='plusAmount'>    
                                                 {% if item.loc_key == "inactive_rate" %}    
@@ -566,6 +579,13 @@
                                                 {% else %}
                                                     {# ${{ nextData[0].lpa_current_amount|number_format(2, '.', ',')  }} #}
                                                     ${{ (nextInt + nextCap)|number_format(2, '.', ',')}}
+                                                {% endif %}
+
+                                                {% if item.loc_key == "inactive_rate" %}
+                                                    {% set data =  srv_Loans.checkPaymentDoneIncompleted( item.loa_id ) %}
+                                                    {% if data.totalAmount > 0 %}
+                                                         + ${{ data.totalAmount }}
+                                                    {% endif %}   
                                                 {% endif %}
                                             </span>
                                         </td>

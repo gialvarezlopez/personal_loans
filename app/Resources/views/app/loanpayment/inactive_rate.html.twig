@@ -164,6 +164,7 @@
 {% block codejs %}
     <script>
         //$(document).on("ready", function(){
+        var textBtnCancel = "";    
         $(function (){
             $("form[name='appbundle_loanpayment']").remove();
             {% if loan.loaCompleted == 1 %}
@@ -341,10 +342,181 @@
 
             }
 
+            $("body").on("click",".btnSetApdate", function(){
+                var elem = $(this);
+                var paymentId = $(this).val();
+                var tr = elem.closest("tr");
+
+               
+
+                var btnNormal = elem.closest("td").text();
+                 textBtnCancel = btnNormal;
+
+                var currentAmount = $.trim(tr.find("td").eq(4).text());
+                var currentAmount = currentAmount.replace("$", "");
+                //alert(currentAmount);
+                var inputAmount = "<div class='input-group'>";
+                inputAmount += "<span class='input-group-addon'>";
+                inputAmount += "<i class='fa fa-usd' aria-hidden='true'></i>";
+                inputAmount += "</span>";
+                inputAmount += "<input type='text' class='form-control inputAmount' value='"+currentAmount+"'>";
+                inputAmount += "</div>";
+                tr.find("td").eq(4).html(inputAmount);
+
+                var currentPayDate = $.trim(tr.find("td").eq(5).text());
+                var inputPayDate = "<div class='input-group'>";
+                inputPayDate += "<span class='input-group-addon'>";
+                inputPayDate += "<i class='fa fa-calendar' aria-hidden='true'></i>";
+                inputPayDate += "</span>";
+                inputPayDate += "<input type='text' class='form-control datepicker ' value='"+currentPayDate+"'>";
+                inputPayDate += "</div>";
+                tr.find("td").eq(5).html(inputPayDate);
+
+                tr.find("td").eq(5).find(".datepicker").daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    locale: 
+                    // format: 'YYYY/MM/DD'
+                    locale_daterangepicker
+                    
+                });
+
+                var currentNote = $.trim(tr.find("td").eq(6).text());
+                var inputNote = "<div class='input-group'>";
+                inputNote += "<span class='input-group-addon'>";
+                inputNote += "<i class='fa fa-sticky-note-o' aria-hidden='true'></i>";
+                inputNote += "</span>";
+                inputNote += "<input type='text' class='form-control note' value='"+currentNote+"'>";
+                inputNote += "</div>";
+                tr.find("td").eq(6).html(inputNote);
+
+
+                var btnSave = "<button class='btn btn-success btnPaymentItem updateItem' value='"+paymentId+"'><i class='fa fa-check-square-o' aria-hidden='true'></i> Crear </button>";
+                var btnCancel = "<button class='btn btn-info cancelUpdate'><i class='fa fa-times' aria-hidden='true' ></i></button>";
+
+                var btnGroup = "<div class='btn-group' role='group' aria-label=''>";
+                btnGroup += btnSave+btnCancel;
+                btnGroup += "</div>";
+                tr.find("td").eq(7).html(btnGroup);
+                
+
+            });
+
+            $("body").on("click",".cancelUpdate", function(){
+                var currency = "$";
+                var elem = $(this);
+                var id = $(this).val();
+                var tr = elem.closest("tr");
+
+                var trAmount = tr.find("td").eq(4);
+                var amountPaid = parseFloat(trAmount.attr("data-paid")).toFixed(2);
+                var dataAmount = "<span class='amounts'>"+currency+""+amountPaid+"</span>";
+                trAmount.html(dataAmount);
+
+
+                var trPaidDate = tr.find("td").eq(5);
+                var paidDate = (trPaidDate.attr("data-paiddate"));
+                trPaidDate.html(paidDate);
+
+
+                var trNote = tr.find("td").eq(6);
+                var note = (trNote.attr("data-paidNote"));
+                //var dataAmount = "<span class='amounts'>"+currency+""+amountPaid+"</span>";
+                trNote.html(note);
+
+                var setBtnUpdate = "<button class='btnSetApdate btn btn-default' value='"+id+"' ><i class='fa fa-pencil-square-o' aria-hidden='true'></i>"+textBtnCancel+"</button>";
+                var setBtnRollBack = "<button class='btnRollBack btn btn-danger' value='"+id+"'><i class='fa fa-trash-o' aria-hidden='true'></i></button>"
+                tr.find("td").eq(7).html("<div class='btn-group' role='group' aria-label=''>"+setBtnUpdate+""+setBtnRollBack+"</div>");
+            });
+
+            $("body").on("click", ".btnRollBack", function(){
+                var paymentId = $(this).val();
+                var cuote = ($(this).closest("tr").attr("id")).replace(/\D/g,'');;
+                var loanId = "{{ loan.loaId }}";
+                $.confirm({
+                    //boxWidth: '500px',
+                    //useBootstrap: false,
+                    draggable: true,
+                    title: 'Confirme!',
+                    content: "Esta seguro de revertir la cuota número <b>"+cuote+"</b>?",
+                    buttons: {
+                        confirmar:{
+                        text: 'Proceder',
+                        btnClass: 'btn-green',
+                            action: function(){
+                                doRollBack( loanId, paymentId );
+                            }
+                        },
+                        cancelar:{
+                            text: 'Cancelar',
+                            btnClass: 'btn-red',
+                                    //keys: ['enter', 'shift'],
+                            action: function(){
+                                //$.alert('Something else?');
+                                //btn.attr("disabled", true);
+                                //return false;
+                            }
+                        },
+                    }
+                });
+            });
+
+            function doRollBack( loanId, paymentId )
+            {
+                $("#holder_loading").show();
+                
+                $.ajax({
+						type: "POST",
+						url: "{{ path('loanpayment_setRollBackPaymentAlreadyDone') }}",
+						data: { loanId:loanId, paymentId:paymentId},
+						error: function (data) {
+							$("#holder_loading").hide();
+							$.confirm({
+								icon: 'fa fa-remove',
+								title: 'Error!',
+								content: 'An error occurred while trying to send the request',
+								type: 'red',
+								typeAnimated: true,
+								buttons: {
+									tryAgain: {
+										text: 'Try again',
+										btnClass: 'btn-red',
+										action: function () {
+											doRollBack(loanId, paymentId);
+										}
+									},
+									close: function () {
+									}
+								}
+							});
+						},
+						success: function (data) {
+							if ( data == "success" )
+							{
+                                location.reload();
+							} else
+							{
+								$("#holder_loading").hide();
+								var infoError = (data);
+								$.alert({
+									icon: 'glyphicon glyphicon-exclamation-sign',
+									title: 'Info!',
+									content: '' + infoError,
+									type: 'blue',
+									typeAnimated: true,
+								});
+							}
+						}
+					});
+            }
+
+
             $("body").on("click",".btnPaymentItem", function(){
                 
-                var paymentId = $(this).val();
-                var tr = $(this).closest("tr");
+                var elem = $(this);
+
+                var paymentId = elem.val();
+                var tr = elem.closest("tr");
 
                 var btn = tr.find(".btnPaymentItem");
 
@@ -355,11 +527,19 @@
                 var date = tr.find(".datepicker").val();
                 var note = tr.find(".note").val();
 
-                var type = tr.find(':selected').data('type');
+                
+
+                 if( elem.hasClass("updateItem") ){
+                     var type = "paid"; //already created
+                     var isEdit = 1;
+                 }else{
+                     var type = tr.find(':selected').data('type');
+                     var isEdit = 0;
+                 }
                 //console.log(type);
                 
                 var currency = "$";
-                var payment = parseFloat($(this).closest("tr").find("td").eq(2).attr("data-amount")).toFixed(2);
+                var payment = parseFloat(elem.closest("tr").find("td").eq(2).attr("data-amount")).toFixed(2);
 
 
                 if( $.trim(date) == "" && type =="paid")
@@ -375,8 +555,22 @@
                     return false;
                 }
 
+                if( $.isNumeric(amount) && amount > 0 )
+                {
 
+                }else{
+                    tr.find(".inputAmount").focus();
+                    $.alert({
+                        icon: 'glyphicon glyphicon-exclamation-sign',
+                        title: 'Info!',
+                        content: 'Select the amount to pay',
+                        type: 'red',
+                        typeAnimated: true,
+                    });
+                    return false;
+                }
 
+                
                 if( $.isNumeric(amount) && amount > 0  &&  ( payment != amount) )
                 {
                    
@@ -400,7 +594,7 @@
                                     text: 'Proceder',
                                     btnClass: 'btn-green',
                                     action: function(){
-                                        doPayment(type, paymentId, amount, date, note);
+                                        doPayment(isEdit, type, paymentId, amount, date, note);
                                     }
                                 },
                                 cancelar:{
@@ -434,30 +628,8 @@
                     //}
                 }
                 else if ( $.isNumeric(amount) && amount > 0  &&  ( payment == amount) ) {
-                    //alert("xxxx");
-                    //
-                    /*
-                        if( $.trim(date) == "" && type =="paid")
-                        {
-                            //tr.find(".datepicker").focus();
-                            $.alert({
-                                icon: 'glyphicon glyphicon-exclamation-sign',
-                                title: 'Info!',
-                                content: 'Select a paid date',
-                                type: 'red',
-                                typeAnimated: true,
-                            });
-                            //return false;
-                        }
-                        else
-                        {
-                        
-                        }
-                    */
-                    //alert("aliminar pruebas")
-                    //return false;
-                        // console.log("paso");
-                    doPayment(type, paymentId, amount, date, note)
+
+                    doPayment(isEdit, type, paymentId, amount, date, note)
                 }
                 
                 
@@ -480,13 +652,15 @@
                 tr.find("td").eq(2).html(select);
             });
 
-            function doPayment(type, paymentId, amount, date, note){
+            function doPayment(isEdit, type, paymentId, amount, date, note){
+                //return false;//-------------------------
+
                 var loanId = "{{ loan.loaId }}";
                 $("#holder_loading").show();
                 $.ajax({
 						type: "POST",
 						url: "{{ path('loanpayment_doPaymentNoRate') }}",
-						data: { loanId:loanId, type:type, paymentId:paymentId, amount: amount, date:date, note: note},
+						data: { loanId:loanId, isEdit: isEdit, type:type, paymentId:paymentId, amount: amount, date:date, note: note},
 						error: function (data) {
 							$("#holder_loading").hide();
 							$.confirm({

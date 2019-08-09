@@ -229,26 +229,26 @@ class Loans
         // ejecutamos la función pasándole la fecha que queremos
     //saber_dia('2015-03-13');
 
-    function checkPaymentsPerLoan($loanId, $addtionalAmounts=false)
+    function checkPaymentsPerLoan($loanId, $addtionalAmounts=false, $excepPaymentId = false)
     {
         if( isset($loanId) && !empty($loanId) )
         {
-            /*
-                if( $addtionalAmounts == true )
+            
+                if( $excepPaymentId == true )
                 {
-                    $filter  = " laa_id = $loanId";
+                    $filter  = " AND lpa_id <> $excepPaymentId ";
                 }
                 else
                 {
-                    $filter  = " loa_id = $loanId AND laa_id IS NULL ";
+                    $filter  = " ";
                 }
-            */
+            
 
             $RAW_QUERY  = "SELECT SUM(lpa_paid_capital) AS paidCapital, 
                             SUM(lpa_paid_rate_interest) AS paidRate, 
                             SUM(lpa_total_amount_paid) AS paidTotal,
                             SUM(lpa_current_amount) AS currentAmount
-                            FROM loan_payment where loa_id = $loanId";
+                            FROM loan_payment where loa_id = $loanId ".$filter;
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -289,7 +289,48 @@ class Loans
         return $total;
     }
 
+    //Pending is not complete-----------------------------------------------
+    public function checkPaymentDoneIncompleted( $loanId )
+    {
+        $aResult = array("info"=>"","cuotes"=>"", "totalAmount"=>"");
+        if( !empty($loanId) )
+        {
+            //$em = $this->getDoctrine()->getManager();
+            $arrPending = array();
+            $RAW_QUERY  = "SELECT * FROM loan_payment WHERE loa_id = $loanId AND lpa_paid_date !='' ORDER BY lpa_id ASC ";
+            $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
+            $statement->execute();
+            $result = $statement->fetchAll();
 
+            if( count($result) > 0 )
+            {
+                $number = 1;
+                $totalPendingAmount = 0;
+                $aCuotes = array();
+                foreach( $result as $item )
+                {
+                    //echo $item["lpa_id"];
+                    if(  $item["lpa_total_amount_paid"] < $item["lpa_current_amount"] )
+                    {
+                        $diffence =  $item["lpa_current_amount"] - $item["lpa_total_amount_paid"];
+                        $arrPending[] = "#".$number." = $".number_format($diffence, 2, '.', '');
+                        $aCuotes[] = $number;
+                        $totalPendingAmount = $totalPendingAmount + $diffence;
+                    }
+                    $number++;
+                }
+
+                $info = implode(",", $arrPending);
+                $totalAmount = number_format($totalPendingAmount, 2, '.', '');
+                $cuotes = implode(",", $aCuotes);
+
+                $aResult = array("info"=>$info, "cuotes"=>$cuotes, "totalAmount"=>$totalAmount);
+
+            }
+        }
+
+        return $aResult;
+    }
 
 
     function getPendingAmount($loanId, $addtionalAmounts=false)
