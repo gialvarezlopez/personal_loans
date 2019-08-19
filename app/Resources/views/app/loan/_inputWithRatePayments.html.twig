@@ -128,17 +128,17 @@
                         <td>{{ counter }}</td>
                         <td>
                             {% if counter > 1 %}
-                                {{ item[0].lhp_deadline|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date("Y-m-d") }}
+                                {{ item[0].lhp_deadline|date_modify("-"~ (loan.loaRecurringDayPayment - 1 ) ~" day")|date(app.user.usrDateFormat) }}
                             {% else %}
                                 N/A
                             {% endif %}    
                             -
-                            <span class="maxDate">{{ item[0].lhp_deadline }}</span>
+                            <span class="maxDate">{{ item[0].lhp_deadline|date(app.user.usrDateFormat) }}</span>
                         </td>
                         
                         <td>
                             {% if item[0].lhp_paid_date  %} 
-                                {{  item[0].lhp_paid_date }} 
+                                {{  item[0].lhp_paid_date|date(app.user.usrDateFormat) }} 
                             {% else %} 
                                 {% trans %}general_msg_pending{% endtrans %} 
                             {% endif %}

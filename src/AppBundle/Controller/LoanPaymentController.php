@@ -582,6 +582,7 @@ class LoanPaymentController extends Controller
 
                             if( isset($date) && $date != "" )
                             {
+                                $date = date("Y-m-d", strtotime($date));
                                 $oPayment->setLpaPaidDate( new \datetime($date));
                             }
 

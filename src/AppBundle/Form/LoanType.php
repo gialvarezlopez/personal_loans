@@ -48,7 +48,7 @@ class LoanType extends AbstractType
                     'attr' => ['class' => ''],
                     'required'   => false,
                 ))
-                
+                /*
                 ->add('loaDeadline', DateType::class, array(
                     'widget' => 'single_text',
 
@@ -59,7 +59,9 @@ class LoanType extends AbstractType
                     'attr' => ['class' => 'datepicker'],
                     //'format' => 'MM-dd-yyyy',
                 ))
+                */
                 ->add('loaRecurringDayPayment')
+                /*
                 ->add('loaLoanMade', DateType::class, array(
                     'widget' => 'single_text',
                     
@@ -69,6 +71,7 @@ class LoanType extends AbstractType
                     // adds a class that can be selected in JavaScript
                     'attr' => ['class' => 'datepicker'],
                 ))
+                */
                 ->add('loaQuotas')
                 
                 //->add('loaPending')

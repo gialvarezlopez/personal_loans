@@ -289,7 +289,7 @@
                                     <td>
                                         {% if loan.loaCompleted == 0 %} 
                                             {% if loan.loaDeadline %}
-                                                <i class="fa fa-calendar" aria-hidden="true"></i> <strong> {{ loan.loaDeadline|date('Y-m-d') }} </strong>
+                                                <i class="fa fa-calendar" aria-hidden="true"></i> <strong> {{ loan.loaDeadline|date(app.user.usrDateFormat) }} </strong>
                                             {% endif %}
                                         {% else %}
                                             <strong>N/A</strong>    
@@ -299,7 +299,7 @@
                             {% endif %}
                             <tr>
                                 <td>{% trans %}loan_form_loan_created_at{% endtrans %}</td>
-                                <td>{% if loan.loaLoanMade %} {# {{ srv_TimeZone.getTimeZone(loan.loaLoanMade|date('Y-m-d')) }} #}  {{loan.loaLoanMade|date('Y-m-d')}} {% endif %}</td>
+                                <td>{% if loan.loaLoanMade %} {# {{ srv_TimeZone.getTimeZone(loan.loaLoanMade|date('Y-m-d')) }} #}  {{loan.loaLoanMade|date(app.user.usrDateFormat)}} {% endif %}</td>
                             </tr>
                             <tr>
                                 <td>{% trans %}loan_form_status{% endtrans %}</td>

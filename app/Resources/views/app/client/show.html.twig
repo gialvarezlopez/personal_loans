@@ -95,13 +95,13 @@ fieldset{
                 </tr>
                 <tr>
                     <th>{% trans %}clients_info_created_at{% endtrans %}</th>
-                    <td> {{ srv_TimeZone.getTimeZone(client.cliCreated|date('Y-m-d H:i:s')) }}</td>
+                    <td> {{ (srv_TimeZone.getTimeZone(client.cliCreated|date('Y-m-d H:i:s')))|date(app.user.usrDateFormat) }} </td>
                 </tr>
                 <tr>
                     <th>{% trans %}clients_info_updated_at{% endtrans %}</th>
                     <td> 
                         {% if client.cliUpdated != "" %}
-                            {{ srv_TimeZone.getTimeZone(client.cliUpdated|date('Y-m-d H:i:s')) }}
+                            {{ (srv_TimeZone.getTimeZone(client.cliUpdated|date('Y-m-d H:i:s')))|date(app.user.usrDateFormat) }}
                         {% else %}
                             N/A
                         {% endif %}</td>

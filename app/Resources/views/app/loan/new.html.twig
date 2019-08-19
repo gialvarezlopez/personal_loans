@@ -133,14 +133,18 @@
                             <div class="row">
                                 <div class="col-md-12 col-lg-12 col-sm-12">
                                     <div class="form-group">
-                                        <div class="form_error">{{ form_errors(form.loaLoanMade)}}</div>
+                                        <div class="form_error">{# {{ form_errors(form.loaLoanMade)}} #}</div>
                                         <label for="" class=" control-label">{% trans %}loan_form_loan_created_at{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar" aria-hidden="true"></i>
                                             </div>
-                                            <div class="">{{ form_widget(form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                            <div class="">
+                                                {# {{ form_widget(form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }} #}
+
+                                                <input type="text" id="loaLoanMade" name="loaLoanMade" value="" placeholder="{{ app.user.usrDateFormat }}" class="form-control datepicker" autocomplete="off">
+                                            </div>
                                         </div>
                                         <span id="helpBlock2" class="help-block">{% trans %}loan_form_loan_created_at_help{% endtrans %}</span>
                                     </div>
@@ -219,16 +223,20 @@
                                 </div>
                                 <div class="col-md-12 col-lg-6 col-sm-12">
                                     <div class="form-group">
-                                        <div class="form_error">{{ form_errors(form.loaDeadline)}}</div>
+                                        <div class="form_error">{# {{ form_errors(form.loaDeadline)}} #}</div>
                                         <label for="" class=" control-label">{% trans %}loan_form_msg_first_payment_date{% endtrans %}: <span class="text-danger">*</span></label>
 
                                         <div class="input-group">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar" aria-hidden="true"></i>
                                             </div>
-                                            <div class="">{{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }}</div>
+                                            <div class="">
+                                                {# {{ form_widget(form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':'YYYY-MM-DD', "autocomplete":"off"} } ) }} #}
+                                                <input type="text" id="loaDeadline" name="loaDeadline" value="" placeholder="{{ app.user.usrDateFormat }}" class="form-control datepicker" autocomplete="off">
+                                            </div>
                                         </div>
                                         <span id="helpBlock2" class="help-block">{% trans %}loan_form_first_payment_date_help{% endtrans %}</span>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -407,10 +415,17 @@
                 //alert("You are " + years + " years old!");
             }); 
             */
+            var dateFormat = "{{app.user.usrDateFormat}}";
+            if( dateFormat == "m-d-Y" || dateFormat == "m/d/Y" )
+            {
+                dateFormat = "MM/DD/YYYY";
+            }else{
+                dateFormat = "YYYY/MM/DD";
+            }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Apply",
                     "cancelLabel": "Cancel",
@@ -455,7 +470,7 @@
             {% else %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Aplicar",
                     "cancelLabel": "Cancelar",

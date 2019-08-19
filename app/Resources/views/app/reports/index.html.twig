@@ -150,6 +150,7 @@
                 <hr>
                 <div class="row">
                     <div class="col-lg-12">
+                    
                         {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate, opt) %}
                         {% if lastLoan|length > 0 %}
                             {#
@@ -423,9 +424,9 @@
                                         <td>
                                             <div>
                                             {% if item.loc_key == "inactive_rate" %}
-                                                {{ deadlineLastQuota }}
+                                                {{ deadlineLastQuota|date(app.user.usrDateFormat) }}
                                             {% else %}
-                                                {{ item.loa_deadline|date("Y-m-d") }}
+                                                {{ item.loa_deadline|date(app.user.usrDateFormat) }}
                                             {% endif %}
                                             </div>
                                         </td>
@@ -654,10 +655,17 @@
                // $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             }
 
+            var dateFormat = "{{app.user.usrDateFormat}}";
+            if( dateFormat == "m-d-Y" || dateFormat == "m/d/Y" )
+            {
+                dateFormat = "MM/DD/YYYY";
+            }else{
+                dateFormat = "YYYY/MM/DD";
+            }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY/MM/DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Apply",
                     "cancelLabel": "Cancel",
@@ -710,7 +718,7 @@
             {% else %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY/MM/DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Aplicar",
                     "cancelLabel": "Cancelar",

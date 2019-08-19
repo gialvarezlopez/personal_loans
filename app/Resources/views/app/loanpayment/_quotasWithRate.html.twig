@@ -78,13 +78,13 @@
                     {{ num }}
                 </td>
                 <td>{# Column B #}
-                    {{ payment[0].lhp_deadline }}
+                    {{ payment[0].lhp_deadline|date(app.user.usrDateFormat) }}
                 </td>
                 <td>{# Column C #}
                     {% if payment[0].lhp_paid_date %}
-                        {{ payment[0].lhp_paid_date }}
+                        {{ payment[0].lhp_paid_date|date(app.user.usrDateFormat) }}
                     {% else %}
-                        {{ payment[1].lhp_paid_date }}
+                        {{ payment[1].lhp_paid_date|date(app.user.usrDateFormat) }}
                     {% endif %}
                     
                 </td>
@@ -199,7 +199,12 @@
                     {% endif %}
                 </td>
                 <td>{# Column O #}
-                    {{ payment[0].lhp_next_payment_date }}
+                    
+                    {% if payment[0].lhp_next_payment_date != "" %}
+                        {{ payment[0].lhp_next_payment_date|date(app.user.usrDateFormat) }}
+                    {% else %}
+                        -    
+                    {% endif %}
                 </td>
                 <td>{# Column P #}
                     {% if payment|length == 1 %}

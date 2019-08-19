@@ -100,3 +100,8 @@ span.help-block{
     font-size: 13px !important;
 
 }
+
+.form_error ul li{
+    color: red;
+    font-weight: 400;
+}

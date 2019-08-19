@@ -19,7 +19,7 @@
     </style>
 
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial) - <strong>Fecha maxima de pago: {{ deadline }}</strong></div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 1 (Inicial) - <strong>Fecha maxima de pago: {{ deadline|date(app.user.usrDateFormat) }}</strong></div>
         <div class="panel-body">
             <div class="row">
                <div class="col-lg-12 text-left infoAlert">
@@ -55,8 +55,8 @@
                 </div>
                 <div class="col-lg-6 col-md-12">
                     {% set period = loan.loaRecurringDayPayment %}
-                    {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
-                    {% set maxDate = loan.loaDeadline|date('Y-m-d') %}
+                    {% set createdAt =  loan.loaLoanMade|date(app.user.usrDateFormat) %}
+                    {% set maxDate = loan.loaDeadline|date(app.user.usrDateFormat) %}
                     {% set recurringDay = loan.loaRecurringDayPayment %}
                     {% set counter = 0 %}
                     {% set row = 0 %}
@@ -72,10 +72,10 @@
                                 <tr>
                                     <td>{{ row }}</td>
                                     <td>
-                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") %}
+                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date(app.user.usrDateFormat) %}
 
                                         {% if counter > 0 %}
-                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date("Y-m-d") }}
+                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date(app.user.usrDateFormat) }}
                                         {% else %}
                                             {{ createdAt }}
                                         {% endif %}
@@ -141,7 +141,7 @@
     </style>
 
     <div class="panel panel-danger">
-        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional) - <strong>Fecha maxima de pago: {{ loandAdd_nextPaymentDate }}</strong></div>
+        <div class="panel-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {% trans %}loan_table_rate_payments_pending_quotas{% endtrans %} - Balance 2 (Adicional) - <strong>Fecha maxima de pago: {{ loandAdd_nextPaymentDate|date(app.user.usrDateFormat) }}</strong></div>
         <div class="panel-body">
             <div class="row">
                <div class="col-lg-12 text-left infoAlert">
@@ -177,8 +177,8 @@
                 </div>
                 <div class="col-lg-6 col-md-12">
                     {% set period = loan.loaRecurringDayPayment %}
-                    {% set createdAt =  loan.loaLoanMade|date('Y-m-d') %}
-                    {% set maxDate = loandAdd_nextPaymentDate %}
+                    {% set createdAt =  loan.loaLoanMade|date(app.user.usrDateFormat) %}
+                    {% set maxDate = loandAdd_nextPaymentDate|date(app.user.usrDateFormat) %}
                     {% set recurringDay = loan.loaRecurringDayPayment %}
                     {% set counter = 0 %}
                     {% set row = 0 %}
@@ -194,10 +194,10 @@
                                 <tr>
                                     <td>{{ row }}</td>
                                     <td>
-                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date("Y-m-d") %}
+                                        {% set endMaxDate = maxDate|date_modify("+"~ ( (recurringDay * i )  ) ~" day")|date(app.user.usrDateFormat) %}
 
                                         {% if counter > 0 %}
-                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date("Y-m-d") }}
+                                            {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date(app.user.usrDateFormat) }}
                                         {% else %}
                                             {{ createdAt }}
                                         {% endif %}

@@ -36,6 +36,8 @@ class DashboardController extends Controller
         if( isset($from) && $from != "" && isset($to) && $to != "")
         {
             //$fechaInicio = str_replace("/","-")
+            $from = date("Y-m-d", strtotime($from));
+            $to = date("Y-m-d", strtotime($to));
             $periodDate = Array("startDate"=>$from,"endDate"=>$to);
             //echo "ddd";
         }
@@ -85,6 +87,11 @@ class DashboardController extends Controller
         if(date("l",$strFecha)==$diaFin){
             $fechaFin= date("Y-m-d",$strFecha);
         }
+
+        $formatDate = $this->getUser()->getUsrDateFormat();
+        $fechaInicio = date($formatDate, strtotime($fechaInicio));
+        $fechaFin = date($formatDate, strtotime($fechaFin));
+
         return Array("startDate"=>$fechaInicio,"endDate"=>$fechaFin);
     }
 }

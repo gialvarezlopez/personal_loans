@@ -168,11 +168,17 @@
                // $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             }
 
-            
+            var dateFormat = "{{app.user.usrDateFormat}}";
+            if( dateFormat == "m-d-Y" || dateFormat == "m/d/Y" )
+            {
+                dateFormat = "MM/DD/YYYY";
+            }else{
+                dateFormat = "YYYY/MM/DD";
+            }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY/MM/DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Apply",
                     "cancelLabel": "Cancel",
@@ -223,7 +229,7 @@
             {% else %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY/MM/DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Aplicar",
                     "cancelLabel": "Cancelar",

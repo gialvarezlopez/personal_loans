@@ -12,7 +12,7 @@
               <hr>
               <div class="panel panel-info">
                 <div class="panel-heading">
-                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                  <h5 class="panel-title">{{ periodDate["startDate"]|date(app.user.usrDateFormat) ~" - "~ periodDate["endDate"]|date(app.user.usrDateFormat) }}</h5>
                 </div>
                 <div class="panel-body">      
                   <b><p>{% trans %}dashboard_period_detail_filtered{% endtrans %}:</p></b>
@@ -63,7 +63,7 @@
               <hr>
               <div class="panel panel-info">
                 <div class="panel-heading">
-                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                  <h5 class="panel-title">{{ periodDate["startDate"]|date(app.user.usrDateFormat) ~" - "~ periodDate["endDate"]|date(app.user.usrDateFormat) }}</h5>
                 </div>
                 <div class="panel-body">
                   <b><p>{% trans %}dashboard_period_detail_filtered{% endtrans %}:</p></b>
@@ -116,7 +116,7 @@
               <hr>
               <div class="panel panel-info">
                 <div class="panel-heading">
-                  <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+                  <h5 class="panel-title">{{ periodDate["startDate"]|date(app.user.usrDateFormat) ~" - "~ periodDate["endDate"]|date(app.user.usrDateFormat) }}</h5>
                 </div>
                 <div class="panel-body">
                 <b><p>{% trans %}dashboard_period_detail_filtered{% endtrans %}:</p></b>
@@ -164,7 +164,7 @@
 
           <div class="panel panel-info">
             <div class="panel-heading">
-              <h5 class="panel-title">{{ periodDate["startDate"]|replace({'-': "/"}) ~" - "~ periodDate["endDate"]|replace({'-': "/"}) }}</h5>
+              <h5 class="panel-title">{{ periodDate["startDate"]|date(app.user.usrDateFormat) ~" - "~ periodDate["endDate"]|date(app.user.usrDateFormat) }}</h5>
             </div>
             <div class="panel-body">
 

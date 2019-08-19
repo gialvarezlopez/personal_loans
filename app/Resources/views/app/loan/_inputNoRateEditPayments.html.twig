@@ -144,11 +144,11 @@
                                             {% endif %}
                                             <td>
                                                 {% if initDate and (initDate) != "N/A" %} 
-                                                    <span class='initDate'>{{ initDate }}</span>
+                                                    <span class='initDate'>{{ initDate|date(app.user.usrDateFormat)  }}</span>
                                                 {% else %}
                                                     {{ initDate }}
                                                 {% endif %}    
-                                                - <span class="maxDate">{{ max_date }}</span>
+                                                - <span class="maxDate">{{ max_date|date(app.user.usrDateFormat)  }}</span>
                                             </td>
                                             <td data-amount="{{ item.lpa_current_amount }}">
                                                 {% if  action is defined and (action == "edit" ) %}
@@ -242,7 +242,7 @@
 
                                             <td data-paidDate="{{item.lpa_paid_date}}">
                                                 {% if item.lpa_paid_date  %} 
-                                                    {{  item.lpa_paid_date }}
+                                                    {{  item.lpa_paid_date|date(app.user.usrDateFormat) }}
                                                 {% else %} 
                                                     {% if action is defined and action == "payment" %}
                                                     <div class="input-group">
@@ -404,4 +404,4 @@
 
                         {% set data =  srv_Loans.checkPaymentDoneIncompleted( loan.loaId ) %}
 
-                        {{ dump(data) }}
+                        

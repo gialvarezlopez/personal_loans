@@ -153,14 +153,18 @@
                                 <div class="row">
                                     <div class="col-md-12 col-lg-12 col-sm-12">
                                         <div class="form-group">
-                                            <div class="form_error">{{ form_errors(edit_form.loaLoanMade) }}</div>
+                                            <div class="form_error"></div>
                                             <label for="" class=" control-label">{% trans %}loan_form_loan_created_at{% endtrans %}: <span class="text-danger">*</span></label>
 
                                             <div class="input-group">
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-calendar" aria-hidden="true"></i>
                                                 </div>
-                                                <div class="">{{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaLoanMade|date(app.user.usrDateFormat)  } } ) }}</div>
+                                                <div class="">
+                                                    {# {{ form_widget(edit_form.loaLoanMade,  { 'attr': {'class': 'form-control datepickerx', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaLoanMade|date(app.user.usrDateFormat)  } } ) }} #}
+                                                    <input type="text" id="loaLoanMade" name="loaLoanMade" value="{{ loan.loaLoanMade|date(app.user.usrDateFormat) }}" placeholder="{{ app.user.usrDateFormat }}" class="form-control datepicker" autocomplete="off">
+                                                </div>
+                                                
                                             </div>
                                             <span id="helpBlock2" class="help-block">{% trans %}loan_form_loan_created_at_help{% endtrans %}</span>
                                         </div>
@@ -293,7 +297,8 @@
                                     </div>
                                     <div class="col-md-12 col-lg-6 col-sm-12">
                                         <div class="form-group">
-                                            <div class="form_error">{{ form_errors(edit_form.loaDeadline)}}</div>
+                                            <div class="form_error"></div>
+                                            
                                             <label for="" class=" control-label">
                                                  
                                                 {% if hasPayments == 0 %} 
@@ -317,20 +322,25 @@
                                                 <div class="">
                                                     {% if loan.loc.locKey  == "inactive_rate" %}
                                                         {% if hasPayments == 0 %}
-                                                            {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }}
+                                                            {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }} #}
+                                                            <input type="text" id="loaDeadline" name="loaDeadline" value="{{  loan.loaDeadline|date(app.user.usrDateFormat) }}" placeholder="{{ app.user.usrDateFormat }}" class="form-control datepicker" autocomplete="off">
                                                         {% else %}
                                                             
                                                             {% set lastPayment = srv_Loans.getLastPayment(loanId) %}
                                                             {% if lastPayment and lastPayment[0]['lpa_paid_date'] != "" %}
-                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly", "value": (lastPayment[0]['lpa_paid_date'])|date(app.user.usrDateFormat) } } ) }}
+                                                                {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly", "value": (lastPayment[0]['lpa_paid_date'])|date(app.user.usrDateFormat) } } ) }} #}
+                                                                <input type="text" id="loaDeadline" name="loaDeadline" value="{{  (lastPayment[0]['lpa_paid_date'])|date(app.user.usrDateFormat) }}" placeholder="{{ app.user.usrDateFormat }}" class="form-control" autocomplete="off" readonly>
                                                             {% else %}
-                                                                {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly"} } ) }}
+                                                                {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", "readonly":"readonly"} } ) }} #}
+                                                                <input type="text" id="loaDeadline" name="loaDeadline" value="" placeholder="{{ app.user.usrDateFormat }}" class="form-control" readonlye>
+                                                                
                                                             {% endif %}
                                                             {# {{ form_widget(edit_form.loaDeadline,  { 'attr': {'class': 'form-control ', 'placeholder':'YYYY-MM-DD', "autocomplete":"off", "readonly":"readonly"} } ) }} #}
                                                         {% endif %}
                                                     {% else %}
                                                         
-                                                        {{ form_widget(edit_form.loaDeadline , { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }}
+                                                        {# {{ form_widget(edit_form.loaDeadline , { 'attr': {'class': 'form-control datepicker', 'placeholder':app.user.usrDateFormat, "autocomplete":"off", 'value' : loan.loaDeadline|date(app.user.usrDateFormat) } } ) }} #}
+                                                        <input type="text" class="form-control datepicker" value="{{ loan.loaDeadline|date(app.user.usrDateFormat) }}" placeholder="{{ app.user.usrDateFormat }}" id="loaDeadline" name="loaDeadline" autocomplete="off">
                                                     {% endif %}
                                                     
                                                 </div>
@@ -531,8 +541,8 @@
 
             {% if loan.loaCompleted == 1 %}
                 $("form[name='appbundle_loan'] input[type='text'], form[name='appbundle_loan'] input[type='number'], form[name='appbundle_loan'] textarea").attr("readonly", true);
-                $("#appbundle_loan_loaDeadline").removeClass("datepicker").val("");
-                $("#appbundle_loan_loaLoanMade").removeClass("datepicker");
+                $("#loaDeadline").removeClass("datepicker").val("");
+                $("#loaLoanMade").removeClass("datepicker");
             {% endif %}
             
             $("#appbundle_loan_loaRateInterest").closest("div").remove();    
@@ -554,6 +564,53 @@
                     'pdfHtml5'
                 ],
             });
+
+            var table = $('#tablePayments').DataTable({
+                //"scrollX": true,
+                'paging'      : false,
+                'lengthChange': false,
+                'searching'   : true,
+                "scrollCollapse": true,
+                "scrollY": 400,
+                "scrollX": true,
+                 bSort: false,
+                //'ordering'    : true,
+                //'info'        : true,
+                //'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                //'dom': 'Blfrtip',
+                /*
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                */
+            });
+
+            $('#tableAdditionalAmouns').DataTable({
+                //"scrollX": true,
+                'paging'      : false,
+                'lengthChange': false,
+                'searching'   : false,
+                "scrollCollapse": true,
+                "scrollY": 400,
+                "scrollX": true
+                //'ordering'    : true,
+                //'info'        : true,
+                //'autoWidth'   : false,
+                //'dom': 'Bfrtip',
+                //'dom': 'Blfrtip',
+                /*
+                'buttons': [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                */
+            });
            //Date picker
             /*
                 $('.datepicker').daterangepicker({
@@ -570,11 +627,11 @@
                 });
             */
             var dateFormat = "{{app.user.usrDateFormat}}";
-            if( dateFormat == "m/d/Y")
+            if( dateFormat == "m-d-Y" || dateFormat == "m/d/Y" )
             {
-                dateFormat = "MM-DD-YYYY";
+                dateFormat = "MM/DD/YYYY";
             }else{
-                dateFormat = "YYYY-MM-DD";
+                dateFormat = "YYYY/MM/DD";
             }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
@@ -673,7 +730,7 @@
 
             
 
-            //$("#appbundle_loan_loaDeadline").val("");
+            //$("#loaDeadline").val("");
 
             
             {% if loan.loc.locKey  != "inactive_rate" %}
@@ -704,7 +761,8 @@
                 $("#holderRate").html("<h5>{% trans %}loan_form_default_interest_rate_disabled{% endtrans %}</h5>");
                 $("#setPatments").on("click",function(){
                     var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
-                    var nextDate = $("#appbundle_loan_loaDeadline").val();
+                    var nextDate = $("#loaDeadline").val();
+                    //alert( nextDate );
                     var quotas = $("#appbundle_loan_loaQuotas").val();
                     if( $.trim(recurringDays) == "" || $.trim(nextDate) == "" || $.trim(quotas) == "" )
                     {
@@ -927,13 +985,13 @@
                         var id = lastTr.replace(/[^0-9]/g, '');
                         var newId = parseInt(id) + 1
                         var lastDate = $("body").find("#tablePayments tr:last" ).eq(0).find(".maxDate").text();
-                        var minDate = moment(lastDate, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD');
+                        var minDate = moment(lastDate, dateFormat).add(1, 'days').format(dateFormat);
                         var inputDate = $("#curringDaySelected").val();
-                        var maxDate = moment(lastDate, 'YYYY-MM-DD').add(inputDate, 'days').format('YYYY-MM-DD'); 
+                        var maxDate = moment(lastDate, dateFormat).add(inputDate, 'days').format(dateFormat); 
                         var cln = $("#tablePayments tr:last" ).clone();
                         $("#tablePayments").append(cln);
                         $("body").find("#tablePayments tr:last" ).attr("id","tr_"+newId);
-                        $("body").find("#tablePayments tr:last" ).removeClass("done paid");
+                        $("body").find("#tablePayments tr:last" ).removeClass("done paid markerToday");
                         $("body").find("#tablePayments tr:last" ).attr("data-paymentid","");
                         $("body").find("#tablePayments tr:last" ).attr("data-paymenttypeid","");
                        
@@ -959,6 +1017,9 @@
                         {
                             $("#appbundle_loan_loaQuotas").val(rowCount);
                         }
+
+                        var $scrollBody = $(table.table().node()).parent();
+                        $scrollBody.scrollTop($scrollBody.get(0).scrollHeight);
                     }
                 }
 
@@ -978,7 +1039,7 @@
                             {
                                 var newMaxDate = $(this).closest("tr" ).siblings().find("td").eq(0).find(".maxDate").text();
                                 $(this).closest("tr" ).siblings().find("td").eq(0).find(".initDate").text("N/A");
-                                $("#appbundle_loan_loaDeadline").val(newMaxDate);
+                                $("#loaDeadline").val(newMaxDate);
                                 $("#inputfistPaymentDate").val(newMaxDate);
                                 $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
@@ -1008,7 +1069,7 @@
                         if( resRowCount == 0 )
                         {
                             $("#addInput").remove();
-                            $("#appbundle_loan_loaDeadline").val("");
+                            $("#loaDeadline").val("");
                             $("#appbundle_loan_loaQuotas").val("");
                             $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
@@ -1197,52 +1258,7 @@
             
             //$("#tablePayments").DataTable();
             
-            $('#tablePayments').DataTable({
-                //"scrollX": true,
-                'paging'      : false,
-                'lengthChange': false,
-                'searching'   : true,
-                "scrollCollapse": true,
-                "scrollY": 400,
-                "scrollX": true,
-                 bSort: false,
-                //'ordering'    : true,
-                //'info'        : true,
-                //'autoWidth'   : false,
-                //'dom': 'Bfrtip',
-                //'dom': 'Blfrtip',
-                /*
-                'buttons': [
-                    'copyHtml5',
-                    'excelHtml5',
-                    'csvHtml5',
-                    'pdfHtml5'
-                ],
-                */
-            });
-
-            $('#tableAdditionalAmouns').DataTable({
-                //"scrollX": true,
-                'paging'      : false,
-                'lengthChange': false,
-                'searching'   : false,
-                "scrollCollapse": true,
-                "scrollY": 400,
-                "scrollX": true
-                //'ordering'    : true,
-                //'info'        : true,
-                //'autoWidth'   : false,
-                //'dom': 'Bfrtip',
-                //'dom': 'Blfrtip',
-                /*
-                'buttons': [
-                    'copyHtml5',
-                    'excelHtml5',
-                    'csvHtml5',
-                    'pdfHtml5'
-                ],
-                */
-            });
+            
             
 
             $("#btnAddAmounts").on("click", function(){
@@ -1256,7 +1272,7 @@
                 }
                 else
                 {
-                    nextPayment = $("#appbundle_loan_loaDeadline").val();
+                    nextPayment = $("#loaDeadline").val();
                 }
 
                 $("#inputAANextPaymentDate").val(nextPayment);
