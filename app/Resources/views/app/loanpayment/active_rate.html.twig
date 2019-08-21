@@ -219,7 +219,7 @@
                                         <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                         </div>
-                                        <div class="">{{ form_widget(form.lpaMaxPaymentDate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":loan.loaDeadline|date('Y-m-d'), "readonly":"true" } } ) }}</div>
+                                        <div class="">{{ form_widget(form.lpaMaxPaymentDate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":loan.loaDeadline|date(app.user.usrDateFormat), "readonly":"true" } } ) }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -602,7 +602,7 @@
                                                             </div>
                                                 
                                                             {% set modify = '+'~ loan.loaRecurringDayPayment ~'day' %}
-                                                            {% set nextPay =  loan.loaDeadline|date_modify(modify) | date("Y-m-d") %}
+                                                            {% set nextPay =  loan.loaDeadline|date_modify(modify) | date(app.user.usrDateFormat) %}
                                                             <div class="">{{ form_widget(form.loaNextPaymentDate,  { 'attr': {'class': 'form-control', "autocomplete":"off", "value":nextPay,  "required":"required",  "disabled":"true"} } ) }}</div>
                                                         </div>
                                                     </div>
@@ -744,10 +744,17 @@
                 ],
             });
 
+            var dateFormat = "{{app.user.usrDateFormat}}";
+            if( dateFormat == "m-d-Y" || dateFormat == "m/d/Y" )
+            {
+                dateFormat = "MM/DD/YYYY";
+            }else{
+                dateFormat = "YYYY/MM/DD";
+            }
             {% if app.request.getLocale() == "en" %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Apply",
                     "cancelLabel": "Cancel",
@@ -784,7 +791,7 @@
             {% else %}
                 var locale_daterangepicker = {
                     "direction": "ltr",
-                    "format": "YYYY-MM-DD",
+                    "format": dateFormat,
                     "separator": " - ",
                     "applyLabel": "Aplicar",
                     "cancelLabel": "Cancelar",
@@ -1463,7 +1470,7 @@
                         else
                         {
                             //Next period
-                            var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+                            var per = moment(nextDate, dateFormat).add(+{{ loan.loaRecurringDayPayment }}, 'days').format(dateFormat); 
                             var rate = parseFloat("{{ loan.loaRateInterest }}");
                             var newNextRate = pendingRate + rate; 
                             if( !isInt(newNextRate) )
@@ -1482,7 +1489,7 @@
                     //$("#"+typeLoaNextInterestRate).val( inputRateByDefault );
                     nextDate = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
                     //console.log("else");
-                    var per = moment(nextDate, 'YYYY-MM-DD').add(+{{ loan.loaRecurringDayPayment }}, 'days').format('YYYY-MM-DD'); 
+                    var per = moment(nextDate, dateFormat).add(+{{ loan.loaRecurringDayPayment }}, 'days').format(dateFormat); 
 
                     //alert(inputRateByDefault + "aaaaaaaaa"); //-----------------------------------
                 }
@@ -1632,6 +1639,20 @@
 					});
                     return false;
                 }
+
+                var currentD = $("#appbundle_loanpayment_lpaMaxPaymentDate").val();
+                var paidD = $("#appbundle_loanpayment_lpaPaidDate").val();
+                var nextD = $("#appbundle_loanpayment_loaNextPaymentDate").val();
+
+                currentD =  (moment(currentD, dateFormat).format('YYYY-MM-DD'));
+                $("#appbundle_loanpayment_lpaMaxPaymentDate").val(currentD);
+                paidD =  (moment(paidD, dateFormat).format('YYYY-MM-DD'));
+                $("#appbundle_loanpayment_lpaPaidDate").val(paidD);
+                if( nextD != "" ){
+                    nextD =  (moment(nextD, dateFormat).format('YYYY-MM-DD'));
+                    $("#appbundle_loanpayment_loaNextPaymentDate").val(nextD);
+                }
+                //moment(lastDate, dateFormat).add(1, 'days').format(dateFormat);
 
                 //return false;
                 $("#holder_loading").show();
