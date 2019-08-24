@@ -566,7 +566,7 @@
                     for(var i = 0; i < quotas; i++)
                     {
                         totalDays = (i == 0 )?0:recurringDays;
-                        nextDate = moment(nextDate, 'YYYY-MM-DD').add(totalDays, 'days').format('YYYY-MM-DD'); 
+                        nextDate = moment(nextDate, dateFormat).add(totalDays, 'days').format(dateFormat); 
                         listDate.push(nextDate);
                     }
 
@@ -583,7 +583,7 @@
                     {
                         if( i != 0 )
                         {
-                            var per = moment(arrDates[i], 'YYYY-MM-DD').add(-(recurringDays-1), 'days').format('YYYY-MM-DD'); 
+                            var per = moment(arrDates[i], dateFormat).add(-(recurringDays-1), 'days').format(dateFormat); 
                             var button = "<span class='btn btn-danger deleteItem'><i class='fa fa-trash-o' aria-hidden='true'></i> </span>";
                         }else{
                             var per = " N/A ";
@@ -639,9 +639,9 @@
                     var id = lastTr.replace(/[^0-9]/g, '');
                     var newId = parseInt(id) + 1
                     var lastDate = $("body").find("#tablePayments tr:last" ).eq(0).find(".maxDate").text();
-                    var minDate = moment(lastDate, 'YYYY-MM-DD').add(1, 'days').format('YYYY-MM-DD');
+                    var minDate = moment(lastDate, dateFormat).add(1, 'days').format(dateFormat);
                     var inputDate = $("#curringDaySelected").val();
-                    var maxDate = moment(lastDate, 'YYYY-MM-DD').add(inputDate, 'days').format('YYYY-MM-DD'); 
+                    var maxDate = moment(lastDate, dateFormat).add(inputDate, 'days').format(dateFormat); 
                     var cln = $("#tablePayments tr:last" ).clone();
                     $("#tablePayments").append(cln);
                     $("body").find("#tablePayments tr:last" ).attr("id","tr_"+newId);
