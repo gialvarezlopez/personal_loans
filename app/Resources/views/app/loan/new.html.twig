@@ -311,7 +311,7 @@
                     {{ include("app/loan/_selectLoanType.html.twig") }}
                 {% endif %}
             </div>
-            <div class="col-lg-8 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div id="holderMainRight"></div>
                 {% if loanType %}
                     {#
@@ -516,7 +516,7 @@
 
             $("#appbundle_loan_loaCompleted").closest("div").remove();
 
-            $("#appbundle_loan_loaDeadline").val("");
+            $("#loaDeadline").val("");
 
             {% if  loanType and loanType['key'] != "inactive_rate" %}
                 $("#holderQuotas").remove();
@@ -526,8 +526,9 @@
                 $(".holderRate").html("");
                 $("#setPatments").on("click",function(){
                     var recurringDays = $("#appbundle_loan_loaRecurringDayPayment").val();
-                    var nextDate = $("#appbundle_loan_loaDeadline").val();
+                    var nextDate = $("#loaDeadline").val();
                     var quotas = $("#appbundle_loan_loaQuotas").val();
+                    //alert(recurringDays+" - " +nextDate+" "+quotas)
                     if( $.trim(recurringDays) == "" || $.trim(nextDate) == "" || $.trim(quotas) == "" )
                     {
                         $.alert({
@@ -673,7 +674,7 @@
                             {
                                 var newMaxDate = $(this).closest("tr" ).siblings().find("td").eq(0).find(".maxDate").text();
                                 $(this).closest("tr" ).siblings().find("td").eq(0).find(".initDate").text("N/A");
-                                $("#appbundle_loan_loaDeadline").val(newMaxDate);
+                                $("#loaDeadline").val(newMaxDate);
                                 $("#inputfistPaymentDate").val(newMaxDate);
                                 $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
@@ -702,7 +703,7 @@
                         if( resRowCount == 0 )
                         {
                             $("#addInput").remove();
-                            $("#appbundle_loan_loaDeadline").val("");
+                            $("#loaDeadline").val("");
                             $("#appbundle_loan_loaQuotas").val("");
                             $.alert({
                                     icon: 'glyphicon glyphicon-exclamation-sign',
