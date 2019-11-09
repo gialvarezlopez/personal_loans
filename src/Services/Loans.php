@@ -187,17 +187,29 @@ class Loans
                 $periods = ($days/$recurringDays); 
                 $filterPeriod = abs(floor($periods));
                
-                $newRate = $rate; 
+               echo $newRate = $rate; 
+
+                //$newRate = 0; 
                 
-               $totalPeriods = $periods+1; //sum the init period
+                echo $check = $this->saber_dia($maxPayDate, $zone);
+                if($check == "domingo" )
+                {
+                    $totalPeriods = $periods+1; //sum the init period
+                } else{
+                    $totalPeriods = $periods; //sum the init period
+                    
+                }
+                //echo $totalPeriods;
                //$totalPeriods = $periods; //sum the init period
+               //$totalPeriods = $periods+1; //sum the init period
                $pros=0;     
-               for($i=0; $i < $periods; $i++)
+               for($i=0; $i < ceil($totalPeriods); $i++)
                {
-                   if( $pros != 0 || $days > 0 )
-                   {
-                    $newRate += $rateByDefault; ////quiiii
-                   }
+                    if( $pros != 0 /*|| $days > 0*/ )
+                    {
+                        $newRate += $rateByDefault; ////quiiii
+                        echo  $newRate."---";
+                    }
                     //echo "i - ".$i;
                     $pros++;
                }
@@ -220,15 +232,18 @@ class Loans
     }
 
     function saber_dia($checkDate, $zone) {
+        //echo $zone;
         /*
-        echo $checkDate;
         date_default_timezone_set($zone);
         $dias = array('domingo','lunes','martes','miercoles','jueves','viernes','sabado');
-        $fecha = $dias[date('N', strtotime($checkDate))];
+        $fecha = @$dias[date('N', strtotime($checkDate))];
         return $fecha;
         */
 
         $fechats = strtotime($checkDate); //pasamos a timestamp
+
+        //el parametro w en la funcion date indica que queremos el dia de la semana
+        //lo devuelve en numero 0 domingo, 1 lunes,....
         switch (date('w', $fechats)){
             case 0: return "domingo"; break;
             case 1: return "lunes"; break;

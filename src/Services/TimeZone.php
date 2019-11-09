@@ -59,10 +59,11 @@ class TimeZone
             // In this example, use a fixed IP address in Minnesota
 
             //$ip = "172.56.40.143"; //$_SERVER['REMOTE_ADDR'];
-            $ip = $_SERVER['REMOTE_ADDR'];
+            //$ip = $_SERVER['REMOTE_ADDR'];
+            $ip = "74.108.16.156";
             if( $ip == "127.0.0.1" || $ip == "::1" || $ip == "localhost")
             {
-                $ip = "172.56.40.143";
+                $ip = "74.108.16.156";
             }
             $record = $reader->city($ip);
 
