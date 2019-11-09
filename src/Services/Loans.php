@@ -187,11 +187,11 @@ class Loans
                 $periods = ($days/$recurringDays); 
                 $filterPeriod = abs(floor($periods));
                
-               echo $newRate = $rate; 
+                $newRate = $rate; 
 
                 //$newRate = 0; 
                 
-                echo $check = $this->saber_dia($maxPayDate, $zone);
+                 $check = $this->saber_dia($maxPayDate, $zone);
                 if($check == "domingo" )
                 {
                     $totalPeriods = $periods+1; //sum the init period
@@ -208,7 +208,7 @@ class Loans
                     if( $pros != 0 /*|| $days > 0*/ )
                     {
                         $newRate += $rateByDefault; ////quiiii
-                        echo  $newRate."---";
+                        //echo  $newRate."---";
                     }
                     //echo "i - ".$i;
                     $pros++;
