@@ -167,8 +167,8 @@ class Loans
     {
         date_default_timezone_set($zone);
 
-        //echo $maxPayDate;
-        $newRate = $rate;
+        //echo $maxPayDate." - ";
+        //$newRate = $rate;
 
         //echo floor(9.999); // 9
         $today = strtotime(date('Y-m-d')); 
@@ -177,7 +177,6 @@ class Loans
         $days =  ($timeToEnd/(60*60*24) ) ;
         
         //echo date("Y-m-d");
-
         // result will be negative numbers
         if( $days < 0 ) 
         {
@@ -187,26 +186,45 @@ class Loans
                 $periods = ($days/$recurringDays); 
                 $filterPeriod = abs(floor($periods));
                
-                $newRate = $rate; 
+                $newRate = 0; //Modificado 11-09-2019 antes estaba $newRate = $rate;
                 
-               $totalPeriods = $periods+1; //sum the init period
+               $totalPeriods = $periods + 1; //sum the init period
                //$totalPeriods = $periods; //sum the init period
                $pros=0;     
-               for($i=0; $i < $periods; $i++)
+               for($i=0; $i < $totalPeriods; $i++)
                {
-                   if( $pros != 0 || $days > 0 )
-                   {
-                    $newRate += $rateByDefault; ////quiiii
-                   }
+                   //if( $pros != 0 /*|| $days > 0 */ )
+                   //{
+                        $newRate += $rateByDefault; ////quiiii
+                   //}
                     //echo "i - ".$i;
                     $pros++;
                }
 
-                $check = $this->saber_dia($maxPayDate, $zone);
-               if($check == "sabado" )
+               //Agregado 11-09-2019
+               if( $newRate == 0 )
                {
-                   //$totalPeriods++;
-                   //$newRate += $rate;
+                    $newRate = $rate;
+               }
+
+               //echo date("Y-m-d");
+                $check = $this->saber_dia( date("Y-m-d")/*$maxPayDate*/, $zone);
+
+                //echo $check." -> ";
+               if($check == "Sabado" )
+               {
+                   $totalPeriods--;
+                   //$newRate -= $rate;
+                   $newRate = 0;
+                   for($i=0; $i < $totalPeriods; $i++)
+                    {
+                        //if( $pros != 0 /*|| $days > 0 */ )
+                        //{
+                                $newRate += $rateByDefault; ////quiiii
+                        //}
+                            //echo "i - ".$i;
+                            $pros++;
+                    }
                }
                //ECHO $newRate;
                $data = array("days"=>$days, "totalPeriods"=>$totalPeriods, "quotas"=>ceil($totalPeriods), "rate"=>$newRate, "rateWithoutCurrentPeriod"=>($newRate - $rate)  );
@@ -221,10 +239,25 @@ class Loans
 
     function saber_dia($checkDate, $zone) {
         //echo $zone;
+        /*
+        echo $checkDate;
         date_default_timezone_set($zone);
         $dias = array('domingo','lunes','martes','miercoles','jueves','viernes','sabado');
-        $fecha = @$dias[date('N', strtotime($checkDate))];
+        $fecha = $dias[date('N', strtotime($checkDate))];
         return $fecha;
+        */
+
+        $fechats = strtotime($checkDate); //pasamos a timestamp
+        switch (date('w', $fechats)){
+            case 0: return "Domingo"; break;
+            case 1: return "Lunes"; break;
+            case 2: return "Martes"; break;
+            case 3: return "Miercoles"; break;
+            case 4: return "Jueves"; break;
+            case 5: return "Viernes"; break;
+            case 6: return "Sabado"; break;
+        }
+        
     }
         // ejecutamos la función pasándole la fecha que queremos
     //saber_dia('2015-03-13');

@@ -51,7 +51,7 @@
 
                     <p>{% trans %}loan_table_rate_payments_loan_origiinal_rate{% endtrans %}<b> {{ loan.loaRateInterestByDefault }}%</b></p> 
 
-                    <p></p>
+                    <p></p> 
                 </div>
                 <div class="col-lg-6 col-md-12">
                     {% set period = loan.loaRecurringDayPayment %}
@@ -77,7 +77,7 @@
                                         {% if counter > 0 %}
                                             {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date(app.user.usrDateFormat) }}
                                         {% else %}
-                                            {{ createdAt }}
+                                            {# {{ createdAt }} /// #} {{ endMaxDate|date_modify("-"~ (recurringDay - 1 ) ~" day")|date(app.user.usrDateFormat) }}
                                         {% endif %}
                                         -
                                         {% if (pending.quotas - 1) == i %}
