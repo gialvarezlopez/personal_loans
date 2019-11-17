@@ -190,15 +190,22 @@ class Loans
                 $newRate = $rate; 
 
                 //$newRate = 0; 
-                
-                 $check = $this->saber_dia($maxPayDate, $zone);
-                if($check == "domingo" )
+                //echo date('l');
+                //echo $check = $this->saber_dia(date('Y-m-d')/*$maxPayDate*/, $zone);
+                /*
+                echo $currentDate = date('l');
+                //Saturday
+                //$check = "";
+                if($currentDate != "Saturday" )
                 {
-                    $totalPeriods = $periods+1; //sum the init period
+                    $totalPeriods = $periods + 1; //sum the init period
                 } else{
                     $totalPeriods = $periods; //sum the init period
                     
                 }
+                */
+
+                $totalPeriods = $periods + 1; //sum the init period
                 //echo $totalPeriods;
                //$totalPeriods = $periods; //sum the init period
                //$totalPeriods = $periods+1; //sum the init period
@@ -233,13 +240,13 @@ class Loans
 
     function saber_dia($checkDate, $zone) {
         //echo $zone;
-        /*
+        
         date_default_timezone_set($zone);
         $dias = array('domingo','lunes','martes','miercoles','jueves','viernes','sabado');
         $fecha = @$dias[date('N', strtotime($checkDate))];
         return $fecha;
-        */
-
+        
+        /*
         $fechats = strtotime($checkDate); //pasamos a timestamp
 
         //el parametro w en la funcion date indica que queremos el dia de la semana
@@ -253,6 +260,7 @@ class Loans
             case 5: return "viernes"; break;
             case 6: return "sabado"; break;
         }
+        */
     }
         // ejecutamos la función pasándole la fecha que queremos
     //saber_dia('2015-03-13');
