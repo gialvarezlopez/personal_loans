@@ -81,6 +81,7 @@ body{
 <link rel="stylesheet" href="{{ asset('bundles/app/font/font-source-sans-pro.css') }}">
     <!-- Bootstrap 3.3.7 -->
 <link rel="stylesheet" href="{{ asset('bundles/app/template/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+<title>Listado de cobros</title>
 {#  Check the notifications #}
 {% set created = 0 %}
 {% for message in app.session.flashbag().get("success") %}
@@ -119,7 +120,7 @@ body{
 
                 <div class="row">
                     <div class="col-lg-12">
-                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate, opt) %}
+                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, status, periodDate, opt) %}
                         {% if lastLoan|length > 0 %}
 
                             <table id="clientslist" class="table table-striped display nowrap" style="width:100%">
@@ -193,8 +194,18 @@ body{
                                                         <span style="{{color}}">En mora</span>
                                                     {% endif %}
                                                     #}
-                                                    {% set color = "color: #34825F; font-weight: 700;" %}
-                                                    <span style="{{ color }}">Al dia</span>
+                                                    
+                                                    {% set paymentDate = noPaid[0].lpa_max_payment_date %}
+                                                    {% set checkRange = srv_Loans.check_in_range(periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d'), paymentDate) %}
+                                                    {% if checkRange %}
+                                                       {% set color = "color: #34825F; font-weight: 700;" %}
+                                                        <span style="{{ color }}">Al dia</span>
+                                                    {% else %}
+                                                        {% set color = "color: #9b1111; font-weight: 700;" %}
+                                                        <span style="{{color}}">En mora</span>
+                                                    {% endif %}
+
+                                                    
                                                 {% endif %}
                                              {% endif %}
                                         </td>
@@ -512,7 +523,42 @@ body{
                                             {% else %}
                                                 {# N/A  ---------------#}  {# ${{ nextCap|number_format(2, '.', ',') }}  #}
                                                 {% if detailPending["numQuotas"] != '' %}
-                                                        <span style="{{color}}" ># {{ detailPending["numQuotas"]  }} </span>
+                                                        <span style="{{color}}" > {#{{ detailPending["numQuotas"]  }} -#} 
+                                                        {% set foo = detailPending["numQuotas"]|split(',') %}
+
+                                                        {% set maxPerLine = 0 %}
+                                                        {% set break = false %}
+                                                        
+                                                        {% for f in foo %}
+                                                            
+                                                            
+
+                                                            {% if maxPerLine % 100 == 0 %}
+                                                                
+                                                                {% if break == false %}
+                                                                    <br>#{{f}}
+                                                                {% else %}
+                                                                    #{{f}}
+                                                                {% endif %}
+                                                                
+                                                                
+                                                            {% else %}
+                                                                {% set break = false %}
+                                                                #{{f}}
+                                                            {% endif %}
+
+                                                            {% set maxPerLine = maxPerLine + 1  %}
+
+                                                            {% if maxPerLine >= foo|length %}
+                                                                {% set divide = "" %}
+                                                            {% else %}
+                                                                {% set divide = "," %}
+                                                            {% endif %}
+                                                            {{ divide }}
+
+                                                            
+                                                        {% endfor %}
+                                                        </span>
                                                 {% else %}  
                                                         N/A      
                                                 {% endif %}

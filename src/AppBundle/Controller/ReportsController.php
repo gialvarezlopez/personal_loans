@@ -64,6 +64,52 @@ class ReportsController extends Controller
         //$week =  $this->inicio_fin_semana();
         //var_dump($res);
 
+
+        /*
+            //echo $day_number = date("d");
+            $year=date("Y");
+            $month=date("m");
+            $day=date("d");
+
+            # Obtenemos el numero de la semana
+            $semana=date("W",mktime(0,0,0,$month,$day,$year));
+
+            # Obtenemos el día de la semana de la fecha dada
+            $diaSemana=date("w",mktime(0,0,0,$month,$day,$year));
+
+            # el 0 equivale al domingo...
+            if($diaSemana==0)
+                $diaSemana=7;
+
+            # A la fecha recibida, le restamos el dia de la semana y obtendremos el lunes
+            $primerDia=date("d-m-Y",mktime(0,0,0,$month,$day-$diaSemana+1,$year));
+
+            # A la fecha recibida, le sumamos el dia de la semana menos siete y obtendremos el domingo
+            $ultimoDia=date("d-m-Y",mktime(0,0,0,$month,$day+(7-$diaSemana),$year));
+
+            echo "<br>Semana: ".$semana." - año: ".$year;
+            echo "<br>Primer día ".$primerDia;
+            echo "<br>Ultimo día ".$ultimoDia;
+        */
+
+        /*
+        $fecha_inicio = '2017-08-15'; 
+        $fecha_fin = '2017-08-31';
+        $fecha = '2017-09-22';
+
+        if ($this->check_in_range($fecha_inicio, $fecha_fin, $fecha))
+        {
+
+            echo "$fecha está en el rango\n";
+
+        } else {
+
+            echo "$fecha NO está en el rango\n";
+
+        }
+        */
+
+
         
         //$loans = $dashboard->getLoans($userId, $count = false,  $category=false, $limit=false);
         return $this->render('app/reports/index.html.twig', array(
@@ -73,6 +119,8 @@ class ReportsController extends Controller
         //return $this->render("AppBundle:user:login.html.twig");
     }
 
+    
+
     public function printLoansAction( Request $request )
     {
         $em = $this->getDoctrine()->getManager();
@@ -81,6 +129,7 @@ class ReportsController extends Controller
         $from = $request->get("from");
         $to = $request->get("to");
         $opt = $request->get("opt");
+        $status = $request->get("status");
 
         if( isset($from) && $from != "" && isset($to) && $to != "")
         {
@@ -106,11 +155,18 @@ class ReportsController extends Controller
         //$week =  $this->inicio_fin_semana();
         //var_dump($res);
 
+        $extraTitle = "";
+        if( $status == 2 )
+        {
+            $extraTitle = " - ( Prestamos Congelados)";
+        }
+
         
         //$loans = $dashboard->getLoans($userId, $count = false,  $category=false, $limit=false);
         $html = $this->renderView('app/reports/printLoans.html.twig', array(
             'periodDate' => $periodDate,
-            "opt" => $radioOpt 
+            "opt" => $radioOpt,
+            "status"=>$status
         ));
 
         //var_dump($periodDate["startDate"]);
@@ -163,12 +219,33 @@ class ReportsController extends Controller
 
         $font = $dompdf->getFontMetrics()->get_font("helvetica", "bold");    
         //$canvas->page_text(72, 18, $infoPeriod."Header: {PAGE_NUM} of {PAGE_COUNT}", $font, 10, array(0,0,0));
-        $canvas->page_text(45, 25, $infoPeriod, $font, 12, array(0,0,0));
+        $canvas->page_text(45, 25, $infoPeriod.$extraTitle, $font, 12, array(0,0,0));
         $canvas->page_text($w-100,$h-28,"Página {PAGE_NUM} de {PAGE_COUNT}", $font,8);
         //$canvas->page_text($w-590,$h-28,"El pie de p&aacute;gina del lado izquiero, Guadalajara, Jalisco C.P. XXXXX Tel. XX (XX) XXXX XXXX", $font,6);
 
         // Output the generated PDF to Browser (inline view)
-        $dompdf->stream("mypdf.pdf", [
+        $name = $infoPeriod.$extraTitle;
+       /*     
+        $info = explode(" ",$name);
+        
+        $data = array();
+
+        for($i=0; $i < count($info); $i++)
+        {
+            $txt = trim($info[$i]);
+            if( $txt != "" )
+            {
+                array_push($data,$txt);
+            }
+        }
+        
+
+        $name = implode("-",$data);
+        */
+
+        $letters = array(",");
+        $name = str_replace($letters, "", $name);
+        $dompdf->stream($name.".pdf", [
             "Attachment" => false
         ]);
 

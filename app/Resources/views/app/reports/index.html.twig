@@ -54,6 +54,10 @@
 #clientslist td{
     vertical-align: middle;
 }
+
+.custom-print{
+    margin-right: 3px;
+}
 /*
 .control-label, th, #clientslist td, .widthAuto td{
     font-weight: 550!important;
@@ -150,8 +154,8 @@
                 <hr>
                 <div class="row">
                     <div class="col-lg-12">
-                    
-                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,1,2", periodDate, opt) %}
+
+                        {% set lastLoan = srv_Dashboard.getLoanLastPaymentDetail(app.user.usrId, false, false, false, "0,2", periodDate, opt) %}
                         {% if lastLoan|length > 0 %}
                             {#
                                 <span id="prevP">&#160;</span> Previous Payment
@@ -245,6 +249,8 @@
                                                 {% else %}
                                                     <span style='color:green'>Al dia</span>
                                                 {% endif %}
+
+                                                
                                              {% else %}
                                                 {% set noPaid = srv_Loans.getPendingQuotasNoPaid(item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}
                                                 {% set detailPending =  srv_Loans.showNumPendingQuotas( item.loa_id, periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d') ) %}   
@@ -258,9 +264,19 @@
                                                     {% else %}
                                                         <span style='color:red'>En mora</span> xxxxx
                                                     {% endif %} #}
+                                                    {# {{ noPaid[0].lpa_max_payment_date }} #}
+                                                    {% set paymentDate = noPaid[0].lpa_max_payment_date %}
+                                                    {% set checkRange = srv_Loans.check_in_range(periodDate['startDate']|date('Y-m-d'), periodDate['endDate']|date('Y-m-d'), paymentDate) %}
+                                                    {% if checkRange %}
+                                                        <span style='color:green'>Al dia</span>
+                                                    {% else %}
+                                                        <span style='color:red'>En mora</span> 
+                                                    {% endif %}
+                                                    
 
-                                                    <span style='color:green'>Al dia</span>
+                                                    {# <span style='color:green'>Al dia</span>#}
                                                 {% endif %}
+                                                
                                              {% endif %}
                                         </td>
                                         <td>{{ item.name }} </td>
@@ -1008,7 +1024,10 @@
                 window.location.href = "{{ path('report_index') }}?from="+from+"&to="+to+"&opt="+opt;
             });
 
-            $(".dt-buttons").append("<button class='custom-print' tabindex='0' aria-controls='clientslist' type='button'><span>PDF</span></button>");
+            $(".dt-buttons").append("<button class='custom-print btn btn-success' tabindex='0' aria-controls='clientslist' type='button'><span>PDF Activos</span></button>");
+            $(".dt-buttons").append("<button class='custom-print_freezed btn btn-danger' tabindex='0' aria-controls='clientslist' type='button'><span>PDF Congelados</span></button>");
+            //$(".dt-buttons").append("<button class='custom-print' tabindex='0' aria-controls='clientslist' type='button'><span>PDF</span></button>");
+
 
             $("body").on("click",".custom-print", function(){
                 //$("#holder_loading").show();
@@ -1018,9 +1037,23 @@
                 txt = txt.split("-");
                 var from = $.trim(txt[0]);
                 var to = $.trim(txt[1]);
-                var url = "{{ path('report_print_loans') }}?from="+from+"&to="+to+"&opt="+opt;
+                var url = "{{ path('report_print_loans') }}?from="+from+"&to="+to+"&opt="+opt+"&status=0"; // 0 =  No  congelados, pero no finalizados
                 window.open(url, '_blank');
             });
+
+            $("body").on("click",".custom-print_freezed", function(){
+                //$("#holder_loading").show();
+                var opt = $("input[name='optFilter']:checked").val();
+                //alert(opt);
+                var txt = $.trim($('#rangeDate').val());
+                txt = txt.split("-");
+                var from = $.trim(txt[0]);
+                var to = $.trim(txt[1]);
+                var url = "{{ path('report_print_loans') }}?from="+from+"&to="+to+"&opt="+opt+"&status=2";//2 congelados
+                window.open(url, '_blank');
+            });
+
+            $(".buttons-html5").addClass("btn btn-default")
         });    
     </script>
 {% endblock %}

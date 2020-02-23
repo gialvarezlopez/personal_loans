@@ -91,10 +91,11 @@ class Dashboard
         return $result;
     }
 
-    public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,1,2", $periodDays=false, $optOption = false)
+    public function getLoanLastPaymentDetail($userId, $count = false,  $category=false, $limit=false, $completed="0,2", $periodDays=false, $optOption = false)
     {
 
-        $hasPending = $this->getLoansWithPendingPayments();
+        //exit();
+        $hasPending = $this->getLoansWithPendingPayments($completed);
 
         $or = "";
         if( count($hasPending) > 0 )
@@ -151,7 +152,8 @@ class Dashboard
                     }
                 }
             }
-            $RAW_QUERY .= "  AND l.loa_completed = 0 ORDER BY c.cli_first_name ASC ";
+            $RAW_QUERY .= "  AND l.loa_completed in (".$completed.") ORDER BY c.cli_first_name ASC ";
+            //echo $RAW_QUERY;
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
@@ -208,10 +210,10 @@ class Dashboard
                 $RAW_QUERY .= " AND loc.loc_key = '".$category."'"; 
             }
 
-            if( $completed >=0 )
-            {
+            //if( $completed >=0 )
+            //{
                 $RAW_QUERY .= " AND l.loa_completed in (".$completed.")"; 
-            }
+            //}
 
             if( $limit )
             {
@@ -259,14 +261,14 @@ class Dashboard
     }
 
 
-    public function getLoansWithPendingPayments()
+    public function getLoansWithPendingPayments($statusLoan = "0")
     {
         $aDataLoans = array();
         //$res = $srvLoan->getAllDetailLoan($loanId);
         $srvLoan = $this->container->get('srv_Loans');
         $srvTimeZone = $this->container->get('srv_TimeZone');
 
-        $RAW_QUERY  = "SELECT * FROM loan WHERE loa_completed = 0 AND loa_active = 1 ";
+        $RAW_QUERY  = "SELECT * FROM loan WHERE loa_completed in (".$statusLoan.") AND loa_active = 1 ";
         $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
         $statement->execute();
         $result = $statement->fetchAll();

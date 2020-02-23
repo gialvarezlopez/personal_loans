@@ -470,12 +470,31 @@ class Loans
             $RAW_QUERY = "SELECT lpa_id, lpa_max_payment_date, lpa_current_amount FROM loan_payment WHERE loa_id = $loanId
             AND lpa_total_amount_paid IS NULL
             AND lpa_max_payment_date <= '".$endDate."'
-            ";                
+            ";  
+            
+            //echo $RAW_QUERY;
 
             $statement  = $this->em->getConnection()->prepare($RAW_QUERY);
             $statement->execute();
             $result = $statement->fetchAll();
             return $result;                
+        }
+    }
+
+    function check_in_range($fecha_inicio, $fecha_fin, $fecha){
+
+        $fecha_inicio = strtotime($fecha_inicio);
+        $fecha_fin = strtotime($fecha_fin);
+        $fecha = strtotime($fecha);
+   
+        if(($fecha >= $fecha_inicio) && ($fecha <= $fecha_fin)) {
+   
+            return true;
+   
+        } else {
+   
+            return false;
+   
         }
     }
 
